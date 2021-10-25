@@ -3,6 +3,7 @@ import {Tab,Tabs} from "../utils/Tabs";
 import { X } from "react-feather";
 import "./Menu.scss";
 import {COLORS} from "../constants";
+import {LoginForm} from "../auth/LoginForm";
 
 export type MenuProps = {
     currentTab: "login" | "signup";
@@ -20,7 +21,9 @@ export class Menu extends React.Component<MenuProps, {}> {
                     <X className="close-button" onClick={this.props.onClose}/>
                 </div>
                 <Tabs currentTab={this.props.currentTab} onTabClick={this.props.onTabClick}>
-                    <Tab tabId="login" tabTitle="Login"></Tab>
+                    <Tab tabId="login" tabTitle="Login">
+                        <LoginForm attemptLogin={() => {}}/>
+                    </Tab>
                     <Tab tabId="signup" tabTitle="Signup"></Tab>
                 </Tabs>
             </div>
