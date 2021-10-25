@@ -1,0 +1,14 @@
+@import '../utils.scss';
+
+.toolbar-main {
+    @include bordered-block;
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    padding: 0.25rem;
+}
+
+button {
+    background-color: inherit;
+    border: none;
+}

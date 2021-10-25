@@ -1,26 +1,25 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import {Toolbar} from './Toolbar/Toolbar';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+type AppState = {
+    showMenu: boolean;
+}
+
+class App extends React.Component<{}, AppState> {
+    constructor(props: {}) {
+        super(props);
+        this.state = { showMenu: false }
+        this.handleOpenMenu = this.handleOpenMenu.bind(this);
+    }
+
+    handleOpenMenu() {
+        this.setState({ ...this.state, showMenu: true });
+    }
+
+    render() {
+        return !this.state.showMenu ? <Toolbar onOpenMenu={this.handleOpenMenu}/> : null;
+    }
 }
 
 export default App;
