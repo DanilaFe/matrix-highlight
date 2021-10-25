@@ -3,6 +3,7 @@ $default-border: 0.08rem solid #cacaca;
 $default-border-radius: 0.5rem;
 
 $primary-color: #3072c7;
+$primary-color-light: lighten($primary-color, 20%);
 
 $highlight-color-yellow: 255, 237, 79;
 $highlight-color-pink: 255, 79, 167;

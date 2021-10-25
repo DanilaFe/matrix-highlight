@@ -3,7 +3,7 @@ import {Tab,Tabs} from "../utils/Tabs";
 import { X } from "react-feather";
 import "./Menu.scss";
 import {COLORS} from "../constants";
-import {LoginForm} from "../auth/LoginForm";
+import {LoginForm} from "./auth/LoginForm";
 
 export type MenuProps = {
     currentTab: "login" | "signup";

@@ -39,3 +39,41 @@ input[type="text"], input[type="password"] {
         background-color: #eaeaea;
     }
 }
+
+button, input[type="submit"] {
+    @include bordered-block;
+    background: white;
+    padding: 0.5rem;
+    text-transform: uppercase;
+    font-family: Iosevka;
+    font-weight: bold;
+    transition: background-color 0.1s;
+    border-color: rgba(0, 0, 0, 0.20);
+    min-width: 5rem;
+
+    &.destructive {
+        background-color: tomato;
+        color: white;
+
+        &:hover {
+            background-color: lighten(tomato, 10%);
+        }
+
+        &:disabled {
+            background-color: lighten(tomato, 10%);
+        }
+    }
+
+    &.primary {
+        background-color: $primary-color;
+        color: white;
+
+        &:hover {
+            background-color: $primary-color-light;
+        }
+
+        &:disabled {
+            background-color: $primary-color-light;
+        }
+    }
+}

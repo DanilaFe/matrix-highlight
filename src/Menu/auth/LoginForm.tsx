@@ -35,6 +35,7 @@ export class LoginForm extends React.Component<LoginFormProps, LoginFormState> {
                 <input value={this.state.password} onChange={this.handlePasswordChange} type="password" id="password" disabled={disabled}></input>
                 <label htmlFor="homeserver">Homeserver</label>
                 <input value={this.state.homeserver} onChange={this.handleHomeserverChange} type="text" id="homeserver" disabled={disabled}></input>
+                <input type="submit" value="Log In" className="primary" disabled={disabled}></input>
             </form>
         )
     }
