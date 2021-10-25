@@ -1,4 +1,5 @@
 import React from "react";
+import "./Tab.scss"
 
 export type TabProps = {
     tabId: string,

@@ -1,5 +1,6 @@
 import React from "react";
 import {TabLabel} from "./TabLabel";
+import "./Tabs.scss";
 
 export type TabsProps = {
     currentTab: string;

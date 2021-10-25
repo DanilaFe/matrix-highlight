@@ -1,5 +1,6 @@
 import React from "react";
 import {TabProps} from "./Tab";
+import "./TabLabel.scss";
 
 export type TabLabelProps = TabProps & {
     onTabClick(key: string): void
