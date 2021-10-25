@@ -1,0 +1,34 @@
+@import "../utils.scss";
+
+.tooltip {
+    @include bordered-block;
+    box-shadow: $default-shadow;
+    padding: 0.25rem;
+    display: inline-block;
+
+    & > button {
+        min-width: 0;
+        cursor: pointer;
+        margin: 0.08rem;
+        padding: 0.25rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 100%;
+
+        &.primary svg {
+            color: white;
+        }
+    }
+
+    & > button.color-switch {
+        background-color: rgba(var(--highlight-color), 0.7);
+        padding: 0.75rem;
+        border-radius: 100%;
+        border: 0.08rem solid rgba(0, 0, 0, 0.10);
+
+        &:hover {
+            background-color: rgba(var(--highlight-color), 0.4);
+        }
+    }
+}
