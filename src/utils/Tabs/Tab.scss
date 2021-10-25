@@ -4,9 +4,9 @@
     flex-direction: column;
     flex-basis: 0;
     flex-grow: 1;
-}
 
-h2 {
-    text-align: center;
-    font-weight: normal;
+    & > h2 {
+        text-align: center;
+        font-weight: normal;
+    }
 }

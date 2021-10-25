@@ -1,6 +1,6 @@
 @import "../utils.scss";
 
-.menu {
+.window {
     @include bordered-block;
     font-family: "Iosevka";
     box-shadow: $default-shadow;
@@ -11,43 +11,43 @@
     right: max(calc(50% - 25rem), 3rem);
     display: flex;
     flex-direction: column;
-}
 
-.title {
-    border-bottom: 0.08rem solid #cacaca;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.5rem;
-}
-
-.title-text {
-    margin-left: 0.5rem;
-}
-
-.close-button {
-    height: 1rem;
-    width: 1rem;
-    min-width: 0;
-    border: none;
-    padding: 0;
-    position: absolute;
-    right: 1rem;
-    // ?? Cross is smaller than button
-    display: flex;
-    align-items: center;
-    transition: color 0.25s;
-    cursor: pointer;
-
-    &:hover {
-        color: red;
+    & > .title {
+        border-bottom: 0.08rem solid #cacaca;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0.5rem;
     }
-}
 
-.color-dot {
-    height: 0.5rem;
-    width: 0.5rem;
-    border-radius: 100%;
-    margin-right: 0.25rem;
-    background-color: rgb(var(--highlight-color));
+    .title-text {
+        margin-left: 0.5rem;
+    }
+
+    .close-button {
+        height: 1rem;
+        width: 1rem;
+        min-width: 0;
+        border: none;
+        padding: 0;
+        position: absolute;
+        right: 1rem;
+        // ?? Cross is smaller than button
+        display: flex;
+        align-items: center;
+        transition: color 0.25s;
+        cursor: pointer;
+
+        &:hover {
+            color: red;
+        }
+    }
+
+    .color-dot {
+        height: 0.5rem;
+        width: 0.5rem;
+        border-radius: 100%;
+        margin-right: 0.25rem;
+        background-color: rgb(var(--highlight-color));
+    }
 }

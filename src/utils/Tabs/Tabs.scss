@@ -1,11 +1,10 @@
-nav {
-    display: flex;
-    margin: 0.5rem 0 0.5rem;
-}
-
 .tabs {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     flex-basis: 0;
+    & > nav {
+        display: flex;
+        margin: 0.5rem 0 0.5rem;
+    }
 }
