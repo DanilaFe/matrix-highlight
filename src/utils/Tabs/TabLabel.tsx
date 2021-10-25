@@ -7,22 +7,11 @@ export type TabLabelProps = TabProps & {
     active: boolean
 }
 
-export class TabLabel extends React.Component<TabLabelProps, {}> {
-    constructor(props: TabLabelProps) {
-        super(props);
-        this.handleTabClick = this.handleTabClick.bind(this);
-    }
-
-    handleTabClick() {
-        this.props.onTabClick(this.props.tabId);
-    }
-    
-    render() {
-        return (
-            <span className={`tab-button ${this.props.active ? 'active' : ''}`}
-                onClick={this.handleTabClick}>
-                <span className="tab-button-name">{this.props.tabTitle}</span>
-            </span>
-        )
-    }
+export const TabLabel = (props: TabLabelProps) => {
+    return (
+        <span className={`tab-button ${props.active ? 'active' : ''}`}
+            onClick={() => props.onTabClick(props.tabId)}>
+            <span className="tab-button-name">{props.tabTitle}</span>
+        </span>
+    );
 }

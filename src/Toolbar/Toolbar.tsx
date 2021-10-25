@@ -6,15 +6,13 @@ export type ToolbarProps = {
     onOpenMenu(): void
 }
 
-export class Toolbar extends React.Component<ToolbarProps, {}> {
-    render() {
-        return (
-            <div className="toolbar-main">
-                <button onClick={this.props.onOpenMenu}>⋯</button>
-                <button onClick={this.props.onOpenMenu}><Cloud className="feather"/></button>
-                <button onClick={this.props.onOpenMenu}><Users className="feather"/></button>
-                <button onClick={this.props.onOpenMenu}><Folder className="feather"/></button>
-            </div>
-        );
-    }
+export const Toolbar = (props: ToolbarProps) => {
+    return (
+        <div className="toolbar-main">
+            <button onClick={props.onOpenMenu}>⋯</button>
+            <button onClick={props.onOpenMenu}><Cloud className="feather"/></button>
+            <button onClick={props.onOpenMenu}><Users className="feather"/></button>
+            <button onClick={props.onOpenMenu}><Folder className="feather"/></button>
+        </div>
+    );
 }

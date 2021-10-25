@@ -6,13 +6,11 @@ export type TabProps = {
     tabTitle: string
 }
 
-export class Tab extends React.Component<TabProps, {}> {
-    render() {
-        return (
-            <div className="tab">
-                <h2>{this.props.tabTitle}</h2>
-                { this.props.children }
-            </div>
-        );
-    }
+export const Tab = (props: React.PropsWithChildren<TabProps>) => {
+    return (
+        <div className="tab">
+            <h2>{props.tabTitle}</h2>
+            { props.children }
+        </div>
+    );
 }

@@ -1,39 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Menu}  from "./Menu/Menu";
 
-type AppState = {
-    showMenu: boolean;
-    authTab: "login" | "signup";
-}
+const App = () => {
+    const [showMenu, setShowMenu] = useState(false);
+    const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
-class App extends React.Component<{}, AppState> {
-    constructor(props: {}) {
-        super(props);
-        this.state = { showMenu: false, authTab: "login" }
-        this.handleOpenMenu = this.handleOpenMenu.bind(this);
-        this.handleAuthTab = this.handleAuthTab.bind(this);
-        this.handleCloseMenu = this.handleCloseMenu.bind(this);
-    }
-
-    handleOpenMenu() {
-        this.setState({ ...this.state, showMenu: true });
-    }
-
-    handleAuthTab(tab: "login" | "signup") {
-        this.setState({ ...this.state, authTab: tab });
-    }
-
-    handleCloseMenu() {
-        this.setState({ ...this.state, showMenu: false });
-    }
-
-    render() {
-        return !this.state.showMenu ?
-            <Toolbar onOpenMenu={this.handleOpenMenu}/> :
-            <Menu currentTab={this.state.authTab} onTabClick={this.handleAuthTab} onClose={this.handleCloseMenu}/>;
-    }
+    return !showMenu ?
+        <Toolbar onOpenMenu={() => setShowMenu(true) }/> :
+        <Menu currentTab={authTab} onTabClick={setAuthTab} onClose={() => setShowMenu(false)}/>;
 }
 
 export default App;

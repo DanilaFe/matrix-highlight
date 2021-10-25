@@ -1,6 +1,7 @@
 import React from "react"
 import {COLORS} from "../constants";
 import { X } from "react-feather";
+import "./Window.scss";
 
 export const Window = (props: React.PropsWithChildren<{onClose(): void }>) => {
     return (

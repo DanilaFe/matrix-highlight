@@ -10,17 +10,15 @@ export type MenuProps = {
     onClose(): void;
 }
 
-export class Menu extends React.Component<MenuProps, {}> {
-    render() {
-        return (
-            <Window onClose={this.props.onClose}>
-                <Tabs currentTab={this.props.currentTab} onTabClick={this.props.onTabClick}>
-                    <Tab tabId="login" tabTitle="Login">
-                        <LoginForm attemptLogin={() => {}}/>
-                    </Tab>
-                    <Tab tabId="signup" tabTitle="Signup"></Tab>
-                </Tabs>
-            </Window>
-        );
-    }
+export const Menu = (props: MenuProps) => {
+    return (
+        <Window onClose={props.onClose}>
+            <Tabs currentTab={props.currentTab} onTabClick={props.onTabClick}>
+                <Tab tabId="login" tabTitle="Login">
+                    <LoginForm attemptLogin={() => {}}/>
+                </Tab>
+                <Tab tabId="signup" tabTitle="Signup"></Tab>
+            </Tabs>
+        </Window>
+    );
 }
