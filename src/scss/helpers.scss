@@ -1,0 +1,7 @@
+@import "./variables.scss";
+
+@mixin bordered-block {
+    background-color: white;
+    border: 0.08rem solid #cacaca;
+    border-radius: 0.5rem;
+}
