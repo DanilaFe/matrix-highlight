@@ -19,7 +19,7 @@ export class Tabs extends React.Component<TabsProps, {}> {
                 onTabClick={this.props.onTabClick}
             />);
         return (
-            <div className="tabbed-menu">
+            <div className="tabs">
                 <nav>{tabLabels}</nav>
                 {this.props.children.find(child => child.props.tabId === this.props.currentTab)}
             </div>
