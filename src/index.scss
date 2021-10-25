@@ -1,0 +1,22 @@
+@import "./utils.scss";
+
+.yellow { --highlight-color: #{$highlight-color-yellow}; }
+.pink { --highlight-color: #{$highlight-color-pink}; }
+.green { --highlight-color: #{$highlight-color-green}; }
+.blue { --highlight-color: #{$highlight-color-blue}; }
+.orange { --highlight-color: #{$highlight-color-orange}; }
+
+body {
+  margin: 0;
+  font-family: Iosevka;
+  max-width: 800px;
+  margin: auto;
+  text-align: justify;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
