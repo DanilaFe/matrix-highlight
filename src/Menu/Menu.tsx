@@ -1,9 +1,8 @@
 import React from "react"
 import {Tab,Tabs} from "../utils/Tabs";
-import { X } from "react-feather";
 import "./Menu.scss";
-import {COLORS} from "../constants";
 import {LoginForm} from "./auth/LoginForm";
+import {Window} from "./Window";
 
 export type MenuProps = {
     currentTab: "login" | "signup";
@@ -14,19 +13,14 @@ export type MenuProps = {
 export class Menu extends React.Component<MenuProps, {}> {
     render() {
         return (
-            <div className="menu">
-                <div className="title">
-                    {COLORS.map(color => <span key={color} className={`${color} color-dot`}></span>)}
-                    <span className="title-text">Matrix Highlight</span>
-                    <X className="close-button" onClick={this.props.onClose}/>
-                </div>
+            <Window onClose={this.props.onClose}>
                 <Tabs currentTab={this.props.currentTab} onTabClick={this.props.onTabClick}>
                     <Tab tabId="login" tabTitle="Login">
                         <LoginForm attemptLogin={() => {}}/>
                     </Tab>
                     <Tab tabId="signup" tabTitle="Signup"></Tab>
                 </Tabs>
-            </div>
+            </Window>
         );
     }
 }
