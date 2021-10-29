@@ -5,20 +5,33 @@ import {LoginForm} from "./auth/LoginForm";
 import {Window} from "./Window";
 
 export type MenuProps = {
-    currentTab: "login" | "signup";
-    onTabClick(tab: "login" | "signup"): void;
+    mode: "auth" | "tools";
+    authTab: "login" | "signup";
+    onAuthTabClick(tab: "login" | "signup"): void;
+    toolsTab: "quotes" | "rooms" | "users";
+    onToolsTabClick(tab: "quotes" | "rooms" | "users"): void;
     onClose(): void;
 }
 
 export const Menu = (props: MenuProps) => {
+    const authView = (
+        <Tabs currentTab={props.authTab} onTabClick={props.onAuthTabClick}>
+            <Tab tabId="login" tabTitle="Login">
+                <LoginForm attemptLogin={() => {}}/>
+            </Tab>
+            <Tab tabId="signup" tabTitle="Signup"></Tab>
+        </Tabs>
+    );
+    const toolsView = (
+        <Tabs currentTab={props.toolsTab} onTabClick={props.onToolsTabClick}>
+            <Tab tabId="quotes" tabTitle="Quotes"></Tab>
+            <Tab tabId="rooms" tabTitle="Rooms"></Tab>
+            <Tab tabId="users" tabTitle="Users"></Tab>
+        </Tabs>
+    );
     return (
         <Window onClose={props.onClose}>
-            <Tabs currentTab={props.currentTab} onTabClick={props.onTabClick}>
-                <Tab tabId="login" tabTitle="Login">
-                    <LoginForm attemptLogin={() => {}}/>
-                </Tab>
-                <Tab tabId="signup" tabTitle="Signup"></Tab>
-            </Tabs>
+            {props.mode === "auth" ? authView : toolsView}
         </Window>
     );
 }
