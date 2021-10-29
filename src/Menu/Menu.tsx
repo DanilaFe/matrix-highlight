@@ -3,6 +3,7 @@ import {Tab,Tabs} from "../utils/Tabs";
 import "./Menu.scss";
 import {LoginForm} from "./auth/LoginForm";
 import {QuoteList} from "./tools/QuoteList";
+import {RoomList} from "./tools/RoomList";
 import {Window} from "./Window";
 import {Page} from "../model";
 
@@ -30,7 +31,9 @@ export const Menu = (props: MenuProps) => {
             <Tab tabId="quotes" tabTitle="Quotes">
                 <QuoteList highlights={props.page.currentRoom!.highlights}/>
             </Tab>
-            <Tab tabId="rooms" tabTitle="Rooms"></Tab>
+            <Tab tabId="rooms" tabTitle="Rooms">
+                <RoomList rooms={props.page.rooms} currentRoomId={props.page.currentRoomId} onRoomClick={() => {}}/>
+            </Tab>
             <Tab tabId="users" tabTitle="Users"></Tab>
         </Tabs>
     );
