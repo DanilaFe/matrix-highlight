@@ -15,6 +15,8 @@ export class Room {
     users: User[];
     localHighlights: Highlight[];
     remoteHighlights: Highlight[];
+
+    get highlights() { return [...this.remoteHighlights, ...this.localHighlights]; }
     
     constructor(props: RoomFields) {
         this.id = props.id;

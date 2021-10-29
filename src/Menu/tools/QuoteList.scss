@@ -1,0 +1,18 @@
+@import "../../utils.scss";
+
+.quote-list {
+    @include bordered-block;
+    overflow: auto;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    flex-basis: 0;
+    flex-grow: 1;
+
+    .quote {
+        border: 0.08rem solid #cacaca;
+        padding: 0.5rem;
+        border-left: 0.25rem solid rgba(var(--highlight-color), 0.7);
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+    }
+};
