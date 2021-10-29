@@ -1,5 +1,5 @@
 import React from "react"
-import {COLORS} from "../constants";
+import {COLORS} from "../model/matrix";
 import { X } from "react-feather";
 import "./Window.scss";
 

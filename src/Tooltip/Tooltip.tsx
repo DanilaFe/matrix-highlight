@@ -1,4 +1,4 @@
-import {COLORS} from "../constants";
+import {COLORS} from "../model/matrix";
 import "./Tooltip.scss";
 
 export const Tooltip = () => {
