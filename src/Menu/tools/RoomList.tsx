@@ -14,7 +14,7 @@ export const RoomList = (props: RoomListProps) => {
             <div className="room-icon"><Folder/></div>
             <div className="room-name">
                 {r.name}
-                {props.currentRoomId === r.id ? <span className="room-curren"/> : null}
+                {props.currentRoomId === r.id ? <span className="room-current">Current</span> : null}
             </div>
             <div className="room-info">
                 Users: {r.users.map(u => u.name).join("")}
