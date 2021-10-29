@@ -8,13 +8,13 @@ import {Renderer} from "./effects/EffectfulRenderer";
 
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
-    const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
+    const [menuMode] = useState<"auth" | "tools">("tools");
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
-    const [page, setPage] = useState(new Page({}));
+    const [page] = useState(new Page({}));
 
     useEffect(() => {
-        Renderer.setActiveListener(active => {});
+        Renderer.setActiveListener(() => {});
     }, []);
     
     useEffect(() => {

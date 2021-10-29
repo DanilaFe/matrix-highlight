@@ -6,7 +6,7 @@ export type LoginFormProps = {
 }
 
 export const LoginForm = (props: LoginFormProps) => {
-    const [trying, setTrying] = useState(false);
+    const [trying] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [homeserver, setHomeserver] = useState("matrix.org");
