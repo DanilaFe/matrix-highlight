@@ -12,18 +12,19 @@ const App = () => {
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
     const [page] = useState(new Page({}));
+    const [currentRoomId] = useState<string | null>(null);
 
     useEffect(() => {
         Renderer.setActiveListener(() => {});
     }, []);
     
     useEffect(() => {
-        Renderer.apply(page.currentRoom?.highlights || []);
+        Renderer.apply(page.getRoom(currentRoomId)?.highlights || []);
     });
 
     return !showMenu ?
         <div><Toolbar onOpenMenu={() => setShowMenu(true) }/><Tooltip/></div> :
-        <Menu mode={menuMode} page={page}
+        <Menu mode={menuMode} page={page} currentRoomId={currentRoomId}
             toolsTab={toolsTab} onToolsTabClick={setToolsTab}
             authTab={authTab} onAuthTabClick={setAuthTab}
             onClose={() => setShowMenu(false)}/>;
