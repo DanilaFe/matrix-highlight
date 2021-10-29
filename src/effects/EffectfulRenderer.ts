@@ -114,6 +114,7 @@ class EffectfulRenderer {
             if (i >= this._highlightData.length) {
                 // We're past existing data and we're now just adding new things.
                 this._pushHighlight(highlight);
+                i++;
                 continue;
             }
             if (this._highlightData[i].id !== highlight.id) {
