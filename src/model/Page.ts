@@ -1,16 +1,24 @@
 import {Room} from "./Room";
+import {immerable} from "immer";
 
 export type PageFields = {
     rooms?: Room[];
-    currentRoom?: Room | null;
+    currentRoomId?: string | null;
 }
 
 export class Page {
+    [immerable] = true;
+
     rooms: Room[];
-    currentRoom: Room | null
+    currentRoomId: string | null
     
+    get currentRoom(): Room | null {
+        if (this.currentRoomId === null) return null;
+        return this.rooms.find(r => r.id === this.currentRoomId)!;
+    }
+
     constructor(props: PageFields) {
         this.rooms = props.rooms || [];
-        this.currentRoom = props.currentRoom || null;
+        this.currentRoomId = props.currentRoomId || null;
     }
 }

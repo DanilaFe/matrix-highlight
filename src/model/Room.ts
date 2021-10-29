@@ -1,5 +1,6 @@
 import {User} from "./User";
 import {Highlight} from "./Highlight";
+import {immerable} from "immer";
 
 export type RoomFields = {
     id: string;
@@ -10,6 +11,8 @@ export type RoomFields = {
 }
 
 export class Room {
+    [immerable] = true;
+
     id: string;
     name: string;
     users: User[];

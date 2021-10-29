@@ -1,6 +1,9 @@
 import {HighlightContent, NodeData, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_START_KEY, HIGHLIGHT_END_KEY, HIGHLIGHT_TEXT_KEY} from "./matrix"
+import {immerable} from "immer";
 
 export class Highlight {
+    [immerable] = true;
+
     constructor(
         public id: number,
         public content: HighlightContent,
