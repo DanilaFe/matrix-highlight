@@ -11,7 +11,7 @@ export interface ClientSubscriber {
     removeRoom?(removedId: string): void;
     addUser?(roomId: string, newUser: User): void;
     removeUser?(roomId: string, userId: string): void;
-    highlight?(roomId: string, highlight: Highlight): void;
+    highlight?(roomId: string, highlight: Highlight, txnUd: number | undefined): void;
     setHighlightVisibility?(roomId: string, highlightId: string, visibility: boolean): void;
 };
 
