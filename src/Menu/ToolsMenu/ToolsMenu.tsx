@@ -11,6 +11,7 @@ export type ToolsMenuProps = {
     onTabClick(tab: ToolsMenuTab): void;
     page: Page;
     currentRoomId: string | null;
+    onRoomSwitch(roomId: string | null): void;
 }
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
@@ -21,7 +22,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 {currentRoom ? <QuoteList highlights={currentRoom.highlights}/> : null}
             </Tab>
             <Tab tabId="rooms" tabTitle="Rooms">
-                <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={() => {}}/>
+                <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}/>
             </Tab>
             <Tab tabId="users" tabTitle="Users"></Tab>
         </Tabs>

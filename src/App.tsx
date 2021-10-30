@@ -22,7 +22,7 @@ const App = () => {
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
     const [page, setPage] = useState(new Page({}));
-    const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
+    const [currentRoomId, setCurrentRoomId] = useState<string | null>("!PvZRbsyWNPNzYhDvxz:matrix.org");
     const [client, setClient] = useState<Client | null>(null);
     const [selection, setSelection] = useState<Selection | null>(null);
 
@@ -172,6 +172,7 @@ const App = () => {
                 attemptLogin={() => {}}
                 attemptSignup={() => {}}/>
             <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab}
+                onRoomSwitch={setCurrentRoomId}
                 page={page} currentRoomId={currentRoomId}/>
         </Menu>;
 }

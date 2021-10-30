@@ -5,12 +5,12 @@ import "./RoomList.scss";
 export type RoomListProps = {
     rooms: Room[];
     currentRoomId: string | null;
-    onRoomClick(room: Room): void;
+    onRoomClick(room: string | null): void;
 };
 
 export const RoomList = (props: RoomListProps) => {
     const rooms = props.rooms.map(r =>
-        <div key={r.id} className="room" onClick={() => props.onRoomClick(r)}>
+        <div key={r.id} className="room" onClick={() => props.onRoomClick(r.id)}>
             <div className="room-icon"><Folder/></div>
             <div className="room-name">
                 {r.name}
