@@ -66,7 +66,10 @@ const App = () => {
     }
 
     useEffect(() => {
-        Renderer.setActiveListener(() => {});
+        Renderer.subscribe({
+            activeChange(id) {},
+            click(id) {}
+        });
     }, []);
 
     useEffect(() => {
@@ -137,7 +140,11 @@ const App = () => {
     return !showMenu ?
         <>
             <Toolbar onOpenMenu={() => setShowMenu(true) }/>
-            {showTooltip ? <Tooltip highlight={makeNewHighlight} top={tooltipTop} left={tooltipLeft}/> : null}
+            {showTooltip ?
+                <Tooltip
+                    highlight={makeNewHighlight}
+                    top={tooltipTop} left={tooltipLeft}/> :
+                null}
         </> :
         <Menu currentMode={menuMode} onClose={() => setShowMenu(false)}>
             <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}

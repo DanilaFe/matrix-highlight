@@ -46,6 +46,7 @@ class HighlightData {
             if (!newElements) continue;
             newElements.highlight.onmouseenter = () => { this._renderer._hoverBegin(this._highlight.id); };
             newElements.highlight.onmouseleave = () => { this._renderer._hoverEnd(this._highlight.id); };
+            newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id); };
             newElements.highlight.classList.toggle("active", this._highlight.active);
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
@@ -61,19 +62,25 @@ class HighlightData {
     }
 }
 
+export type RendererSubscriber = {
+    activeChange?(id: number | string | null): void;
+    click?(id: number | string): void;
+    move?(id: number | string, top: number, left: number): void;
+};
+
 class EffectfulRenderer {
     private _highlightData: HighlightData[] = [];
     private _hoverStack: (number | string)[] = [];
-    private _onActiveChange: ((id: number | string | null) => void) | null = null;
+    private _subscriber: RendererSubscriber | null = null;
 
-    setActiveListener(listener: typeof this._onActiveChange) {
-        this._onActiveChange = listener;
+    subscribe(subscriber: RendererSubscriber) {
+        this._subscriber = subscriber;
     }
 
     _hoverBegin(id: number | string) {
         if (this._hoverStack.includes(id)) return;
         this._hoverStack.push(id);
-        if (this._onActiveChange) this._onActiveChange(id);
+        this._subscriber?.activeChange?.(id);
     }
 
     _hoverEnd(id: number | string ){
@@ -83,11 +90,15 @@ class EffectfulRenderer {
             // Removed top element, need to change active.
             this._hoverStack.pop();
             const newTop = this._hoverStack[this._hoverStack.length - 1];
-            if (this._onActiveChange) this._onActiveChange(newTop === undefined ? null : newTop);
+            this._subscriber?.activeChange?.(newTop === undefined ? null : newTop);
         } else {
             // Removed middle element, no need to change active.
             this._hoverStack.splice(index, 1);
         }
+    }
+
+    _clicked(id: number | string) {
+        this._subscriber?.click(id);
     }
 
     private _pushHighlight(highlight: Highlight) {
