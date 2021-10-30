@@ -12,7 +12,7 @@ export const LoginForm = (props: LoginFormProps) => {
     const [homeserver, setHomeserver] = useState("matrix.org");
 
     return (
-        <form id="LoginForm" onSubmit={() => {}}>
+        <form id="LoginForm" onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
             <label htmlFor="username">Matrix Username</label>
             <input placeholder="your-matrix-username" id="username" type="text"
                 value={username} onChange={e => setUsername(e.target.value)} disabled={trying}/>

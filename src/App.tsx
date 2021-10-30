@@ -48,6 +48,14 @@ const App = () => {
         setShowTooltip(true);
     }
 
+    const attmeptLogin = (username: string, password: string, homeserver: string) => {
+        Auth.fromBasic(username, password, homeserver).then(c => {
+            if (!c) return;
+            setClient(c);
+            setShowMenu(false);
+        });
+    }
+
     const makeNewHighlight = (color: string) => {
         if (!selection || !currentRoomId || !client) return;
         const skeletonEvent = makeEvent(selection);
@@ -125,7 +133,7 @@ const App = () => {
                 setMenuMode("auth");
                 setShowMenu(true);
             }
-        });;
+        });
     }, []);
 
     useEffect(() => {
@@ -169,7 +177,7 @@ const App = () => {
         </> :
         <Menu currentMode={menuMode} onClose={() => setShowMenu(false)}>
             <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}
-                attemptLogin={() => {}}
+                attemptLogin={attmeptLogin}
                 attemptSignup={() => {}}/>
             <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab}
                 onRoomSwitch={setCurrentRoomId}
