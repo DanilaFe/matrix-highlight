@@ -86,7 +86,9 @@ class MxsdkClient implements Client {
         return response.event_id;
     }
 
-    async setHighlightVisibility(roomId: string, highlightId: string, visibility: boolean) {}
+    async setHighlightVisibility(roomId: string, highlightId: string, visibility: boolean) {
+        await this._sdkClient.sendStateEvent(roomId, HIGHLIGHT_HIDE_EVENT_TYPE, { [HIGHLIGHT_HIDDEN_KEY]: !visibility }, highlightId);
+    }
 
     async shutdown(){
         this._sdkClient.stopClient();
