@@ -25,6 +25,8 @@ const App = () => {
     const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
     const [client, setClient] = useState<Client | null>(null);
     const [selection, setSelection] = useState<Selection | null>(null);
+
+    const [tooltipTarget, setTooltipTarget] = useState<string | number | null>(null);
     const [showTooltip, setShowTooltip] = useState(false);
     const [tooltipTop, setTooltipTop] = useState(0);
     const [tooltipLeft, setTooltipLeft] = useState(0);
@@ -42,6 +44,7 @@ const App = () => {
             return;
         }
         updateTooltipPos(selection);
+        setTooltipTarget(null);
         setShowTooltip(true);
     }
 
@@ -68,7 +71,12 @@ const App = () => {
     useEffect(() => {
         Renderer.subscribe({
             activeChange(id) {},
-            click(id) {}
+            click(id, top, left) {
+                setTooltipTop(top);
+                setTooltipLeft(left);
+                setTooltipTarget(id);
+                setShowTooltip(true);
+            }
         });
     }, []);
 
@@ -142,6 +150,8 @@ const App = () => {
             <Toolbar onOpenMenu={() => setShowMenu(true) }/>
             {showTooltip ?
                 <Tooltip
+                    target={tooltipTarget}
+                    hide={() => {}}
                     highlight={makeNewHighlight}
                     top={tooltipTop} left={tooltipLeft}/> :
                 null}

@@ -46,7 +46,7 @@ class HighlightData {
             if (!newElements) continue;
             newElements.highlight.onmouseenter = () => { this._renderer._hoverBegin(this._highlight.id); };
             newElements.highlight.onmouseleave = () => { this._renderer._hoverEnd(this._highlight.id); };
-            newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id); };
+            newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id, this._top, this._left); };
             newElements.highlight.classList.toggle("active", this._highlight.active);
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
@@ -64,7 +64,7 @@ class HighlightData {
 
 export type RendererSubscriber = {
     activeChange?(id: number | string | null): void;
-    click?(id: number | string): void;
+    click?(id: number | string, top: number, left: number): void;
     move?(id: number | string, top: number, left: number): void;
 };
 
@@ -97,8 +97,8 @@ class EffectfulRenderer {
         }
     }
 
-    _clicked(id: number | string) {
-        this._subscriber?.click(id);
+    _clicked(id: number | string, top: number, left: number) {
+        this._subscriber?.click?.(id, top, left);
     }
 
     private _pushHighlight(highlight: Highlight) {

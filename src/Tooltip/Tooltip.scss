@@ -20,6 +20,11 @@
         &.primary svg {
             color: white;
         }
+
+        svg {
+            height: 1rem;
+            width: 1rem;
+        }
     }
 
     & > button.color-switch {
