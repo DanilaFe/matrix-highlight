@@ -8,6 +8,8 @@ class HighlightData {
     private _left: number = 0
     private _top: number = 0
 
+    get top(): number { return this._top; }
+    get left(): number { return this._left; }
     get id(): number | string { return this._highlight.id; }
     get active(): boolean { return this._highlight.active; }
 
@@ -20,7 +22,7 @@ class HighlightData {
         }
     }
 
-    private _recalculateOffset() {
+    recalculateOffset() {
         let left = Infinity;
         let top = Infinity;
         for (const highlightElement of this._highlights) {
@@ -51,7 +53,7 @@ class HighlightData {
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
         }
-        this._recalculateOffset();
+        this.recalculateOffset();
     }
 
     hide() {
@@ -75,6 +77,12 @@ class EffectfulRenderer {
 
     subscribe(subscriber: RendererSubscriber) {
         this._subscriber = subscriber;
+        window.addEventListener("resize", () => {
+            for (const data of this._highlightData) {
+                data.recalculateOffset();
+                subscriber.move?.(data.id, data.top, data.left);
+            }
+        });
     }
 
     _hoverBegin(id: number | string) {
