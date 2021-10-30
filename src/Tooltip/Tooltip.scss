@@ -5,6 +5,7 @@
     box-shadow: $default-shadow;
     padding: 0.25rem;
     display: inline-block;
+    position: absolute;
 
     & > button {
         min-width: 0;

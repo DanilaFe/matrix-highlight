@@ -5,13 +5,16 @@ import {Menu}  from "./Menu/Menu";
 import {AuthMenu} from "./Menu/AuthMenu/AuthMenu";
 import {ToolsMenu} from "./Menu/ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {Page} from "./model";
+import {Page, Highlight} from "./model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {Client, LocalStorage} from "./api/common";
 import {MxsdkAuth} from "./api/mxsdk";
 import {produce} from "immer";
+import {makeEvent} from "./effects/location";
+import {HIGHLIGHT_COLOR_KEY} from "./model/matrix";
 
-const Auth = new MxsdkAuth(new LocalStorage());
+const Storage = new LocalStorage();
+const Auth = new MxsdkAuth(Storage);
 
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
@@ -21,9 +24,58 @@ const App = () => {
     const [page, setPage] = useState(new Page({}));
     const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
     const [client, setClient] = useState<Client | null>(null);
+    const [selection, setSelection] = useState<Selection | null>(null);
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipTop, setTooltipTop] = useState(0);
+    const [tooltipLeft, setTooltipLeft] = useState(0);
+
+    const updateSelection = (selection: Selection | null) => {
+        setSelection(selection);
+        if (!selection || selection.type !== "Range" || selection.toString() === "") {
+            setShowTooltip(false);
+            return;
+        }
+        const rect = selection.getRangeAt(0).getBoundingClientRect()
+        setTooltipLeft(rect.left + window.scrollX);
+        setTooltipTop(rect.top + window.scrollY);
+        setShowTooltip(true);
+    }
+
+    const makeNewHighlight = (color: string) => {
+        if (!selection || !currentRoomId || !client) return;
+        const skeletonEvent = makeEvent(selection);
+        if (skeletonEvent) {
+            const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
+            const txnId = parseInt(Storage.getString("txnId") || "0");
+            Storage.setString("txnId", (txnId+1).toString());
+
+            client.sendHighlight(currentRoomId, event, txnId);
+            setPage(produce(page, draft => {
+                draft.changeRoom(currentRoomId, room => {
+                    room.addLocalHighlight(new Highlight(txnId, event));
+                });
+            }));
+
+            window.getSelection()?.removeAllRanges();
+            setSelection(null);
+        }
+    }
 
     useEffect(() => {
         Renderer.setActiveListener(() => {});
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener("selectionchange", (e) => {
+            const selection = window.getSelection();
+            if (!selection || selection.type !== "Range" || selection.toString() === "") {
+                updateSelection(null);
+            }
+        });
+        document.addEventListener("mouseup", (e) => {
+            updateSelection(window.getSelection());
+            e.stopPropagation();
+        });
     }, []);
 
     useEffect(() => {
@@ -69,7 +121,10 @@ const App = () => {
     });
 
     return !showMenu ?
-        <div><Toolbar onOpenMenu={() => setShowMenu(true) }/><Tooltip/></div> :
+        <>
+            <Toolbar onOpenMenu={() => setShowMenu(true) }/>
+            {showTooltip ? <Tooltip highlight={makeNewHighlight} top={tooltipTop} left={tooltipLeft}/> : null}
+        </> :
         <Menu currentMode={menuMode} onClose={() => setShowMenu(false)}>
             <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}
                 attemptLogin={() => {}}
