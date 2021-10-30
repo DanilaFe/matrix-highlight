@@ -9,6 +9,7 @@ import {Page} from "./model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {Client, LocalStorage} from "./api/common";
 import {MxsdkAuth} from "./api/mxsdk";
+import {produce} from "immer";
 
 const Auth = new MxsdkAuth(new LocalStorage());
 
@@ -17,8 +18,8 @@ const App = () => {
     const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
-    const [page] = useState(new Page({}));
-    const [currentRoomId] = useState<string | null>(null);
+    const [page, setPage] = useState(new Page({}));
+    const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
     const [client, setClient] = useState<Client | null>(null);
 
     useEffect(() => {
@@ -41,7 +42,26 @@ const App = () => {
 
     useEffect(() => {
         // Hook client whenever it changes.
-        client?.subscribe({});
+        client?.subscribe({
+            addRoom(room) {
+                setPage(page => produce(page, draft => draft.addRoom(room)));
+                if (!currentRoomId) setCurrentRoomId(room.id);
+            },
+            highlight(roomId, highlight, txnId) {
+                setPage(page => produce(page, draft => {
+                    draft.changeRoom(roomId, room => {
+                        room.addRemoteHighlight(highlight, txnId);
+                    });
+                }));
+            },
+            setHighlightVisibility(roomId, highlightId, visibility) {
+                setPage(page => produce(page, draft => {
+                    draft.changeRoom(roomId, room => {
+                        room.setHighlightVisibility(highlightId, visibility);
+                    });
+                }));
+            }
+        });
     }, [client]);
     
     useEffect(() => {

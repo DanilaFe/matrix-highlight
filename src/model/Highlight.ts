@@ -5,7 +5,7 @@ export class Highlight {
     [immerable] = true;
 
     constructor(
-        public id: number,
+        public id: string | number,
         public content: HighlightContent,
         public visible: boolean = true,
         public active: boolean = false

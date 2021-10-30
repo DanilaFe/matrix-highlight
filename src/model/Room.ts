@@ -28,4 +28,24 @@ export class Room {
         this.localHighlights = props.localHighlights || [];
         this.remoteHighlights = props.remoteHighlights || [];
     }
+
+    addLocalHighlight(highlight: Highlight) {
+        this.localHighlights.push(highlight);
+    }
+
+    addRemoteHighlight(highlight: Highlight, txnId?: number) {
+        const localIndex = this.localHighlights.findIndex(h => h.id === txnId);
+        if (localIndex !== -1) {
+            this.localHighlights.splice(localIndex, 1);
+        }
+        this.remoteHighlights.push(highlight);
+    }
+
+    setHighlightVisibility(id: string | number, visibility: boolean) {
+        const transform = (hl: Highlight) => {
+            if (hl.id === id) hl.visible = visibility;
+        };
+        this.localHighlights.forEach(transform);
+        this.remoteHighlights.forEach(transform);
+    }
 }

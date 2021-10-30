@@ -14,7 +14,17 @@ export class Page {
         this.rooms = props.rooms || [];
     }
 
+    addRoom(room: Room): void {
+        this.rooms.push(room);
+    }
+
     getRoom(id: string | null): Room | null {
         return this.rooms.find(r => r.id === id) || null;
+    }
+
+    changeRoom(id: string, change: (room: Room) => void) {
+        for (const room of this.rooms) {
+            if (room.id === id) change(room);
+        }
     }
 }
