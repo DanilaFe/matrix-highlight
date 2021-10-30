@@ -113,7 +113,7 @@ class EffectfulRenderer {
         }
         this._highlightData.length = 0;
         for (const highlight of highlights) {
-            this._pushHighlight(highlight);
+            if (highlight.visible) this._pushHighlight(highlight);
         }
     }
 
