@@ -80,7 +80,12 @@ class MxsdkClient implements Client {
     }
 
     async createRoom(){ return ""; }
-    async sendHighlight(roomId: string, content: HighlightContent) { return ""; }
+
+    async sendHighlight(roomId: string, content: HighlightContent, txnId: number) {
+        const response = await this._sdkClient.sendEvent(roomId, HIGHLIGHT_EVENT_TYPE, content, txnId.toString());
+        return response.event_id;
+    }
+
     async setHighlightVisibility(roomId: string, highlightId: string, visibility: boolean) {}
 
     async shutdown(){
