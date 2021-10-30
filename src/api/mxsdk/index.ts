@@ -1,6 +1,6 @@
 import * as sdk from "matrix-js-sdk";
 import {Authentication, ClientSubscriber, Client, Storage} from "../common";
-import {Room,User,Highlight} from "../../model";
+import {Room,Highlight} from "../../model";
 import {HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_PAGE_EVENT_TYPE, HIGHLIGHT_PAGE_KEY, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY, HighlightContent} from "../../model/matrix";
 
 class MxsdkClient implements Client {
