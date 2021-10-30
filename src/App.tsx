@@ -7,12 +7,10 @@ import {ToolsMenu} from "./Menu/ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {Page} from "./model";
 import {Renderer} from "./effects/EffectfulRenderer";
-import {Authentication,Client} from "./api/common";
+import {Client, LocalStorage} from "./api/common";
+import {MxsdkAuth} from "./api/mxsdk";
 
-const test: Authentication = {
-    async fromSaved() { return null; },
-    async fromBasic() { return null; }
-}
+const Auth = new MxsdkAuth(new LocalStorage());
 
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
@@ -29,7 +27,7 @@ const App = () => {
 
     useEffect(() => {
         // Kick off authorization
-        test.fromSaved().then(c => {
+        Auth.fromSaved().then(c => {
             if (c) {
                 // Logged in from saved credentials
                 setClient(c);
