@@ -29,15 +29,19 @@ const App = () => {
     const [tooltipTop, setTooltipTop] = useState(0);
     const [tooltipLeft, setTooltipLeft] = useState(0);
 
+    const updateTooltipPos = (selection: Selection) => {
+        const rect = selection.getRangeAt(0).getBoundingClientRect()
+        setTooltipLeft(rect.left + window.scrollX);
+        setTooltipTop(rect.top + window.scrollY);
+    };
+
     const updateSelection = (selection: Selection | null) => {
         setSelection(selection);
         if (!selection || selection.type !== "Range" || selection.toString() === "") {
             setShowTooltip(false);
             return;
         }
-        const rect = selection.getRangeAt(0).getBoundingClientRect()
-        setTooltipLeft(rect.left + window.scrollX);
-        setTooltipTop(rect.top + window.scrollY);
+        updateTooltipPos(selection);
         setShowTooltip(true);
     }
 
@@ -77,6 +81,16 @@ const App = () => {
             e.stopPropagation();
         });
     }, []);
+
+    useEffect(() => {
+        const updateTooltip = () => {
+            if (selection) updateTooltipPos(selection);
+        };
+        window.addEventListener("resize", updateTooltip)
+        return () => {
+            window.removeEventListener("resize", updateTooltip);
+        }
+    }, [selection]);
 
     useEffect(() => {
         // Kick off authorization
