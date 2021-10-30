@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Menu}  from "./Menu/Menu";
+import {AuthMenu} from "./Menu/auth/AuthMenu";
+import {ToolsMenu} from "./Menu/tools/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {Page} from "./model";
 import {Renderer} from "./effects/EffectfulRenderer";
@@ -24,10 +26,13 @@ const App = () => {
 
     return !showMenu ?
         <div><Toolbar onOpenMenu={() => setShowMenu(true) }/><Tooltip/></div> :
-        <Menu mode={menuMode} page={page} currentRoomId={currentRoomId}
-            toolsTab={toolsTab} onToolsTabClick={setToolsTab}
-            authTab={authTab} onAuthTabClick={setAuthTab}
-            onClose={() => setShowMenu(false)}/>;
+        <Menu currentMode={menuMode} onClose={() => setShowMenu(false)}>
+            <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}
+                attemptLogin={() => {}}
+                attemptSignup={() => {}}/>
+            <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab}
+                page={page} currentRoomId={currentRoomId}/>
+        </Menu>;
 }
 
 export default App;
