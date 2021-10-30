@@ -127,7 +127,7 @@ const App = () => {
                 highlightDispatch({ type: "change-visibility", roomId, highlightId, visibility });
             }
         });
-    }, [client]);
+    }, [client, highlightDispatch]);
     
     useEffect(() => {
         Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
@@ -135,7 +135,7 @@ const App = () => {
 
     return !showMenu ?
         <>
-            <Toolbar onOpenMenu={() => setShowMenu(true) }/>
+            <Toolbar onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}/>
             {tooltip.visible ?
                 <Tooltip
                     target={tooltip.target}
