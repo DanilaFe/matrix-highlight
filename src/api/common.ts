@@ -1,16 +1,27 @@
 import {HighlightContent} from "../model/matrix";
-import {Page} from "../model";
+import {Room, User, Highlight} from "../model";
 
 export interface Storage {
     getString(key: string): string | null;
     setString(key: string, value: string): void;
 }
 
+export interface ClientSubscriber {
+    addRoom?(newRoom: Room): void;
+    removeRoom?(removedId: string): void;
+    addUser?(roomId: string, newUser: User): void;
+    removeUser?(roomId: string, userId: string): void;
+    highlight?(roomId: string, highlight: Highlight): void;
+    setHighlightVisibility?(roomId: string, highlightId: string, visibility: boolean): void;
+};
+
 export interface Client {
-    setUpdateHandler(handler: (newPage: Page) => void): void;
     createRoom(): Promise<string>;
-    sendHighlight(highlight: HighlightContent, txnId: number): Promise<string>;
-    setHighlightVisibility(id: string, visibility: boolean): Promise<void>;
+    sendHighlight(roomId: string, highlight: HighlightContent, txnId: number): Promise<string>;
+    setHighlightVisibility(roomId: string, id: string, visibility: boolean): Promise<void>;
+    shutdown(): Promise<void>;
+
+    subscribe(listener: ClientSubscriber): void;
 }
 
 export interface Authentication {
