@@ -46,11 +46,11 @@ const tooltipReducer = (state: TooltipState, event: TooltipEvent): TooltipState 
         return { ...state, target: null, visible: true, top, left, selection };
     } else if (event.type === "click") {
         return { ...state, visible: true, target: event.id, top: event.top, left: event.left };
-    } else if (event.type == "resize-selection") {
+    } else if (event.type === "resize-selection") {
         if (!state.selection || state.target !== null) return state;
         const { top, left } = selectionCoords(state.selection);
         return { ...state, top, left };
-    } else if (event.type == "resize-clicked") {
+    } else if (event.type === "resize-clicked") {
         if (event.id !== state.target) return state;
         return { ...state, top: event.top, left: event.left };
     } else if (event.type === "hide") {
