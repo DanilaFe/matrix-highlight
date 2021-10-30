@@ -68,6 +68,17 @@ const App = () => {
         }
     }
 
+    const hideHighlight = (id: string | number) => {
+        if (!currentRoomId || !client) return;
+
+        if (typeof id === "string") client.setHighlightVisibility(currentRoomId, id, false);
+        setPage(produce(page, draft => {
+            draft.changeRoom(currentRoomId, room => {
+                room.setHighlightVisibility(id,  false);
+            });
+        }));
+    }
+
     useEffect(() => {
         Renderer.subscribe({
             activeChange(id) {},
@@ -151,7 +162,7 @@ const App = () => {
             {showTooltip ?
                 <Tooltip
                     target={tooltipTarget}
-                    hide={() => {}}
+                    hide={hideHighlight}
                     highlight={makeNewHighlight}
                     top={tooltipTop} left={tooltipLeft}/> :
                 null}

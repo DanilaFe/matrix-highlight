@@ -15,7 +15,9 @@ export const Tooltip = (props: TooltipProps) => {
     const highlightButtons = COLORS.map(color =>
         <button onClick={() => props.highlight(color)} key={color} className={`${color} color-switch`}/>);
     const toolbarButtons = [
-        <button className="destructive" onClick={() => props.hide(props.target!)}><Trash/></button>
+        <button className="destructive"
+            onClick={() => props.hide(props.target!)}
+            onMouseUp={e => e.stopPropagation()}><Trash/></button>
     ];
     return (
         <div className="tooltip" style={{left, top: (top - 40) }}>
