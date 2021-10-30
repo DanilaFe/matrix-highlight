@@ -1,18 +1,18 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import './App.css';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Menu}  from "./Menu/Menu";
 import {AuthMenu} from "./Menu/AuthMenu/AuthMenu";
 import {ToolsMenu} from "./Menu/ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {Page, Highlight} from "./model";
+import {Highlight} from "./model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {Client, LocalStorage} from "./api/common";
 import {MxsdkAuth} from "./api/mxsdk";
-import {produce} from "immer";
 import {makeEvent} from "./effects/location";
 import {HIGHLIGHT_COLOR_KEY} from "./model/matrix";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
+import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 
 const Storage = new LocalStorage();
 const Auth = new MxsdkAuth(Storage);
@@ -22,10 +22,9 @@ const App = () => {
     const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
-    const [page, setPage] = useState(new Page({}));
-    const [currentRoomId, setCurrentRoomId] = useState<string | null>("!PvZRbsyWNPNzYhDvxz:matrix.org");
     const [client, setClient] = useState<Client | null>(null);
 
+    const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
 
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
@@ -37,19 +36,19 @@ const App = () => {
     }
 
     const makeNewHighlight = (color: string) => {
-        if (!tooltip.selection || !currentRoomId || !client) return;
+        if (!tooltip.selection || !highlight.currentRoomId || !client) return;
         const skeletonEvent = makeEvent(tooltip.selection);
         if (skeletonEvent) {
             const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
             const txnId = parseInt(Storage.getString("txnId") || "0");
             Storage.setString("txnId", (txnId+1).toString());
 
-            client.sendHighlight(currentRoomId, event, txnId);
-            setPage(produce(page, draft => {
-                draft.changeRoom(currentRoomId, room => {
-                    room.addLocalHighlight(new Highlight(txnId, event));
-                });
-            }));
+            client.sendHighlight(highlight.currentRoomId, event, txnId);
+            highlightDispatch({
+                type: "local-highlight",
+                highlight: new Highlight(txnId, event),
+                roomId: highlight.currentRoomId
+            });
 
             window.getSelection()?.removeAllRanges();
             tooltipDispatch({type: "hide"});
@@ -57,14 +56,15 @@ const App = () => {
     }
 
     const hideHighlight = (id: string | number) => {
-        if (!currentRoomId || !client) return;
+        if (!highlight.currentRoomId || !client) return;
 
-        if (typeof id === "string") client.setHighlightVisibility(currentRoomId, id, false);
-        setPage(produce(page, draft => {
-            draft.changeRoom(currentRoomId, room => {
-                room.setHighlightVisibility(id,  false);
-            });
-        }));
+        if (typeof id === "string") client.setHighlightVisibility(highlight.currentRoomId, id, false);
+        highlightDispatch({
+            type: "change-visibility",
+            roomId: highlight.currentRoomId,
+            highlightId: id,
+            visibility: false
+        });
     }
 
     useEffect(() => {
@@ -119,29 +119,18 @@ const App = () => {
     useEffect(() => {
         // Hook client whenever it changes.
         client?.subscribe({
-            addRoom(room) {
-                setPage(page => produce(page, draft => draft.addRoom(room)));
-                if (!currentRoomId) setCurrentRoomId(room.id);
-            },
+            addRoom(room) { highlightDispatch({ type: "add-room", room }); },
             highlight(roomId, highlight, txnId) {
-                setPage(page => produce(page, draft => {
-                    draft.changeRoom(roomId, room => {
-                        room.addRemoteHighlight(highlight, txnId);
-                    });
-                }));
+                highlightDispatch({ type: "remote-highlight", roomId, highlight, txnId });
             },
             setHighlightVisibility(roomId, highlightId, visibility) {
-                setPage(page => produce(page, draft => {
-                    draft.changeRoom(roomId, room => {
-                        room.setHighlightVisibility(highlightId, visibility);
-                    });
-                }));
+                highlightDispatch({ type: "change-visibility", roomId, highlightId, visibility });
             }
         });
     }, [client]);
     
     useEffect(() => {
-        Renderer.apply(page.getRoom(currentRoomId)?.highlights || []);
+        Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
     });
 
     return !showMenu ?
@@ -160,8 +149,8 @@ const App = () => {
                 attemptLogin={attmeptLogin}
                 attemptSignup={() => {}}/>
             <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab}
-                onRoomSwitch={setCurrentRoomId}
-                page={page} currentRoomId={currentRoomId}/>
+                onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
+                page={highlight.page} currentRoomId={highlight.currentRoomId}/>
         </Menu>;
 }
 
