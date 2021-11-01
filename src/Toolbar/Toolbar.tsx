@@ -1,29 +1,36 @@
 import React from "react";
 import "./Toolbar.scss";
-import { UserX, Folder, UploadCloud, Cloud, Users, AlertTriangle } from "react-feather";
+import { IndicatorStatus } from "../App.tsx";
+import { UserX, Folder, UploadCloud, Cloud, Users, AlertTriangle, AlignLeft, Settings } from "react-feather";
 
 export type ToolbarProps = {
-    status: string;
+    status: IndicatorStatus;
     onOpenMenu(): void;
+    onShowQuotes(): void;
+    onShowRooms(): void;
+    onShowUsers(): void;
+    onIndicatorClick(): void;
 }
 
 function statusToIcon(status: string) {
     switch (status) {
-        case "logged-out": return <UserX className="feather"/>;
-        case "no-room": return <AlertTriangle className="feather"/>;
-        case "queued": return <UploadCloud className="feather"/>
+        case IndicatorStatus.LoggedOut: return <UserX className="feather"/>;
+        case IndicatorStatus.NoRoom: return <AlertTriangle className="feather"/>;
+        case IndicatorStatus.Queue: return <UploadCloud className="feather"/>
         default: return <Cloud className="feather"/>
     }
 }
 
 export const Toolbar = (props: ToolbarProps) => {
+    // <button onClick={props.onOpenMenu}>⋯</button>
     return (
         <div className="toolbar-main">
-            <button onClick={props.onOpenMenu}>⋯</button>
-            <button onClick={props.onOpenMenu}><Users className="feather"/></button>
-            <button onClick={props.onOpenMenu}><Folder className="feather"/></button>
+            <button><Settings className="feather"/></button>
+            <button onClick={props.onShowQuotes}><AlignLeft className="feather"/></button>
+            <button onClick={props.onShowRooms}><Folder className="feather"/></button>
+            <button onClick={props.onShowUsers}><Users className="feather"/></button>
             <span className="spacer"/>
-            <button onClick={props.onOpenMenu}>{statusToIcon(props.status)}</button>
+            <button onClick={props.onIndicatorClick}>{statusToIcon(props.status)}</button>
         </div>
     );
 }

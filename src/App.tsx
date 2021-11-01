@@ -17,6 +17,13 @@ import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 const Storage = new LocalStorage();
 const Auth = new MxsdkAuth(Storage);
 
+export enum IndicatorStatus {
+    LoggedOut = "loggedOut",
+    NoRoom = "noRoom",
+    Queued = "queued",
+    Synced = "synced",
+}
+
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
@@ -27,15 +34,36 @@ const App = () => {
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
 
-    let status;
+    let status: IndicatorStatus
     if (client === null) {
-        status = "logged-out";
+        status = IndicatorStatus.LoggedOut;
     } else if (!highlight.currentRoomId) {
-        status = "no-room";
+        status = IndicatorStatus.NoRoom;
+    } else if (highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
+        status = IndicatorStatus.Queued;
     } else {
-        const queuedMessages = highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0;
-        status = queuedMessages ? "queued" : "synced";
+        status = IndicatorStatus.Synced;
     }
+
+    const openAuth = (tab: "login" | "signup") => {
+        setMenuMode("auth");
+        setAuthTab(tab);
+        setShowMenu(true);
+    };
+
+    const openTools = (tab: "quotes" | "rooms" | "users") => {
+        setMenuMode("tools");
+        setToolsTab(tab);
+        setShowMenu(true);
+    }
+
+    const handleIndicator = () => {
+        switch (status) {
+            case IndicatorStatus.LoggedOut: openAuth("login"); return;
+            case IndicatorStatus.NoRoom: openTools("rooms"); return;
+            default: return;
+        }
+    };
 
     const createRoom = async () => {
         const url = window.location.href;
@@ -150,7 +178,12 @@ const App = () => {
 
     return !showMenu ?
         <>
-            <Toolbar status={status} onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}/>
+            <Toolbar status={status} onIndicatorClick={handleIndicator}
+                onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}
+                onShowQuotes={() => openTools("quotes")}
+                onShowRooms={() => openTools("rooms")}
+                onShowUsers={() => openTools("users")}
+                />
             {tooltip.visible ?
                 <Tooltip
                     target={tooltip.target}
