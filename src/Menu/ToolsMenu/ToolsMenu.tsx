@@ -8,6 +8,7 @@ export type ToolsMenuTab = "quotes" | "rooms" | "users";
 export type ToolsMenuProps = {
     modeId: string;
     tab: ToolsMenuTab;
+    createRoomEnabled: boolean;
     onTabClick(tab: ToolsMenuTab): void;
     page: Page;
     currentRoomId: string | null;
@@ -23,7 +24,8 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 {currentRoom ? <QuoteList highlights={currentRoom.highlights}/> : null}
             </Tab>
             <Tab tabId="rooms" tabTitle="Rooms">
-                <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch} onCreateRoom={props.onCreateRoom}/>
+                <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}
+                    onCreateRoom={props.onCreateRoom} createRoomEnabled={props.createRoomEnabled}/>
             </Tab>
             <Tab tabId="users" tabTitle="Users"></Tab>
         </Tabs>

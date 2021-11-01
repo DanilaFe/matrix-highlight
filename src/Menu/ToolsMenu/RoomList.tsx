@@ -4,6 +4,7 @@ import "./RoomList.scss";
 
 export type RoomListProps = {
     rooms: Room[];
+    createRoomEnabled: boolean;
     currentRoomId: string | null;
     onRoomClick(room: string | null): void;
     onCreateRoom(): void;
@@ -14,7 +15,7 @@ export const RoomList = (props: RoomListProps) => {
         return (
             <div id="FirstGroupMessage">
                 Your highlights are stored in groups. Each group contains its own highlights, and can be shared with other users (or not shared at all).
-                <button className="primary" onClick={props.onCreateRoom}>Create a group!</button>
+                <button disabled={!props.createRoomEnabled} className="primary" onClick={props.onCreateRoom}>Create a group!</button>
             </div>
         );
     }

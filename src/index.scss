@@ -49,6 +49,10 @@ input[type="text"], input[type="password"] {
     }
 }
 
+fieldset {
+    border: none;
+}
+
 button, input[type="submit"] {
     @include bordered-block;
     background: white;

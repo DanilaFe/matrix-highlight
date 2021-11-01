@@ -27,7 +27,11 @@ export enum IndicatorStatus {
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
+
+    const [authEnabled, setAuthEnabled] = useState(true);
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
+
+    const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
     const [client, setClient] = useState<Client | null>(null);
 
@@ -67,11 +71,15 @@ const App = () => {
 
     const createRoom = async () => {
         const url = window.location.href;
+        setCreateRoomEnabled(false);
         await client?.createRoom(`Highlight room for ${url}.`, url);
+        setCreateRoomEnabled(true);
     }
 
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
+        setAuthEnabled(false);
         Auth.fromBasic(username, password, homeserver).then(c => {
+            setAuthEnabled(true);
             if (!c) return;
             setClient(c);
             setShowMenu(false);
@@ -193,10 +201,10 @@ const App = () => {
                 null}
         </> :
         <Menu currentMode={menuMode} onClose={() => setShowMenu(false)}>
-            <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}
+            <AuthMenu modeId="auth" authEnabled={authEnabled} tab={authTab} onTabClick={setAuthTab}
                 attemptLogin={attmeptLogin}
                 attemptSignup={() => {}}/>
-            <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
+            <ToolsMenu modeId="tools" createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                 onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
                 page={highlight.page} currentRoomId={highlight.currentRoomId}/>
         </Menu>;
