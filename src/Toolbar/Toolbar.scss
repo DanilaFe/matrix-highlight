@@ -18,11 +18,11 @@
         width: 1.5rem;
         height: 1.5rem;
 
-        &:nth-child(5n+1) { --highlight-color: #{$highlight-color-yellow}; }
-        &:nth-child(5n+2) { --highlight-color: #{$highlight-color-pink}; }
-        &:nth-child(5n+3) { --highlight-color: #{$highlight-color-green}; }
-        &:nth-child(5n+4) { --highlight-color: #{$highlight-color-blue}; }
-        &:nth-child(5n+0) { --highlight-color: #{$highlight-color-orange}; }
+        &:nth-of-type(5n+1) { --highlight-color: #{$highlight-color-yellow}; }
+        &:nth-of-type(5n+2) { --highlight-color: #{$highlight-color-pink}; }
+        &:nth-of-type(5n+3) { --highlight-color: #{$highlight-color-green}; }
+        &:nth-of-type(5n+4) { --highlight-color: #{$highlight-color-blue}; }
+        &:nth-of-type(5n+0) { --highlight-color: #{$highlight-color-orange}; }
 
         &:hover {
             background-color: RGBA(var(--highlight-color), 0.3);
@@ -31,5 +31,9 @@
         .feather {
             max-width: 75%;
         }
+    }
+
+    .spacer {
+        padding: .5rem;
     }
 }

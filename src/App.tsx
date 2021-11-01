@@ -27,6 +27,21 @@ const App = () => {
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
 
+    let status;
+    if (client === null) {
+        status = "logged-out";
+    } else if (!highlight.currentRoomId) {
+        status = "no-room";
+    } else {
+        const queuedMessages = highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0;
+        status = queuedMessages ? "queued" : "synced";
+    }
+
+    const createRoom = async () => {
+        const url = window.location.href;
+        await client?.createRoom(`Highlight room for ${url}.`, url);
+    }
+
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
         Auth.fromBasic(username, password, homeserver).then(c => {
             if (!c) return;
@@ -135,7 +150,7 @@ const App = () => {
 
     return !showMenu ?
         <>
-            <Toolbar onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}/>
+            <Toolbar status={status} onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}/>
             {tooltip.visible ?
                 <Tooltip
                     target={tooltip.target}
@@ -148,7 +163,7 @@ const App = () => {
             <AuthMenu modeId="auth" tab={authTab} onTabClick={setAuthTab}
                 attemptLogin={attmeptLogin}
                 attemptSignup={() => {}}/>
-            <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab}
+            <ToolsMenu modeId="tools" tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                 onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
                 page={highlight.page} currentRoomId={highlight.currentRoomId}/>
         </Menu>;

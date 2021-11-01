@@ -16,7 +16,7 @@ export interface ClientSubscriber {
 };
 
 export interface Client {
-    createRoom(): Promise<string>;
+    createRoom(roomName: string, url: string): Promise<string>;
     sendHighlight(roomId: string, highlight: HighlightContent, txnId: number): Promise<string>;
     setHighlightVisibility(roomId: string, id: string, visibility: boolean): Promise<void>;
     shutdown(): Promise<void>;
