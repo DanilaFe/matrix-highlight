@@ -1,4 +1,5 @@
 @import "./utils.scss";
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
 .yellow { --highlight-color: #{$highlight-color-yellow}; }
 .pink { --highlight-color: #{$highlight-color-pink}; }
@@ -17,7 +18,7 @@
 
 body {
   margin: 0;
-  font-family: Iosevka;
+  font-family: "Inconsolata";
   max-width: 800px;
   margin: auto;
   text-align: justify;
@@ -58,7 +59,7 @@ button, input[type="submit"] {
     background: white;
     padding: 0.5rem;
     text-transform: uppercase;
-    font-family: Iosevka;
+    font-family: "Inconsolata";
     font-weight: bold;
     transition: background-color 0.1s;
     border-color: rgba(0, 0, 0, 0.20);

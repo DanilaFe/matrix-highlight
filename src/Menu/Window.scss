@@ -2,7 +2,7 @@
 
 .window {
     @include bordered-block;
-    font-family: "Iosevka";
+    font-family: "Inconsolata";
     box-shadow: $default-shadow;
     position: fixed;
     top: 2rem;
