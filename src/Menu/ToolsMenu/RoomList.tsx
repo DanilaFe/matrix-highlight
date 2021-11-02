@@ -27,9 +27,14 @@ export const RoomList = (props: RoomListProps) => {
                 {props.currentRoomId === r.id ? <span className="room-current">Current</span> : null}
             </div>
             <div className="room-info">
-                Users: {r.users.map(u => u.name).join("")}
+                Users: {r.users.map(u => u.name).join(", ")}
             </div>
         </div>
     );
-    return <div className="room-list">{rooms}</div>;
+    return (
+        <>
+            <h3>Joined Rooms</h3>
+            <div className="room-list">{rooms}</div>
+        </>
+    );
 }

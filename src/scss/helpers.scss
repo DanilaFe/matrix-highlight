@@ -9,8 +9,6 @@
 @mixin padded-list {
     @include bordered-block;
     overflow: auto;
-    flex-basis: 0;
-    flex-grow: 1;
 
     p {
         margin-top: 0.2rem;
@@ -29,6 +27,7 @@
     "icon body";
 
     transition: background-color 0.1s;
+    
     &:hover {
         background-color: #f0f0f0;
         cursor: pointer;

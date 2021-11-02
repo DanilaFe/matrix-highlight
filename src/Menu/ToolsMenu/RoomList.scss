@@ -3,9 +3,14 @@
 .room-list {
     @include padded-list;
     margin-bottom: 1rem;
+    flex-grow: 0;
+    flex-basis: auto;
 
     .room {
         @include padded-list-item;
+        &:last-child {
+            border-bottom: none;
+        }
     }
     
     .room-current {
