@@ -2,6 +2,7 @@ import {Page} from "../../model/Page";
 import {Tab,Tabs} from "../../utils/Tabs";
 import {QuoteList} from "./QuoteList";
 import {RoomList} from "./RoomList";
+import {UserList} from "./UserList";
 
 export type ToolsMenuTab = "quotes" | "rooms" | "users";
 
@@ -27,7 +28,9 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}
                     onCreateRoom={props.onCreateRoom} createRoomEnabled={props.createRoomEnabled}/>
             </Tab>
-            <Tab tabId="users" tabTitle="Users"></Tab>
+            <Tab tabId="users" tabTitle="Users">
+                <UserList currentRoom={props.page.getRoom(props.currentRoomId)}/>
+            </Tab>
         </Tabs>
     );
 }

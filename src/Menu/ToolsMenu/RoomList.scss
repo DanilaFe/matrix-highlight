@@ -1,27 +1,11 @@
 @import "../../utils.scss";
 
 .room-list {
-    @include bordered-block;
-    overflow: auto;
+    @include padded-list;
     margin-bottom: 1rem;
-    flex-basis: 0;
-    flex-grow: 1;
 
     .room {
-        padding: 0.5rem;
-        display: grid;
-        border-bottom: $default-border;
-        grid-template-columns: auto 1fr;
-        grid-template-rows: auto 1fr;
-        grid-template-areas:
-        "icon name"
-        "icon info";
-
-        transition: background-color 0.1s;
-        &:hover {
-            background-color: #f0f0f0;
-            cursor: pointer;
-        }
+        @include padded-list-item;
     }
     
     .room-current {
@@ -33,30 +17,15 @@
     }
 
     .room-icon {
-        grid-area: icon;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 0.5rem;
-
-        .feather {
-            height: 1.5rem;
-            width: 1.5rem;
-        }
+        @include padded-list-icon;
     }
 
     .room-name {
-        grid-area: name;
-        font-weight: bold;
+        @include padded-list-name;
     }
 
     .room-info {
-        grid-area: info;
-    }
-
-    p {
-        margin-top: 0.2rem;
-        margin-bottom: 0.2rem;
+        @include padded-list-body;
     }
 }
 

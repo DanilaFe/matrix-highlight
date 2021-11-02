@@ -1,0 +1,22 @@
+@import "../../utils.scss";
+
+.user-list {
+    @include padded-list;
+    margin-bottom: 1rem;
+
+    .user {
+        @include padded-list-item;
+    }
+    
+    .user-icon {
+        @include padded-list-icon;
+    }
+
+    .user-name {
+        @include padded-list-name;
+    }
+
+    .user-info {
+        @include padded-list-body;
+    }
+}
