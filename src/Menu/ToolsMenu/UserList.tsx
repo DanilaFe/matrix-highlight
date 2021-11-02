@@ -1,4 +1,5 @@
 import "./UserList.scss";
+import {Room} from "../../model";
 import {User} from "react-feather";
 
 export type UserListProps = {
@@ -6,7 +7,7 @@ export type UserListProps = {
 }
 
 export const UserList = (props: UserListProps) => {
-    const users = props.currentRoom.users.map(u =>
+    const users = (props.currentRoom?.users || []).map(u =>
         <div className="user">
             <div className="user-icon"><User/></div>
             <div className="user-name">{u.name}</div>
