@@ -171,6 +171,7 @@ const App = () => {
         // Hook client whenever it changes.
         client?.subscribe({
             addRoom(room) { highlightDispatch({ type: "add-room", room }); },
+            addUser(roomId, user) { highlightDispatch({ type: "add-user", roomId, user }); },
             highlight(roomId, highlight, txnId) {
                 highlightDispatch({ type: "remote-highlight", roomId, highlight, txnId });
             },

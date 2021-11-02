@@ -1,6 +1,6 @@
 import * as sdk from "matrix-js-sdk";
 import {Authentication, ClientSubscriber, Client, Storage} from "../common";
-import {Room,Highlight} from "../../model";
+import {Room,Highlight,User} from "../../model";
 import {HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_PAGE_EVENT_TYPE, HIGHLIGHT_PAGE_KEY, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY, HighlightContent} from "../../model/matrix";
 
 class MxsdkClient implements Client {
@@ -25,6 +25,9 @@ class MxsdkClient implements Client {
         this._sdkClient.on("event", (event: sdk.MatrixEvent) => {
             this._processEvent(event);
         });
+        this._sdkClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: string | null) => {
+            this._processMember(event.getRoomId(), oldMembership, member);
+        });
         for (const room of this._sdkClient.getRooms()) {
             this._processRoom(room);
         }
@@ -37,6 +40,15 @@ class MxsdkClient implements Client {
         if (!event) { return false; }
         const url = event.getContent()[HIGHLIGHT_PAGE_KEY];
         return url === window.location.href;
+    }
+
+    private _processMember(roomId: string, oldMembership: string | null, member: sdk.RoomMember) {
+        if (oldMembership === null) {
+            this._subscriber?.addUser?.(roomId, new User({
+                id: member.userId,
+                name: member.name,
+            }));
+        }
     }
 
     private _processRoom(room: sdk.Room) {
@@ -56,6 +68,9 @@ class MxsdkClient implements Client {
         this._emittedRooms.add(room.roomId);
         for (const event of room.getLiveTimeline().getEvents()) {
             this._processEvent(event);
+        }
+        for (const member of room.getMembers()) {
+            this._processMember(room.roomId, null, member);
         }
     }
 

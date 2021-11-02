@@ -1,4 +1,4 @@
-import {Page, Highlight, Room} from "../model";
+import {Page, Highlight, Room, User} from "../model";
 import {produce} from "immer";
 
 export type HighlightDataState = {
@@ -11,6 +11,7 @@ export type HighlightDataEvent
     | { type: "local-highlight", roomId: string, highlight: Highlight }
     | { type: "change-visibility", roomId: string, highlightId: string | number, visibility: boolean }
     | { type: "add-room", room: Room }
+    | { type: "add-user", roomId: string, user: User }
     | { type: "switch-room", newId: string | null }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
@@ -25,6 +26,8 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
                 room => room.setHighlightVisibility(event.highlightId, event.visibility));
         } else if (event.type === "add-room") {
             draft.addRoom(event.room);
+        } else if (event.type === "add-user") {
+            draft.changeRoom(event.roomId, room => room.addUser(event.user));
         }
     });
     let currentRoomId = state.currentRoomId;

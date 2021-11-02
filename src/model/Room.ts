@@ -29,6 +29,10 @@ export class Room {
         this.remoteHighlights = props.remoteHighlights || [];
     }
 
+    addUser(user: User) {
+        this.users.push(user);
+    }
+
     addLocalHighlight(highlight: Highlight) {
         this.localHighlights.push(highlight);
     }
