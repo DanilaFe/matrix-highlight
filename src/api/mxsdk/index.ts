@@ -36,9 +36,9 @@ class MxsdkClient implements Client {
 
     private _checkRoom(room: sdk.Room): boolean {
         const state = room.getLiveTimeline().getState(sdk.EventTimeline.FORWARDS);
-        const event = state.getStateEvents(HIGHLIGHT_PAGE_EVENT_TYPE, "");
-        if (!event) { return false; }
-        const url = event.getContent()[HIGHLIGHT_PAGE_KEY];
+        const event = state.getStateEvents("m.room.create", "");
+        if (!(HIGHLIGHT_PAGE_EVENT_TYPE in event.getContent())) { return false; }
+        const url = event.getContent()[HIGHLIGHT_PAGE_EVENT_TYPE];
         return url === window.location.href;
     }
 
@@ -98,13 +98,13 @@ class MxsdkClient implements Client {
     async createRoom(roomName: string, roomUrl: string) {
         const createRoomResult = await this._sdkClient.createRoom({
             name: roomName,
+            creation_content: {
+                [HIGHLIGHT_PAGE_EVENT_TYPE]: roomUrl
+            },
             power_level_content_override: {
                 events: { [HIGHLIGHT_HIDE_EVENT_TYPE]: 0 }
             },
         });
-        await this._sdkClient.sendStateEvent(createRoomResult.room_id, HIGHLIGHT_PAGE_EVENT_TYPE, {
-            [HIGHLIGHT_PAGE_KEY]: roomUrl
-        }, "");
         const room = this._sdkClient.getRoom(createRoomResult.room_id);
         this._emitRoom(room);
         return createRoomResult.room_id;
