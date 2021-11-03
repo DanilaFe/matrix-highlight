@@ -9,6 +9,9 @@ export class Page {
     [immerable] = true;
 
     rooms: Room[];
+
+    get joinedRooms(): Room[] { return this.rooms.filter(r => r.membership === "join"); }
+    get invitedRooms(): Room[] { return this.rooms.filter(r => r.membership === "invite"); }
     
     constructor(props: PageFields) {
         this.rooms = props.rooms || [];

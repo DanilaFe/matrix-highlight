@@ -5,6 +5,7 @@ import {immerable} from "immer";
 export type RoomFields = {
     id: string;
     name: string;
+    membership: string;
     users?: User[];
     localHighlights?: Highlight[];
     remoteHighlights?: Highlight[];
@@ -15,6 +16,7 @@ export class Room {
 
     id: string;
     name: string;
+    membership: string;
     users: User[];
     localHighlights: Highlight[];
     remoteHighlights: Highlight[];
@@ -24,6 +26,7 @@ export class Room {
     constructor(props: RoomFields) {
         this.id = props.id;
         this.name = props.name;
+        this.membership = props.membership;
         this.users = props.users || [];
         this.localHighlights = props.localHighlights || [];
         this.remoteHighlights = props.remoteHighlights || [];

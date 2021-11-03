@@ -64,6 +64,7 @@ class MxsdkClient implements Client {
         this._subscriber.addRoom?.(new Room({
             id: room.roomId,
             name: room.name,
+            membership: room.getMember(this._sdkClient.getUserId())!.membership
         }));
         this._emittedRooms.add(room.roomId);
         for (const event of room.getLiveTimeline().getEvents()) {
