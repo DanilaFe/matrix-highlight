@@ -25,7 +25,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 {currentRoom ? <QuoteList highlights={currentRoom.highlights}/> : null}
             </Tab>
             <Tab tabId="rooms" tabTitle="Rooms">
-                <RoomList rooms={props.page.rooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}
+                <RoomList joinedRooms={props.page.joinedRooms} invitedRooms={props.page.invitedRooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}
                     onCreateRoom={props.onCreateRoom} createRoomEnabled={props.createRoomEnabled}/>
             </Tab>
             <Tab tabId="users" tabTitle="Users">
