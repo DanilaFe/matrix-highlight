@@ -183,9 +183,6 @@ const App = () => {
             roomMembership(roomId, membership) {
                 highlightDispatch({ type: "room-membership", roomId, membership });
             },
-            removeRoom(roomId) {
-                highlightDispatch({ type: "remove-room", roomId });
-            },
             addUser(roomId, user) { highlightDispatch({ type: "add-user", roomId, user }); },
             highlight(roomId, highlight, txnId) {
                 highlightDispatch({ type: "remote-highlight", roomId, highlight, txnId });

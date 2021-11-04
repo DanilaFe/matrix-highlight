@@ -21,11 +21,6 @@ export class Page {
         this.rooms.push(room);
     }
 
-    removeRoom(roomId: string): void {
-        const roomIndex = this.rooms.findIndex(r => r.id === roomId);
-        if (roomIndex !== -1) this.rooms.splice(roomIndex, 1);
-    }
-
     getRoom(id: string | null): Room | null {
         return this.rooms.find(r => r.id === id) || null;
     }

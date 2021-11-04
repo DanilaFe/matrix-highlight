@@ -23,11 +23,7 @@ class MxsdkClient implements Client {
             this._processRoom(room);
         });
         this._sdkClient.on("Room.myMembership", (room: sdk.Room, membership: string) => {
-            if (membership === "leave") {
-                this._subscriber?.removeRoom?.(room.roomId);
-            } else {
-                this._subscriber?.roomMembership?.(room.roomId, membership);
-            }
+            this._subscriber?.roomMembership?.(room.roomId, membership);
         });
         this._sdkClient.on("event", (event: sdk.MatrixEvent) => {
             this._processEvent(event);

@@ -12,7 +12,6 @@ export type HighlightDataEvent
     | { type: "change-visibility", roomId: string, highlightId: string | number, visibility: boolean }
     | { type: "add-room", room: Room }
     | { type: "room-membership", roomId: string, membership: string }
-    | { type: "remove-room", roomId: string }
     | { type: "add-user", roomId: string, user: User }
     | { type: "switch-room", newId: string | null }
 
@@ -30,8 +29,6 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
             draft.addRoom(event.room);
         } else if (event.type === "room-membership") {
             draft.changeRoom(event.roomId, room => room.membership = event.membership);
-        } else if (event.type === "remove-room") {
-            draft.removeRoom(event.roomId);
         } else if (event.type === "add-user") {
             draft.changeRoom(event.roomId, room => room.addUser(event.user));
         }
@@ -41,7 +38,7 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         currentRoomId = event.room.id;
     } else if (!currentRoomId && event.type === "room-membership" && event.membership === "join") {
         currentRoomId = event.roomId;
-    } else if (event.type === "remove-room" && event.roomId === currentRoomId) {
+    } else if (event.type === "room-membership" && event.membership === "leave" && event.roomId === currentRoomId) {
         currentRoomId = null;
     } else if (event.type === "switch-room") {
         currentRoomId = event.newId;
