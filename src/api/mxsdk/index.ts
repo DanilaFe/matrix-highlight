@@ -22,6 +22,13 @@ class MxsdkClient implements Client {
         this._sdkClient.on("Room", (room: sdk.Room) => {
             this._processRoom(room);
         });
+        this._sdkClient.on("Room.myMembership", (room: sdk.Room, membership: string) => {
+            if (membership === "leave") {
+                this._subscriber?.removeRoom?.(room.roomId);
+            } else {
+                this._subscriber?.roomMembership?.(room.roomId, membership);
+            }
+        });
         this._sdkClient.on("event", (event: sdk.MatrixEvent) => {
             this._processEvent(event);
         });
@@ -108,6 +115,14 @@ class MxsdkClient implements Client {
         const room = this._sdkClient.getRoom(createRoomResult.room_id);
         this._emitRoom(room);
         return createRoomResult.room_id;
+    }
+
+    async joinRoom(roomId: string) {
+        await this._sdkClient.joinRoom(roomId);
+    }
+
+    async leaveRoom(roomId: string) {
+        await this._sdkClient.leave(roomId);
     }
 
     async sendHighlight(roomId: string, content: HighlightContent, txnId: number) {

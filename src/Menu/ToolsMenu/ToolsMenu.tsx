@@ -15,6 +15,8 @@ export type ToolsMenuProps = {
     currentRoomId: string | null;
     onRoomSwitch(roomId: string | null): void;
     onCreateRoom(): void;
+    onJoinRoom(id: string): void;
+    onIgnoreRoom(id: string): void;
 }
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
@@ -25,8 +27,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 {currentRoom ? <QuoteList highlights={currentRoom.highlights}/> : null}
             </Tab>
             <Tab tabId="rooms" tabTitle="Rooms">
-                <RoomList joinedRooms={props.page.joinedRooms} invitedRooms={props.page.invitedRooms} currentRoomId={props.currentRoomId} onRoomClick={props.onRoomSwitch}
-                    onCreateRoom={props.onCreateRoom} createRoomEnabled={props.createRoomEnabled}/>
+                <RoomList joinedRooms={props.page.joinedRooms} invitedRooms={props.page.invitedRooms} onRoomClick={props.onRoomSwitch} {...props}/>
             </Tab>
             <Tab tabId="users" tabTitle="Users">
                 <UserList currentRoom={props.page.getRoom(props.currentRoomId)}/>

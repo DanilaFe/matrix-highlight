@@ -76,6 +76,15 @@ const App = () => {
         setCreateRoomEnabled(true);
     }
 
+    const joinRoom = async (roomId: string) => {
+        console.log("Joining room!");
+        await client?.joinRoom(roomId);
+    }
+    
+    const leaveRoom = async (roomId: string) => {
+        await client?.leaveRoom(roomId);
+    }
+
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
         setAuthEnabled(false);
         Auth.fromBasic(username, password, homeserver).then(c => {
@@ -171,6 +180,12 @@ const App = () => {
         // Hook client whenever it changes.
         client?.subscribe({
             addRoom(room) { highlightDispatch({ type: "add-room", room }); },
+            roomMembership(roomId, membership) {
+                highlightDispatch({ type: "room-membership", roomId, membership });
+            },
+            removeRoom(roomId) {
+                highlightDispatch({ type: "remove-room", roomId });
+            },
             addUser(roomId, user) { highlightDispatch({ type: "add-user", roomId, user }); },
             highlight(roomId, highlight, txnId) {
                 highlightDispatch({ type: "remote-highlight", roomId, highlight, txnId });
@@ -207,6 +222,7 @@ const App = () => {
                 attemptSignup={() => {}}/>
             <ToolsMenu modeId="tools" createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                 onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
+                onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom}
                 page={highlight.page} currentRoomId={highlight.currentRoomId}/>
         </Menu>;
 }

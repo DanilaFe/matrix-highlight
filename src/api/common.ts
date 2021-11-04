@@ -8,6 +8,7 @@ export interface Storage {
 
 export interface ClientSubscriber {
     addRoom?(newRoom: Room): void;
+    roomMembership?(roomId: string, membership: string): void;
     removeRoom?(removedId: string): void;
     addUser?(roomId: string, user: User): void;
     removeUser?(roomId: string, userId: string): void;
@@ -19,6 +20,8 @@ export interface ClientSubscriber {
 
 export interface Client {
     createRoom(roomName: string, url: string): Promise<string>;
+    joinRoom(roomId: string): Promise<void>;
+    leaveRoom(roomId: string): Promise<void>;
     sendHighlight(roomId: string, highlight: HighlightContent, txnId: number): Promise<string>;
     setHighlightVisibility(roomId: string, id: string, visibility: boolean): Promise<void>;
     shutdown(): Promise<void>;

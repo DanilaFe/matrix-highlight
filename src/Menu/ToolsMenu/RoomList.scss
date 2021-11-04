@@ -32,6 +32,20 @@
     .room-info {
         @include padded-list-body;
     }
+
+    button {
+        margin-right: 0.5rem;
+    }
+
+    .accept-button {
+        background-color: #94ff9f;
+        box-shadow: 0px 0px 5px rgba(#94ff9f, 70%);
+    }
+
+    .reject-button {
+        background-color: #ff9b94;
+        box-shadow: 0px 0px 5px rgba(#ff9b94, 70%);   
+    }
 }
 
 #FirstGroupMessage {
