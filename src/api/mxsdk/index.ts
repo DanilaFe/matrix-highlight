@@ -121,6 +121,10 @@ class MxsdkClient implements Client {
         await this._sdkClient.leave(roomId);
     }
 
+    async inviteUser(roomId: string, userId: string) {
+        await this._sdkClient.invite(roomId, userId);
+    }
+
     async sendHighlight(roomId: string, content: HighlightContent, txnId: number) {
         const response = await this._sdkClient.sendEvent(roomId, HIGHLIGHT_EVENT_TYPE, content, txnId.toString());
         return response.event_id;

@@ -21,6 +21,7 @@ export interface Client {
     createRoom(roomName: string, url: string): Promise<string>;
     joinRoom(roomId: string): Promise<void>;
     leaveRoom(roomId: string): Promise<void>;
+    inviteUser(roomId: string, userId: string): Promise<void>;
     sendHighlight(roomId: string, highlight: HighlightContent, txnId: number): Promise<string>;
     setHighlightVisibility(roomId: string, id: string, visibility: boolean): Promise<void>;
     shutdown(): Promise<void>;

@@ -87,7 +87,7 @@ const App = () => {
     }
 
     const inviteUser = async (roomId: string, userId: string) => {
-
+        await client?.inviteUser(roomId, userId);
     }
 
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
