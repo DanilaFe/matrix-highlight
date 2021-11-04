@@ -17,6 +17,7 @@ export type ToolsMenuProps = {
     onCreateRoom(): void;
     onJoinRoom(id: string): void;
     onIgnoreRoom(id: string): void;
+    onInviteUser(roomId: string, userId: string): void;
 }
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
@@ -30,7 +31,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
                 <RoomList joinedRooms={props.page.joinedRooms} invitedRooms={props.page.invitedRooms} onRoomClick={props.onRoomSwitch} {...props}/>
             </Tab>
             <Tab tabId="users" tabTitle="Users">
-                <UserList currentRoom={props.page.getRoom(props.currentRoomId)}/>
+                <UserList currentRoom={props.page.getRoom(props.currentRoomId)} {...props}/>
             </Tab>
         </Tabs>
     );

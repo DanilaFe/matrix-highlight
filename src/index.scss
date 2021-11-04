@@ -50,6 +50,30 @@ input[type="text"], input[type="password"] {
     }
 }
 
+.input-group {
+    display: flex;
+    margin: 0.5rem 0 0.5rem 0;
+
+    input[type="text"], input[type="password"] {
+        flex-grow: 1;
+        max-width: none;
+        margin: 0;
+    }
+
+    input[type="text"], input[type="password"], button {
+        &:not(:last-child) {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &:not(:first-child) {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+            border-left: none;
+        }
+    }
+}
+
 fieldset {
     border: none;
 }
@@ -64,6 +88,10 @@ button, input[type="submit"] {
     transition: background-color 0.1s;
     border-color: rgba(0, 0, 0, 0.20);
     min-width: 5rem;
+    
+    &:hover {
+        background-color: #f0f0f0;
+    }
 
     &.destructive {
         background-color: tomato;

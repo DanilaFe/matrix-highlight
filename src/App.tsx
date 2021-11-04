@@ -86,6 +86,10 @@ const App = () => {
         await client?.leaveRoom(roomId);
     }
 
+    const inviteUser = async (roomId: string, userId: string) => {
+
+    }
+
     const attmeptLogin = (username: string, password: string, homeserver: string) => {
         setAuthEnabled(false);
         Auth.fromBasic(username, password, homeserver).then(c => {
@@ -220,7 +224,7 @@ const App = () => {
                 attemptSignup={() => {}}/>
             <ToolsMenu modeId="tools" createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                 onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
-                onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom}
+                onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
                 page={highlight.page} currentRoomId={highlight.currentRoomId}/>
         </Menu>;
 }
