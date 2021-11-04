@@ -43,7 +43,8 @@ const App = () => {
         status = IndicatorStatus.LoggedOut;
     } else if (!highlight.currentRoomId) {
         status = IndicatorStatus.NoRoom;
-    } else if (highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
+    } else if (!highlight.currentRoomId ||
+        highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
         status = IndicatorStatus.Queued;
     } else {
         status = IndicatorStatus.Synced;
