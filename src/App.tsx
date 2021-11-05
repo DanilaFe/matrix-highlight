@@ -145,6 +145,10 @@ const App = () => {
     }, [tooltipDispatch]);
 
     useEffect(() => {
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape") return;
+            setShowMenu(false);
+        });
         document.addEventListener("selectionchange", (e) => {
             const selection = window.getSelection();
             if (!selection || selection.type !== "Range" || selection.toString() === "") {
