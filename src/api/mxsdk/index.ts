@@ -85,10 +85,14 @@ class MxsdkClient implements Client {
         if (!this._emittedRooms.has(event.getRoomId()) || !this._subscriber) return;
         switch (event.getType()) {
             case HIGHLIGHT_EVENT_TYPE:
-                const localId = event.getUnsigned().transaction_id;
-                const localIdNumber = (localId && parseInt(localId)) || undefined;
+                let localId = undefined;
+                const transactionId = event.getUnsigned().transaction_id;
+                if (transactionId) {
+                    const number = parseInt(transactionId);
+                    if (number !== NaN) localId = number;
+                }
                 const newHighlight = new Highlight(event.getId(), event.getContent<HighlightContent>())
-                this._subscriber.highlight?.(event.getRoomId(), newHighlight, localIdNumber);
+                this._subscriber.highlight?.(event.getRoomId(), newHighlight, localId);
                 return;
             case HIGHLIGHT_HIDE_EVENT_TYPE:
                 const key = event.getStateKey();
