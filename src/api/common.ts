@@ -9,10 +9,8 @@ export interface Storage {
 export interface ClientSubscriber {
     addRoom?(newRoom: Room): void;
     roomMembership?(roomId: string, membership: string): void;
-    addUser?(roomId: string, user: User): void;
-    removeUser?(roomId: string, userId: string): void;
     addUser?(roomId: string, newUser: User): void;
-    removeUser?(roomId: string, userId: string): void;
+    userMembership?(roomId: string, userId: string, membership: string): void;
     highlight?(roomId: string, highlight: Highlight, txnUd: number | undefined): void;
     setHighlightVisibility?(roomId: string, highlightId: string, visibility: boolean): void;
 };

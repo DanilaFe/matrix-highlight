@@ -13,6 +13,7 @@ export type HighlightDataEvent
     | { type: "add-room", room: Room }
     | { type: "room-membership", roomId: string, membership: string }
     | { type: "add-user", roomId: string, user: User }
+    | { type: "user-membership", roomId: string, userId: string, membership: string }
     | { type: "switch-room", newId: string | null }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
@@ -31,6 +32,8 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
             draft.changeRoom(event.roomId, room => room.membership = event.membership);
         } else if (event.type === "add-user") {
             draft.changeRoom(event.roomId, room => room.addUser(event.user));
+        } else if (event.type === "user-membership") {
+            draft.changeRoom(event.roomId, room => room.changeUser(event.userId, u => u.membership = event.membership));
         }
     });
     let currentRoomId = state.currentRoomId;

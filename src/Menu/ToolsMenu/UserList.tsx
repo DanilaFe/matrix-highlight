@@ -14,7 +14,7 @@ export const UserList = (props: UserListProps) => {
     const currentRoom = props.currentRoom;
     if (!currentRoom) return <></>;
 
-    const users = currentRoom.users.map(u =>
+    const users = currentRoom.joinedUsers.map(u =>
         <div key={u.id} className="user">
             <div className="user-icon"><User/></div>
             <div className="user-name">{u.name}</div>

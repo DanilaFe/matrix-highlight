@@ -189,6 +189,9 @@ const App = () => {
                 highlightDispatch({ type: "room-membership", roomId, membership });
             },
             addUser(roomId, user) { highlightDispatch({ type: "add-user", roomId, user }); },
+            userMembership(roomId, userId, membership) {
+                highlightDispatch({ type: "user-membership", roomId, userId, membership });
+            },
             highlight(roomId, highlight, txnId) {
                 highlightDispatch({ type: "remote-highlight", roomId, highlight, txnId });
             },

@@ -50,7 +50,10 @@ class MxsdkClient implements Client {
             this._subscriber?.addUser?.(roomId, new User({
                 id: member.userId,
                 name: member.name,
+                membership: member.membership,
             }));
+        } else {
+            this._subscriber?.userMembership?.(roomId, member.userId, member.membership);
         }
     }
 

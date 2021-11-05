@@ -21,6 +21,7 @@ export class Room {
     localHighlights: Highlight[];
     remoteHighlights: Highlight[];
 
+    get joinedUsers() { return this.users.filter(u => u.membership === "join"); }
     get highlights() { return [...this.remoteHighlights, ...this.localHighlights]; }
     
     constructor(props: RoomFields) {
@@ -34,6 +35,12 @@ export class Room {
 
     addUser(user: User) {
         this.users.push(user);
+    }
+
+    changeUser(userId: string, change: (user: User) => void) {
+        this.users.forEach(u => {
+            if (u.id === userId) change(u);
+        });
     }
 
     addLocalHighlight(highlight: Highlight) {

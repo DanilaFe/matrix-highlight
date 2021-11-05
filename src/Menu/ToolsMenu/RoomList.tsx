@@ -23,7 +23,7 @@ const RoomItem = (props: PropsWithChildren<{room: Room, onClick(): void, current
                 {props.current ? <span className="room-current">Current</span> : null}
             </div>
             <div className="room-info">
-                Users: {props.room.users.map(u => u.name).join(", ")}
+                Users: {props.room.joinedUsers.map(u => u.name).join(", ")}
                 { props.children ? <p>{props.children}</p> : <></> }
             </div>
         </div>
