@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.window {
+.matrix-highlight .window {
     @include bordered-block;
     font-family: "Inconsolata";
     box-shadow: $default-shadow;

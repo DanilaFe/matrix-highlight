@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.room-list {
+.matrix-highlight .room-list {
     @include padded-list;
     margin-bottom: 1rem;
     flex-grow: 0;
@@ -48,7 +48,7 @@
     }
 }
 
-#FirstGroupMessage {
+.matrix-highlight #FirstGroupMessage {
     margin: auto;
     display: flex;
     flex-direction: column;

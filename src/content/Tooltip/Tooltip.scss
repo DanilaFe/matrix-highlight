@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.tooltip {
+.matrix-highlight .tooltip {
     @include bordered-block;
     box-shadow: $default-shadow;
     padding: 0.25rem;

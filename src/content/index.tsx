@@ -5,6 +5,7 @@ import App from './App';
 
 const newElement = document.createElement('div');
 document.body.appendChild(newElement);
+newElement.classList.add("matrix-highlight");
 ReactDOM.render(
   <React.StrictMode>
     <App />

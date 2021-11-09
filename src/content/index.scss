@@ -15,107 +15,94 @@
         background-color: rgba(var(--highlight-color), 1);
     }
 }
-
-body {
-  margin: 0;
-  font-family: "Inconsolata";
-  max-width: 800px;
-  margin: auto;
-  text-align: justify;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-input[type="text"], input[type="password"] {
-    @include bordered-block;
-    margin: 0.5rem 0 0.5rem 0;
-    max-width: 30rem;
-    border-radius: 0.25rem;
-    padding: 0.5rem;
-    transition: box-shadow 0.25s, border-color 0.25s;
-
-    &:focus {
-        outline: none;
-        border-color: $primary-color;
-        box-shadow: 0px 0px 5px rgba($primary-color, 0.4);
-    }
-
-    &:disabled {
-        background-color: #eaeaea;
-    }
-}
-
-.input-group {
-    display: flex;
-    margin: 0.5rem 0 0.5rem 0;
-
-    input[type="text"], input[type="password"] {
-        flex-grow: 1;
-        max-width: none;
-        margin: 0;
-    }
-
-    input[type="text"], input[type="password"], button {
-        &:not(:last-child) {
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-
-        &:not(:first-child) {
-            border-bottom-left-radius: 0;
-            border-top-left-radius: 0;
-            border-left: none;
-        }
-    }
-}
-
-fieldset {
-    border: none;
-}
-
-button, input[type="submit"] {
-    @include bordered-block;
-    background: white;
-    padding: 0.5rem;
-    text-transform: uppercase;
-    font-family: "Inconsolata";
-    font-weight: bold;
-    transition: background-color 0.1s;
-    border-color: rgba(0, 0, 0, 0.20);
-    min-width: 5rem;
     
-    &:hover {
-        background-color: #f0f0f0;
-    }
-
-    &.destructive {
-        background-color: tomato;
-        color: white;
-
-        &:hover {
-            background-color: lighten(tomato, 10%);
+.matrix-highlight {
+    input[type="text"], input[type="password"] {
+        @include bordered-block;
+        margin: 0.5rem 0 0.5rem 0;
+        max-width: 30rem;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        transition: box-shadow 0.25s, border-color 0.25s;
+    
+        &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0px 0px 5px rgba($primary-color, 0.4);
         }
-
+    
         &:disabled {
-            background-color: lighten(tomato, 10%);
+            background-color: #eaeaea;
         }
     }
-
-    &.primary {
-        background-color: $primary-color;
-        color: white;
-
-        &:hover {
-            background-color: $primary-color-light;
+    
+    .input-group {
+        display: flex;
+        margin: 0.5rem 0 0.5rem 0;
+    
+        input[type="text"], input[type="password"] {
+            flex-grow: 1;
+            max-width: none;
+            margin: 0;
         }
-
-        &:disabled {
-            background-color: $primary-color-light;
+    
+        input[type="text"], input[type="password"], button {
+            &:not(:last-child) {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+    
+            &:not(:first-child) {
+                border-bottom-left-radius: 0;
+                border-top-left-radius: 0;
+                border-left: none;
+            }
+        }
+    }
+    
+    fieldset {
+        border: none;
+    }
+    
+    button, input[type="submit"] {
+        @include bordered-block;
+        background: white;
+        padding: 0.5rem;
+        text-transform: uppercase;
+        font-family: "Inconsolata";
+        font-weight: bold;
+        transition: background-color 0.1s;
+        border-color: rgba(0, 0, 0, 0.20);
+        min-width: 5rem;
+        
+        &:hover {
+            background-color: #f0f0f0;
+        }
+    
+        &.destructive {
+            background-color: tomato;
+            color: white;
+    
+            &:hover {
+                background-color: lighten(tomato, 10%);
+            }
+    
+            &:disabled {
+                background-color: lighten(tomato, 10%);
+            }
+        }
+    
+        &.primary {
+            background-color: $primary-color;
+            color: white;
+    
+            &:hover {
+                background-color: $primary-color-light;
+            }
+    
+            &:disabled {
+                background-color: $primary-color-light;
+            }
         }
     }
 }

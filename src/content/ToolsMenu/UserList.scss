@@ -1,12 +1,12 @@
 @import "../../common/utils.scss";
 
-.users-view {
+.matrix-highlight .users-view {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-.user-list {
+.matrix-highlight .user-list {
     @include padded-list;
     margin-bottom: 1rem;
     flex-basis: 0;
