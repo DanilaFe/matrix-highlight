@@ -1,5 +1,6 @@
 import * as sdk from "matrix-js-sdk";
-import {FromContentEvent, FromPopupEvent, ToPopupEvent, ToContentEvent, RoomMembership, HIGHLIGHT_PAGE_EVENT_TYPE} from "../common/messages";
+import {FromContentEvent, FromPopupEvent, ToPopupEvent, ToContentEvent, RoomMembership} from "../common/messages";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
 
@@ -45,12 +46,6 @@ async function emitMember(roomId: string, oldMembership: RoomMembership | null, 
     await broadcastRoom(roomId, processMember(roomId, oldMembership, member));
 }
 
-function checkRoom(room: sdk.Room): string | undefined {
-    const state = room.getLiveTimeline().getState(sdk.EventTimeline.FORWARDS);
-    const event = state.getStateEvents("m.room.create", "");
-    return event.getContent()[HIGHLIGHT_PAGE_EVENT_TYPE];
-}
-
 async function setupClient(newClient: sdk.MatrixClient) {
     client = newClient;
     newClient.on("sync", state => {
@@ -89,11 +84,22 @@ chrome.runtime.onInstalled.addListener(async () => {
         id: "com.danilafe.highlight_context_menu",
     });
 
-    chrome.contextMenus.onClicked.addListener((info, tab) => {
-        chrome.scripting.executeScript({
+    chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+        await chrome.scripting.executeScript({
             target: { tabId: tab!.id! },
             files: [ "content.js" ]
         });
+        // Catch new page with existing pages
+        if (client) {
+            for (const room of client.getRooms()) {
+                const url = checkRoom(room);
+                if (!url || url !== tab!.url) continue;
+                const roomEvents = processRoom(client, room);
+                for (const event of roomEvents) {
+                    sendToTab(tab!, event);
+                }
+            }
+        }
     });
 
     const credentials = await chrome.storage.sync.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
@@ -114,7 +120,19 @@ function sendToPopup(port: chrome.runtime.Port, message: ToPopupEvent) {
 }
 
 chrome.runtime.onMessage.addListener((message: FromContentEvent) => {
-    console.log("received message", message);
+    if (message.type === "create-room") {
+        createRoom(client!, message.name, message.url);
+    } else if (message.type === "join-room") {
+        joinRoom(client!, message.roomId);
+    } else if (message.type === "leave-room") {
+        leaveRoom(client!, message.roomId);
+    }  else if (message.type === "invite-user") {
+        inviteUser(client!, message.roomId, message.userId);
+    } else if (message.type === "send-highlight") {
+        sendHighlight(client!, message.roomId, message.highlight, message.txnId);
+    } else if (message.type === "set-highlight-visibility") {
+        setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
+    }
 });
 
 chrome.runtime.onConnect.addListener(port => {
