@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.quote-list {
+.matrix-highlight .quote-list {
     @include bordered-block;
     overflow: auto;
     padding: 0.5rem;
