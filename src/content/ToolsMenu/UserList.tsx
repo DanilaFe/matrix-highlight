@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./UserList.scss";
-import {Room} from "../model";
+import {Room} from "../../common/model";
 import {User} from "react-feather";
 
 export type UserListProps = {

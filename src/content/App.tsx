@@ -3,10 +3,9 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {Highlight} from "./model";
+import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
-import {HIGHLIGHT_COLOR_KEY} from "./model/matrix";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 

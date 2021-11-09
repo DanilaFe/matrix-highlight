@@ -1,4 +1,4 @@
-import {COLORS} from "../model/matrix";
+import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
 import {Trash} from "react-feather";
 

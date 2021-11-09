@@ -1,4 +1,4 @@
-import {Highlight} from "../model/Highlight";
+import {Highlight} from "../../common/model/Highlight";
 import {highlightTextPortion, clearTextPortion} from "./dom";
 import {iterateTextPieces, decodeNodeData} from "./location";
 

@@ -1,4 +1,4 @@
-import {Page, Highlight, Room, User} from "../model";
+import {Page, Highlight, Room, User} from "../../common/model";
 import {produce} from "immer";
 
 export type HighlightDataState = {

@@ -1,4 +1,4 @@
-import {Highlight} from "../model";
+import {Highlight} from "../../common/model";
 import "./QuoteList.scss";
 
 export type QuoteListProps = {
