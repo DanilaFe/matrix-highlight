@@ -85,25 +85,6 @@ chrome.runtime.onInstalled.addListener(async () => {
         id: "com.danilafe.highlight_context_menu",
     });
 
-    chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-        await chrome.scripting.executeScript({
-            target: { tabId: tab!.id! },
-            files: [ "content.js" ]
-        });
-        hookedTabs.push(tab!.id!);
-        // Catch new page with existing pages
-        if (client) {
-            for (const room of client.getRooms()) {
-                const url = checkRoom(room);
-                if (!url || url !== tab!.url) continue;
-                const roomEvents = processRoom(client, room);
-                for (const event of roomEvents) {
-                    sendToTab(tab!, event);
-                }
-            }
-        }
-    });
-
     const credentials = await chrome.storage.sync.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
     const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
@@ -114,6 +95,26 @@ chrome.runtime.onInstalled.addListener(async () => {
             userId: id,
             accessToken: token
         }));
+    }
+});
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    console.log("Clicked!");
+    await chrome.scripting.executeScript({
+        target: { tabId: tab!.id! },
+        files: [ "content.js" ]
+    });
+    hookedTabs.push(tab!.id!);
+    // Catch new page with existing pages
+    if (client) {
+        for (const room of client.getRooms()) {
+            const url = checkRoom(room);
+            if (!url || url !== tab!.url) continue;
+            const roomEvents = processRoom(client, room);
+            for (const event of roomEvents) {
+                sendToTab(tab!, event);
+            }
+        }
     }
 });
 
