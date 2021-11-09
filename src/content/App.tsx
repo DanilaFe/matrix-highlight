@@ -3,7 +3,7 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {FromContentEvent, ToContentEvent} from "../common/messages";
+import {FromContentMessage, ToContentMessage} from "../common/messages";
 import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
@@ -16,7 +16,7 @@ export enum IndicatorStatus {
     Synced = "synced",
 }
 
-export function sendToBackground(event: FromContentEvent): Promise<void> {
+export function sendToBackground(event: FromContentMessage): Promise<void> {
     return new Promise(resolve => {
         chrome.runtime.sendMessage(event, () => resolve());
     });
@@ -106,7 +106,7 @@ const App = () => {
     }
 
     useEffect(() => {
-        chrome.runtime.onMessage.addListener((message: ToContentEvent, sender, response) => {
+        chrome.runtime.onMessage.addListener((message: ToContentMessage, sender, response) => {
             response(true);
             highlightDispatch(message); 
         });

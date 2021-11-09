@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {FromContentEvent, FromPopupEvent, ToPopupEvent, ToContentEvent, RoomMembership} from "../common/messages";
+import {FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
 import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
@@ -12,13 +12,13 @@ sdk.request(fetchRequest);
 
 const hookedTabs: number[] = [];
 
-function sendToTab(tab: chrome.tabs.Tab, event: ToContentEvent): Promise<void> {
+function sendToTab(tab: chrome.tabs.Tab, event: ToContentMessage): Promise<void> {
     return new Promise(resolve => {
-        chrome.tabs.sendMessage<ToContentEvent, void>(tab.id!, event, () => resolve());
+        chrome.tabs.sendMessage<ToContentMessage, void>(tab.id!, event, () => resolve());
     });
 }
 
-async function broadcastUrl(url: string, event: ToContentEvent | ToContentEvent[]): Promise<void> {
+async function broadcastUrl(url: string, event: ToContentMessage | ToContentMessage[]): Promise<void> {
     const tabs = await chrome.tabs.query({ url });
     const events = Array.isArray(event) ? event : [event];
     for (const event of events) {
@@ -29,7 +29,7 @@ async function broadcastUrl(url: string, event: ToContentEvent | ToContentEvent[
     }
 }
 
-async function broadcastRoom(roomId: string, event: ToContentEvent | ToContentEvent[] | null): Promise<void> {
+async function broadcastRoom(roomId: string, event: ToContentMessage | ToContentMessage[] | null): Promise<void> {
     const url = checkRoom(client!.getRoom(roomId)!);
     if (!url || !event) return;
     broadcastUrl(url, event);
@@ -99,7 +99,6 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-    console.log("Clicked!");
     await chrome.scripting.executeScript({
         target: { tabId: tab!.id! },
         files: [ "content.js" ]
@@ -118,11 +117,11 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     }
 });
 
-function sendToPopup(port: chrome.runtime.Port, message: ToPopupEvent) {
+function sendToPopup(port: chrome.runtime.Port, message: ToPopupMessage) {
     port.postMessage(message);
 }
 
-chrome.runtime.onMessage.addListener((message: FromContentEvent) => {
+chrome.runtime.onMessage.addListener((message: FromContentMessage) => {
     if (message.type === "create-room") {
         createRoom(client!, message.name, message.url);
     } else if (message.type === "join-room") {
@@ -147,7 +146,7 @@ chrome.runtime.onConnect.addListener(port => {
     } else {
         sendToPopup(port, { type: "login-required" });
     }
-    port.onMessage.addListener(async (message: FromPopupEvent) => {
+    port.onMessage.addListener(async (message: FromPopupMessage) => {
         if (message.type === "attempt-login") {
             const {username, password, homeserver} = message;
             const newClient = sdk.createClient({ baseUrl: `https://${homeserver}` });

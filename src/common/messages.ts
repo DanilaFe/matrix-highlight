@@ -3,7 +3,7 @@ import {Room, User, Highlight, HighlightContent} from "./model";
 
 export type RoomMembership = "invite" | "join" | "leave" | "ban"
 
-export type ToPopupEvent = {
+export type ToPopupMessage = {
     type: "login-successful",
     username: string,
     name: string
@@ -14,14 +14,14 @@ export type ToPopupEvent = {
     type: "login-required"
 }
 
-export type FromPopupEvent = {
+export type FromPopupMessage = {
     type: "attempt-login",
     username: string,
     password: string,
     homeserver: string
 }
 
-export type ToContentEvent = {
+export type ToContentMessage = {
     type: "add-room",
     room: Room
 } | {
@@ -49,7 +49,7 @@ export type ToContentEvent = {
     visibility: boolean,
 }
 
-export type FromContentEvent = {
+export type FromContentMessage = {
     type: "create-room",
     name: string,
     url: string,

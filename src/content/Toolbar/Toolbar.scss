@@ -2,7 +2,7 @@
 
 .matrix-highlight .toolbar-main {
     @include bordered-block;
-    position: absolute;
+    position: fixed;
     left: 1rem;
     top: 1rem;
     padding: 0.25rem;

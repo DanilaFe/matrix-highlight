@@ -1,10 +1,10 @@
 import {Room, User, Highlight, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
-import {RoomMembership, ToContentEvent} from "../common/messages";
+import {RoomMembership, ToContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
 
-export function processRoom(client: sdk.MatrixClient, room: sdk.Room): ToContentEvent[] {
+export function processRoom(client: sdk.MatrixClient, room: sdk.Room): ToContentMessage[] {
     if (client.isRoomEncrypted(room.roomId)) return [];
-    const events: ToContentEvent[] = [];
+    const events: ToContentMessage[] = [];
     events.push({
         type: "add-room",
         room: new Room({
@@ -23,7 +23,7 @@ export function processRoom(client: sdk.MatrixClient, room: sdk.Room): ToContent
     return events;
 };
 
-export function processMember(roomId: string, oldMembership: RoomMembership | null, member: sdk.RoomMember): ToContentEvent {
+export function processMember(roomId: string, oldMembership: RoomMembership | null, member: sdk.RoomMember): ToContentMessage {
     if (oldMembership === null) {
         const user = new User({
             id: member.userId,
@@ -42,7 +42,7 @@ export function processMember(roomId: string, oldMembership: RoomMembership | nu
 };
 
 
-export function processEvent(event: sdk.MatrixEvent): ToContentEvent | null {
+export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
     switch (event.getType()) {
         case HIGHLIGHT_EVENT_TYPE:
             let localId = undefined;

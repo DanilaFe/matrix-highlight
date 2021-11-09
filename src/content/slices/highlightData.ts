@@ -1,5 +1,5 @@
 import {Page, Highlight, Room, User} from "../../common/model";
-import {ToContentEvent} from "../../common/messages";
+import {ToContentMessage} from "../../common/messages";
 import {produce} from "immer";
 
 export type HighlightDataState = {
@@ -7,7 +7,7 @@ export type HighlightDataState = {
     page: Page;
 }
 
-export type HighlightDataEvent = ToContentEvent
+export type HighlightDataEvent = ToContentMessage
     | { type: "local-highlight", roomId: string, highlight: Highlight }
     | { type: "switch-room", newId: string | null }
 
