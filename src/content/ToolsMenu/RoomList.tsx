@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import {Room} from "../../model";
+import {Room} from "../model";
 import {Folder} from "react-feather";
 import "./RoomList.scss";
 

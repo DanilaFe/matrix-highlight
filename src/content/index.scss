@@ -1,4 +1,4 @@
-@import "./utils.scss";
+@import "../common/utils.scss";
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
 .yellow { --highlight-color: #{$highlight-color-yellow}; }

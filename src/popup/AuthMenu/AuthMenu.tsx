@@ -1,4 +1,4 @@
-import {Tab, Tabs} from "../../utils/Tabs";
+import {Tab, Tabs} from "../../common/utils/Tabs";
 import {LoginForm} from "./LoginForm";
 export type AuthMenuTab = "login" | "signup";
 

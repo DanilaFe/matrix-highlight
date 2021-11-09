@@ -1,5 +1,5 @@
-import {Page} from "../../model/Page";
-import {Tab,Tabs} from "../../utils/Tabs";
+import {Page} from "../model/Page";
+import {Tab,Tabs} from "../../common/utils/Tabs";
 import {QuoteList} from "./QuoteList";
 import {RoomList} from "./RoomList";
 import {UserList} from "./UserList";
