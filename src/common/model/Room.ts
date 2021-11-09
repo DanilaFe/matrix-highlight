@@ -23,6 +23,17 @@ export class Room {
 
     get joinedUsers() { return this.users.filter(u => u.membership === "join"); }
     get highlights() { return [...this.remoteHighlights, ...this.localHighlights]; }
+
+    static fromOther(other: Room) {
+        return new Room({
+            id: other.id,
+            name: other.name,
+            membership: other.membership,
+            users: other.users.map(u => User.fromOther(u)),
+            localHighlights: other.localHighlights.map(h => Highlight.fromOther(h)),
+            remoteHighlights: other.remoteHighlights.map(h => Highlight.fromOther(h)),
+        });
+    }
     
     constructor(props: RoomFields) {
         this.id = props.id;

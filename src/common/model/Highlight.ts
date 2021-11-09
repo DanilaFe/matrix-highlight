@@ -4,6 +4,10 @@ import {immerable} from "immer";
 export class Highlight {
     [immerable] = true;
 
+    static fromOther(other: Highlight) {
+        return new Highlight(other.id, other.content, other.visible, other.active);
+    }
+
     constructor(
         public id: string | number,
         public content: HighlightContent,

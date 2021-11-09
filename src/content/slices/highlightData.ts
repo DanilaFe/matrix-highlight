@@ -15,18 +15,18 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
     const page = produce(state.page, draft => {
         if (event.type === "highlight") {
             draft.changeRoom(event.roomId,
-                room => room.addRemoteHighlight(event.highlight, event.txnId));
+                room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId));
         } else if (event.type === "local-highlight") {
-            draft.changeRoom(event.roomId, room => room.addLocalHighlight(event.highlight));
+            draft.changeRoom(event.roomId, room => room.addLocalHighlight(Highlight.fromOther(event.highlight)));
         } else if (event.type === "highlight-visibility") {
             draft.changeRoom(event.roomId,
                 room => room.setHighlightVisibility(event.highlightId, event.visibility));
         } else if (event.type === "add-room") {
-            draft.addRoom(event.room);
+            draft.addRoom(Room.fromOther(event.room));
         } else if (event.type === "room-membership") {
             draft.changeRoom(event.roomId, room => room.membership = event.membership);
         } else if (event.type === "add-user") {
-            draft.changeRoom(event.roomId, room => room.addUser(event.user));
+            draft.changeRoom(event.roomId, room => room.addUser(User.fromOther(event.user)));
         } else if (event.type === "user-membership") {
             draft.changeRoom(event.roomId, room => room.changeUser(event.userId, u => u.membership = event.membership));
         }
