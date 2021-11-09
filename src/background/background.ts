@@ -14,9 +14,7 @@ const hookedTabs: number[] = [];
 
 function sendToTab(tab: chrome.tabs.Tab, event: ToContentEvent): Promise<void> {
     return new Promise(resolve => {
-        chrome.tabs.sendMessage<ToContentEvent, void>(tab.id!, event, () => {
-            resolve();
-        });
+        chrome.tabs.sendMessage<ToContentEvent, void>(tab.id!, event, () => resolve());
     });
 }
 

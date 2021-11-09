@@ -106,7 +106,8 @@ const App = () => {
     }
 
     useEffect(() => {
-        chrome.runtime.onMessage.addListener((message: ToContentEvent) => {
+        chrome.runtime.onMessage.addListener((message: ToContentEvent, sender, response) => {
+            response(true);
             highlightDispatch(message); 
         });
     }, [highlightDispatch]);
