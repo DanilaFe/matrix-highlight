@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {FromPopupEvent, ToPopupEvent, ToContentEvent, RoomMembership, HIGHLIGHT_PAGE_EVENT_TYPE} from "../common/messages";
+import {FromContentEvent, FromPopupEvent, ToPopupEvent, ToContentEvent, RoomMembership, HIGHLIGHT_PAGE_EVENT_TYPE} from "../common/messages";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
 
@@ -83,6 +83,19 @@ async function setupClient(newClient: sdk.MatrixClient) {
 };
 
 chrome.runtime.onInstalled.addListener(async () => {
+    chrome.contextMenus.create({
+        title: "Highlight using Matrix",
+        contexts: ["page"],
+        id: "com.danilafe.highlight_context_menu",
+    });
+
+    chrome.contextMenus.onClicked.addListener((info, tab) => {
+        chrome.scripting.executeScript({
+            target: { tabId: tab!.id! },
+            files: [ "content.js" ]
+        });
+    });
+
     const credentials = await chrome.storage.sync.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
     const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
@@ -99,6 +112,10 @@ chrome.runtime.onInstalled.addListener(async () => {
 function sendToPopup(port: chrome.runtime.Port, message: ToPopupEvent) {
     port.postMessage(message);
 }
+
+chrome.runtime.onMessage.addListener((message: FromContentEvent) => {
+    console.log("received message", message);
+});
 
 chrome.runtime.onConnect.addListener(port => {
     if (client) {
