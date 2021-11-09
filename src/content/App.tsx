@@ -3,7 +3,7 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {FromContentEvent} from "../common/messages";
+import {FromContentEvent, ToContentEvent} from "../common/messages";
 import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
@@ -11,7 +11,6 @@ import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 
 export enum IndicatorStatus {
-    LoggedOut = "loggedOut",
     NoRoom = "noRoom",
     Queued = "queued",
     Synced = "synced",
@@ -25,11 +24,6 @@ export function sendToBackground(event: FromContentEvent): Promise<void> {
 
 const App = () => {
     const [showMenu, setShowMenu] = useState(false);
-    const [menuMode, setMenuMode] = useState<"auth" | "tools">("tools");
-
-    const [authEnabled, setAuthEnabled] = useState(true);
-    const [authTab, setAuthTab] = useState<"login" | "signup">("login");
-
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
 
@@ -37,9 +31,7 @@ const App = () => {
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
 
     let status: IndicatorStatus
-    if (1 === null) {
-        status = IndicatorStatus.LoggedOut;
-    } else if (!highlight.currentRoomId) {
+    if (!highlight.currentRoomId) {
         status = IndicatorStatus.NoRoom;
     } else if (!highlight.currentRoomId ||
         highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
@@ -48,21 +40,13 @@ const App = () => {
         status = IndicatorStatus.Synced;
     }
 
-    const openAuth = (tab: "login" | "signup") => {
-        setMenuMode("auth");
-        setAuthTab(tab);
-        setShowMenu(true);
-    };
-
     const openTools = (tab: "quotes" | "rooms" | "users") => {
-        setMenuMode("tools");
-        setToolsTab(tab);
+        setToolsTab(tab)
         setShowMenu(true);
     }
 
     const handleIndicator = () => {
         switch (status) {
-            case IndicatorStatus.LoggedOut: openAuth("login"); return;
             case IndicatorStatus.NoRoom: openTools("rooms"); return;
             default: return;
         }
@@ -114,7 +98,7 @@ const App = () => {
             sendToBackground({ type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
         }
         highlightDispatch({
-            type: "change-visibility",
+            type: "highlight-visibility",
             roomId: highlight.currentRoomId,
             highlightId: id,
             visibility: false
@@ -122,14 +106,16 @@ const App = () => {
     }
 
     useEffect(() => {
+        chrome.runtime.onMessage.addListener((message: ToContentEvent) => {
+            highlightDispatch(message); 
+        });
+    }, [highlightDispatch]);
+
+    useEffect(() => {
         Renderer.subscribe({
             activeChange(id) {},
-            click(id, top, left) {
-                tooltipDispatch({ type: "click", id, top, left });
-            },
-            move(id, top, left) {
-                tooltipDispatch({ type: "resize-clicked", id, top, left });
-            }
+            click(id, top, left) { tooltipDispatch({ type: "click", id, top, left }); },
+            move(id, top, left) { tooltipDispatch({ type: "resize-clicked", id, top, left }); }
         });
     }, [tooltipDispatch]);
 
@@ -167,7 +153,7 @@ const App = () => {
     return !showMenu ?
         <>
             <Toolbar status={status} onIndicatorClick={handleIndicator}
-                onOpenMenu={() => { setMenuMode("tools"); setShowMenu(true) }}
+                onOpenMenu={() => { setShowMenu(true) }}
                 onShowQuotes={() => openTools("quotes")}
                 onShowRooms={() => openTools("rooms")}
                 onShowUsers={() => openTools("users")}

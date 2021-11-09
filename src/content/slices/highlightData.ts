@@ -1,4 +1,5 @@
 import {Page, Highlight, Room, User} from "../../common/model";
+import {ToContentEvent} from "../../common/messages";
 import {produce} from "immer";
 
 export type HighlightDataState = {
@@ -6,24 +7,18 @@ export type HighlightDataState = {
     page: Page;
 }
 
-export type HighlightDataEvent
-    = { type: "remote-highlight", roomId: string, highlight: Highlight, txnId: number | undefined }
+export type HighlightDataEvent = ToContentEvent
     | { type: "local-highlight", roomId: string, highlight: Highlight }
-    | { type: "change-visibility", roomId: string, highlightId: string | number, visibility: boolean }
-    | { type: "add-room", room: Room }
-    | { type: "room-membership", roomId: string, membership: string }
-    | { type: "add-user", roomId: string, user: User }
-    | { type: "user-membership", roomId: string, userId: string, membership: string }
     | { type: "switch-room", newId: string | null }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
     const page = produce(state.page, draft => {
-        if (event.type === "remote-highlight") {
+        if (event.type === "highlight") {
             draft.changeRoom(event.roomId,
                 room => room.addRemoteHighlight(event.highlight, event.txnId));
         } else if (event.type === "local-highlight") {
             draft.changeRoom(event.roomId, room => room.addLocalHighlight(event.highlight));
-        } else if (event.type === "change-visibility") {
+        } else if (event.type === "highlight-visibility") {
             draft.changeRoom(event.roomId,
                 room => room.setHighlightVisibility(event.highlightId, event.visibility));
         } else if (event.type === "add-room") {

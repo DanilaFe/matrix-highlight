@@ -14,7 +14,6 @@ export type ToolbarProps = {
 
 function statusToIcon(status: string) {
     switch (status) {
-        case IndicatorStatus.LoggedOut: return <UserX className="feather"/>;
         case IndicatorStatus.NoRoom: return <AlertTriangle className="feather"/>;
         case IndicatorStatus.Queued: return <UploadCloud className="feather"/>
         default: return <Cloud className="feather"/>

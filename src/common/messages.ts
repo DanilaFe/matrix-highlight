@@ -45,7 +45,7 @@ export type ToContentEvent = {
 } | {
     type: "highlight-visibility",
     roomId: string,
-    highlightId: string,
+    highlightId: number | string,
     visibility: boolean,
 }
 
