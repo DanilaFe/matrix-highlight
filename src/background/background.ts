@@ -10,6 +10,8 @@ const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
 let client: sdk.MatrixClient | null = null;
 sdk.request(fetchRequest);
 
+const hookedTabs: number[] = [];
+
 function sendToTab(tab: chrome.tabs.Tab, event: ToContentEvent): Promise<void> {
     return new Promise(resolve => {
         chrome.tabs.sendMessage<ToContentEvent, void>(tab.id!, event, () => {
@@ -23,6 +25,7 @@ async function broadcastUrl(url: string, event: ToContentEvent | ToContentEvent[
     const events = Array.isArray(event) ? event : [event];
     for (const event of events) {
         for (const tab of tabs) {
+            if (!hookedTabs.includes(tab.id!)) continue;
             await sendToTab(tab, event);
         }
     }
@@ -89,6 +92,7 @@ chrome.runtime.onInstalled.addListener(async () => {
             target: { tabId: tab!.id! },
             files: [ "content.js" ]
         });
+        hookedTabs.push(tab!.id!);
         // Catch new page with existing pages
         if (client) {
             for (const room of client.getRooms()) {
