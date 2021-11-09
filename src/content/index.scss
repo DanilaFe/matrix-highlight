@@ -17,6 +17,14 @@
 }
     
 .matrix-highlight {
+    all: initial;
+    *:not(svg,path,circle,line) {
+        all: revert;
+    }
+    svg {
+        fill: none;
+    }
+
     input[type="text"], input[type="password"] {
         @include bordered-block;
         margin: 0.5rem 0 0.5rem 0;
