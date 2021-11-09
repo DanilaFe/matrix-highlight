@@ -55,10 +55,10 @@ export type FromContentEvent = {
     url: string,
 } | {
     type: "join-room",
-    id: string,
+    roomId: string,
 } | {
     type: "leave-room",
-    id: string,
+    roomId: string,
 } | {
     type: "invite-user",
     roomId: string,
@@ -66,7 +66,8 @@ export type FromContentEvent = {
 } | {
     type: "send-highlight",
     roomId: string,
-    highlight: HighlightContent
+    highlight: HighlightContent,
+    txnId: number
 } | {
     type: "set-highlight-visibility",
     roomId: string,

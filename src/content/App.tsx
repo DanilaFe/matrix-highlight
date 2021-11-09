@@ -3,6 +3,7 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
+import {FromContentEvent} from "../common/messages";
 import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
@@ -14,6 +15,12 @@ export enum IndicatorStatus {
     NoRoom = "noRoom",
     Queued = "queued",
     Synced = "synced",
+}
+
+export function sendToBackground(event: FromContentEvent): Promise<void> {
+    return new Promise(resolve => {
+        chrome.runtime.sendMessage(event, () => resolve());
+    });
 }
 
 const App = () => {
@@ -62,61 +69,56 @@ const App = () => {
     };
 
     const createRoom = async () => {
-        // TODO Stub
-        // const url = window.location.href;
-        // setCreateRoomEnabled(false);
-        // await client?.createRoom(`Highlight room for ${url}.`, url);
-        // setCreateRoomEnabled(true);
+        const url = window.location.href;
+        setCreateRoomEnabled(false);
+        await sendToBackground({ type: "create-room", name: `Highlight room for ${url}.`, url }); 
+        setCreateRoomEnabled(true);
     }
 
     const joinRoom = async (roomId: string) => {
-        // TODO Stub
-        // console.log("Joining room!");
-        // await client?.joinRoom(roomId);
+        await sendToBackground({ type: "join-room", roomId });
     }
     
     const leaveRoom = async (roomId: string) => {
-        // TODO Stub
-        // await client?.leaveRoom(roomId);
+        await sendToBackground({ type: "leave-room", roomId });
     }
 
     const inviteUser = async (roomId: string, userId: string) => {
-        // TODO Stub
-        // await client?.inviteUser(roomId, userId);
+        await sendToBackground({ type: "invite-user", roomId, userId });
     }
 
-    const makeNewHighlight = (color: string) => {
-        // TODO Stub
-        // if (!tooltip.selection || !highlight.currentRoomId || !client) return;
-        // const skeletonEvent = makeEvent(tooltip.selection);
-        // if (skeletonEvent) {
-        //     const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
-        //     const txnId = parseInt(Storage.getString("txnId") || "0");
-        //     Storage.setString("txnId", (txnId+1).toString());
+    const makeNewHighlight = async (color: string) => {
+        if (!tooltip.selection || !highlight.currentRoomId) return;
+        const skeletonEvent = makeEvent(tooltip.selection);
+        if (skeletonEvent) {
+            const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
+            const txnId = (await chrome.storage.sync.get([ "txnId" ]))["txnId"] || 0;
+            await chrome.storage.sync.set({ txnId: txnId + 1 });
 
-        //     client.sendHighlight(highlight.currentRoomId, event, txnId);
-        //     highlightDispatch({
-        //         type: "local-highlight",
-        //         highlight: new Highlight(txnId, event),
-        //         roomId: highlight.currentRoomId
-        //     });
+            sendToBackground({ type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
+            highlightDispatch({
+                type: "local-highlight",
+                highlight: new Highlight(txnId, event),
+                roomId: highlight.currentRoomId
+            });
 
-        //     window.getSelection()?.removeAllRanges();
-        //     tooltipDispatch({type: "hide"});
-        // }
+            window.getSelection()?.removeAllRanges();
+            tooltipDispatch({type: "hide"});
+        }
     }
 
     const hideHighlight = (id: string | number) => {
-        // TODO Stub
-        // if (!highlight.currentRoomId || !client) return;
+        if (!highlight.currentRoomId) return;
 
-        // if (typeof id === "string") client.setHighlightVisibility(highlight.currentRoomId, id, false);
-        // highlightDispatch({
-        //     type: "change-visibility",
-        //     roomId: highlight.currentRoomId,
-        //     highlightId: id,
-        //     visibility: false
-        // });
+        if (typeof id === "string") {
+            sendToBackground({ type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
+        }
+        highlightDispatch({
+            type: "change-visibility",
+            roomId: highlight.currentRoomId,
+            highlightId: id,
+            visibility: false
+        });
     }
 
     useEffect(() => {
