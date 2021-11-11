@@ -3,6 +3,9 @@ import {Room, User, Highlight, HighlightContent} from "./model";
 
 export type RoomMembership = "invite" | "join" | "leave" | "ban"
 
+export const PORT_TAB = "port-tab";
+export const PORT_POP = "port-pop";
+
 export type ToPopupMessage = {
     type: "login-successful",
     username: string,

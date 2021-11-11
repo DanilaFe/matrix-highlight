@@ -3,7 +3,7 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {FromContentMessage, ToContentMessage} from "../common/messages";
+import {PORT_TAB, FromContentMessage, ToContentMessage} from "../common/messages";
 import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
@@ -16,13 +16,14 @@ export enum IndicatorStatus {
     Synced = "synced",
 }
 
-export function sendToBackground(event: FromContentMessage): Promise<void> {
-    return new Promise(resolve => {
-        chrome.runtime.sendMessage(event, () => resolve());
-    });
+export function sendToBackground(port: chrome.runtime.Port | null, event: FromContentMessage): void {
+    if (!port) console.log("No port :(");
+    port?.postMessage(event);
 }
 
 const App = () => {
+    const [port, setPort] = useState<chrome.runtime.Port | null>(null);
+
     const [showMenu, setShowMenu] = useState(false);
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
@@ -55,20 +56,20 @@ const App = () => {
     const createRoom = async () => {
         const url = window.location.href;
         setCreateRoomEnabled(false);
-        await sendToBackground({ type: "create-room", name: `Highlight room for ${url}.`, url }); 
+        sendToBackground(port, { type: "create-room", name: `Highlight room for ${url}.`, url }); 
         setCreateRoomEnabled(true);
     }
 
     const joinRoom = async (roomId: string) => {
-        await sendToBackground({ type: "join-room", roomId });
+        sendToBackground(port, { type: "join-room", roomId });
     }
     
     const leaveRoom = async (roomId: string) => {
-        await sendToBackground({ type: "leave-room", roomId });
+        sendToBackground(port, { type: "leave-room", roomId });
     }
 
     const inviteUser = async (roomId: string, userId: string) => {
-        await sendToBackground({ type: "invite-user", roomId, userId });
+        sendToBackground(port, { type: "invite-user", roomId, userId });
     }
 
     const makeNewHighlight = async (color: string) => {
@@ -79,7 +80,7 @@ const App = () => {
             const txnId = (await chrome.storage.sync.get([ "txnId" ]))["txnId"] || 0;
             await chrome.storage.sync.set({ txnId: txnId + 1 });
 
-            sendToBackground({ type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
+            sendToBackground(port, { type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
             highlightDispatch({
                 type: "local-highlight",
                 highlight: new Highlight(txnId, event),
@@ -95,7 +96,7 @@ const App = () => {
         if (!highlight.currentRoomId) return;
 
         if (typeof id === "string") {
-            sendToBackground({ type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
+            sendToBackground(port, { type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
         }
         highlightDispatch({
             type: "highlight-visibility",
@@ -106,11 +107,13 @@ const App = () => {
     }
 
     useEffect(() => {
-        chrome.runtime.onMessage.addListener((message: ToContentMessage, sender, response) => {
-            response(true);
+        const port = chrome.runtime.connect({ name: PORT_TAB });
+        setPort(port);
+        port.onMessage.addListener((message: ToContentMessage) => {
+            // response(true);
             highlightDispatch(message); 
         });
-    }, [highlightDispatch]);
+    }, [setPort, highlightDispatch]);
 
     useEffect(() => {
         Renderer.subscribe({

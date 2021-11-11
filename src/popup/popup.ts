@@ -1,6 +1,7 @@
+import {PORT_POP} from "../common/messages";
 export {}
 
-const port = chrome.runtime.connect();
+const port = chrome.runtime.connect({ name: PORT_POP });
 port.onMessage.addListener(msg => {
     if (msg.type === "login-required") {
         port.postMessage({

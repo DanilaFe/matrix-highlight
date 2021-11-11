@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
+import {PORT_POP, PORT_TAB, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
 import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
@@ -10,21 +10,15 @@ const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
 let client: sdk.MatrixClient | null = null;
 sdk.request(fetchRequest);
 
-const hookedTabs: number[] = [];
-
-function sendToTab(tab: chrome.tabs.Tab, event: ToContentMessage): Promise<void> {
-    return new Promise(resolve => {
-        chrome.tabs.sendMessage<ToContentMessage, void>(tab.id!, event, () => resolve());
-    });
-}
+const hookedTabs: Map<number, chrome.runtime.Port> = new Map();
 
 async function broadcastUrl(url: string, event: ToContentMessage | ToContentMessage[]): Promise<void> {
     const tabs = await chrome.tabs.query({ url });
     const events = Array.isArray(event) ? event : [event];
     for (const event of events) {
         for (const tab of tabs) {
-            if (!hookedTabs.includes(tab.id!)) continue;
-            await sendToTab(tab, event);
+            if (!hookedTabs.has(tab.id!)) continue;
+            hookedTabs.get(tab.id!)?.postMessage(event);
         }
     }
 }
@@ -99,45 +93,18 @@ chrome.runtime.onInstalled.addListener(async () => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (!tab?.id) return;
     await chrome.scripting.executeScript({
-        target: { tabId: tab!.id! },
+        target: { tabId: tab.id },
         files: [ "content.js" ]
     });
-    hookedTabs.push(tab!.id!);
-    // Catch new page with existing pages
-    if (client) {
-        for (const room of client.getRooms()) {
-            const url = checkRoom(room);
-            if (!url || url !== tab!.url) continue;
-            const roomEvents = processRoom(client, room);
-            for (const event of roomEvents) {
-                sendToTab(tab!, event);
-            }
-        }
-    }
 });
 
 function sendToPopup(port: chrome.runtime.Port, message: ToPopupMessage) {
     port.postMessage(message);
 }
 
-chrome.runtime.onMessage.addListener((message: FromContentMessage) => {
-    if (message.type === "create-room") {
-        createRoom(client!, message.name, message.url);
-    } else if (message.type === "join-room") {
-        joinRoom(client!, message.roomId);
-    } else if (message.type === "leave-room") {
-        leaveRoom(client!, message.roomId);
-    }  else if (message.type === "invite-user") {
-        inviteUser(client!, message.roomId, message.userId);
-    } else if (message.type === "send-highlight") {
-        sendHighlight(client!, message.roomId, message.highlight, message.txnId);
-    } else if (message.type === "set-highlight-visibility") {
-        setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
-    }
-});
-
-chrome.runtime.onConnect.addListener(port => {
+function setupPopupPort(port: chrome.runtime.Port) {
     if (client) {
         const username = client.getUserId();
         const homeserver = client.getHomeserverUrl();
@@ -165,4 +132,43 @@ chrome.runtime.onConnect.addListener(port => {
             sendToPopup(port, { type: "login-successful", username, homeserver, name });
         }
     });
+}
+
+function setupTabPort(port: chrome.runtime.Port) {
+    const tab = port.sender?.tab;
+    if (!tab?.id) return;
+    console.log("Got new connection!");
+    hookedTabs.set(tab.id, port);
+    // Catch new page with existing pages
+    if (client) {
+        for (const room of client.getRooms()) {
+            const url = checkRoom(room);
+            if (!url || url !== tab.url) continue;
+            const roomEvents = processRoom(client, room);
+            for (const event of roomEvents) {
+                console.log("Sending event", event);
+                port.postMessage(event);
+            }
+        }
+    }
+    port.onMessage.addListener((message: FromContentMessage) => {
+        if (message.type === "create-room") {
+            createRoom(client!, message.name, message.url);
+        } else if (message.type === "join-room") {
+            joinRoom(client!, message.roomId);
+        } else if (message.type === "leave-room") {
+            leaveRoom(client!, message.roomId);
+        }  else if (message.type === "invite-user") {
+            inviteUser(client!, message.roomId, message.userId);
+        } else if (message.type === "send-highlight") {
+            sendHighlight(client!, message.roomId, message.highlight, message.txnId);
+        } else if (message.type === "set-highlight-visibility") {
+            setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
+        }
+    });
+}
+
+chrome.runtime.onConnect.addListener(port => {
+    if (port.name === PORT_POP) setupPopupPort(port);
+    else if (port.name === PORT_TAB) setupTabPort(port);
 });
