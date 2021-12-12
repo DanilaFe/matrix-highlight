@@ -3,7 +3,6 @@ import {LoginForm} from "./LoginForm";
 export type AuthMenuTab = "login" | "signup";
 
 export type AuthMenuProps = {
-    modeId: string
     authEnabled: boolean;
     tab: AuthMenuTab;
     onTabClick(tab: AuthMenuTab): void;
