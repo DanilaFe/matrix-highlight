@@ -12,6 +12,8 @@ sdk.request(fetchRequest);
 
 const hookedTabs: Map<number, chrome.runtime.Port> = new Map();
 
+let attemptedLogin: boolean = false;
+
 async function broadcastUrl(url: string, event: ToContentMessage | ToContentMessage[]): Promise<void> {
     const tabs = await chrome.tabs.query({ url });
     const events = Array.isArray(event) ? event : [event];
@@ -72,13 +74,9 @@ async function setupClient(newClient: sdk.MatrixClient) {
     await newClient.startClient({initialSyncLimit: 100});
 };
 
-chrome.runtime.onInstalled.addListener(async () => {
-    chrome.contextMenus.create({
-        title: "Highlight using Matrix",
-        contexts: ["page"],
-        id: "com.danilafe.highlight_context_menu",
-    });
-
+async function fetchLogin() {
+    if (attemptedLogin) return;
+    attemptedLogin = true;
     const credentials = await chrome.storage.sync.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
     const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
@@ -90,6 +88,14 @@ chrome.runtime.onInstalled.addListener(async () => {
             accessToken: token
         }));
     }
+}
+
+chrome.runtime.onInstalled.addListener(async () => {
+    chrome.contextMenus.create({
+        title: "Highlight using Matrix",
+        contexts: ["page"],
+        id: "com.danilafe.highlight_context_menu",
+    });
 });
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
@@ -168,7 +174,8 @@ function setupTabPort(port: chrome.runtime.Port) {
     });
 }
 
-chrome.runtime.onConnect.addListener(port => {
+chrome.runtime.onConnect.addListener(async port => {
+    await fetchLogin();
     if (port.name === PORT_POP) setupPopupPort(port);
     else if (port.name === PORT_TAB) setupTabPort(port);
 });
