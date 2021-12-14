@@ -1,46 +1,27 @@
-# Getting Started with Create React App
+# Matrix Highlight
+A decentralized and federated way of annotating the web based on [Matrix](https://matrix.org).
+Watch a quick [demo video](https://youtu.be/Q3h5A0DsE1s), or read the [introductory post](https://danilafe.com/blog/introducing_highlight/).
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Image](https://danilafe.com/blog/introducing_highlight/mhl_many.png)
 
-## Available Scripts
+## Features
+* __Current__: Create and send website annotations over Matrix.
+* __Current__: Store data in a decentralized and federated manner.
+* __Current__: Share highlights with other users, including those on other servers.
+* __Current__: Group annotations together and create multiple annotation groups
+* __Planned__: Use Matrix's End-to-End encryption to ensure the secure transmission and storage of highlight data.
+* __Planned__: Leverage the new [`m.thread` MSC](https://github.com/matrix-org/matrix-doc/blob/gsouquet/threading-via-relations/proposals/3440-threading-via-relations.md) to allow users to comment on and discuss
+highlights.
+* __Planned__: Use something like [ArchiveBox](https://archivebox.io/) to cache the current version of a website and prevent annotations from breaking.
+* __Planned__ Highlight PDFs in addition to web pages.
 
-In the project directory, you can run:
+## Building
+The project is a handful of React applications written in TypeScript. It's sufficient to run:
 
-### `yarn start`
+```Bash
+yarn install
+yarn webpack
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+An (unpacked) extension will be available in `dist/`. Then, you can follow the [Google guide] to
+install the unpacked extension in Chrome or Chromium.
