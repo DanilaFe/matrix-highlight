@@ -67,10 +67,14 @@ export class Room {
     }
 
     setHighlightVisibility(id: string | number, visibility: boolean) {
-        const transform = (hl: Highlight) => {
-            if (hl.id === id) hl.visible = visibility;
-        };
-        this.localHighlights.forEach(transform);
-        this.remoteHighlights.forEach(transform);
+        this.changeHighlight(id, hl => hl.visible = visibility);
+    }
+
+    changeHighlight(id : string | number, transform: (h: Highlight) => void): void {
+        const doTransform = (hl: Highlight) => {
+            if (hl.id === id) transform(hl);
+        }
+        this.localHighlights.forEach(doTransform);
+        this.remoteHighlights.forEach(doTransform);
     }
 }
