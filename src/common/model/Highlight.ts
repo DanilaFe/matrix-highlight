@@ -1,4 +1,5 @@
 import {HighlightContent, NodeData, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_START_KEY, HIGHLIGHT_END_KEY, HIGHLIGHT_TEXT_KEY} from "./matrix"
+import {Message} from "./Message";
 import {immerable} from "immer";
 
 export class Highlight {
@@ -12,7 +13,8 @@ export class Highlight {
         public id: string | number,
         public content: HighlightContent,
         public visible: boolean = true,
-        public active: boolean = false
+        public active: boolean = false,
+        public messages: Message[] = []
     ) {}
 
     get color(): string { return this.content[HIGHLIGHT_COLOR_KEY]; }
