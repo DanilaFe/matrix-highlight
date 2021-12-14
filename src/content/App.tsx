@@ -3,8 +3,8 @@ import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
-import {PORT_TAB, FromContentMessage, ToContentMessage} from "../common/messages";
-import {Highlight, HIGHLIGHT_COLOR_KEY} from "../common/model";
+import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
+import {Highlight, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
@@ -20,6 +20,18 @@ export function sendToBackground(port: chrome.runtime.Port | null, event: FromCo
     if (!port) console.log("No port :(");
     port?.postMessage(event);
 }
+
+function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chrome.runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void): void {
+    const port = chrome.runtime.connect({ name: str });
+    setPort(port);
+    port.onDisconnect.addListener(() => {
+        openPort(PORT_RENEW, setPort, highlightDispatch) /* Do not retrieve all data on reconnect */
+    });
+    port.onMessage.addListener((message: ToContentMessage) => {
+        // response(true);
+        highlightDispatch(message); 
+    });
+};
 
 const App = () => {
     const [port, setPort] = useState<chrome.runtime.Port | null>(null);
@@ -107,12 +119,14 @@ const App = () => {
     }
 
     useEffect(() => {
-        const port = chrome.runtime.connect({ name: PORT_TAB });
-        setPort(port);
-        port.onMessage.addListener((message: ToContentMessage) => {
-            // response(true);
-            highlightDispatch(message); 
-        });
+        setTimeout(() => {
+            openPort(PORT_RENEW, setPort, highlightDispatch);
+            port?.disconnect();
+        }, 1000 * 60 * 4);
+    }, [port, setPort, highlightDispatch]);
+
+    useEffect(() => {
+        openPort(PORT_TAB, setPort, highlightDispatch);
     }, [setPort, highlightDispatch]);
 
     useEffect(() => {

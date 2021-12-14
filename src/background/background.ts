@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {PORT_POP, PORT_TAB, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
+import {PORT_POP, PORT_TAB, PORT_RENEW, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
 import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
@@ -140,13 +140,13 @@ function setupPopupPort(port: chrome.runtime.Port) {
     });
 }
 
-function setupTabPort(port: chrome.runtime.Port) {
+function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
     if (!tab?.id) return;
     console.log("Got new connection!");
     hookedTabs.set(tab.id, port);
     // Catch new page with existing pages
-    if (client) {
+    if (client && initial) {
         for (const room of client.getRooms()) {
             const url = checkRoom(room);
             if (!url || url !== tab.url) continue;
@@ -157,6 +157,9 @@ function setupTabPort(port: chrome.runtime.Port) {
             }
         }
     }
+    port.onDisconnect.addListener(() => {
+        hookedTabs.delete(tab.id!);
+    });
     port.onMessage.addListener((message: FromContentMessage) => {
         if (message.type === "create-room") {
             createRoom(client!, message.name, message.url);
@@ -177,5 +180,5 @@ function setupTabPort(port: chrome.runtime.Port) {
 chrome.runtime.onConnect.addListener(async port => {
     await fetchLogin();
     if (port.name === PORT_POP) setupPopupPort(port);
-    else if (port.name === PORT_TAB) setupTabPort(port);
+    else if (port.name === PORT_TAB || port.name === PORT_RENEW) setupTabPort(port, port.name === PORT_TAB);
 });
