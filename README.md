@@ -1,6 +1,7 @@
 # Matrix Highlight
 A decentralized and federated way of annotating the web based on [Matrix](https://matrix.org).
 Watch a quick [demo video](https://youtu.be/Q3h5A0DsE1s), or read the [introductory post](https://danilafe.com/blog/introducing_highlight/).
+If you're on Matrix, come chat with us at [`#matrix-highlight:matrix.danilafe.com`](https://matrix.to/#/#matrix-highlight:matrix.danilafe.com).
 
 ![Image](https://danilafe.com/blog/introducing_highlight/mhl_many.png)
 
