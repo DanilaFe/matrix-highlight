@@ -16,6 +16,9 @@ highlights.
 * __Planned__: Use something like [ArchiveBox](https://archivebox.io/) to cache the current version of a website and prevent annotations from breaking.
 * __Planned__ Highlight PDFs in addition to web pages.
 
+## See Also
+Also check out [Populus](https://github.com/opentower/populus-viewer), which is a tool in similar spirit, but with a focus on annotating files.
+
 ## Building
 The project is a handful of React applications written in TypeScript. It's sufficient to run:
 
