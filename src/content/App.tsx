@@ -110,6 +110,7 @@ const App = () => {
         if (typeof id === "string") {
             sendToBackground(port, { type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
         }
+        tooltipDispatch({ type: "hide" });
         highlightDispatch({
             type: "highlight-visibility",
             roomId: highlight.currentRoomId,
