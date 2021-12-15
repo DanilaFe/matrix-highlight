@@ -30,8 +30,8 @@ class HighlightData {
             left = Math.min(left, boundingRect.left);
             top = Math.min(top, boundingRect.top);
         }
-        this._left = left;
-        this._top = top;
+        this._left = left + window.scrollX;
+        this._top = top + window.scrollY;
     }
 
     show() {
