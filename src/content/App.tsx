@@ -2,7 +2,7 @@ import { useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
-import {Tooltip} from "./Tooltip/Tooltip";
+import {Tooltip, TooltipMode} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
 import {Highlight, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
@@ -119,6 +119,10 @@ const App = () => {
         });
     }
 
+    const startReplyHighlight = () => {
+        tooltipDispatch({ type: "mode", mode: TooltipMode.Reply });
+    };
+
     useEffect(() => {
         setTimeout(() => {
             openPort(PORT_RENEW, setPort, highlightDispatch);
@@ -150,6 +154,7 @@ const App = () => {
             }
         });
         document.addEventListener("mouseup", (e) => {
+            tooltipDispatch({ type: "hide" });
             tooltipDispatch({ type: "selection", selection: window.getSelection() });
             e.stopPropagation();
         });
@@ -181,6 +186,8 @@ const App = () => {
                 <Tooltip
                     target={tooltip.target}
                     hide={hideHighlight}
+                    mode={tooltip.mode}
+                    reply={startReplyHighlight}
                     highlight={makeNewHighlight}
                     top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
                 null}

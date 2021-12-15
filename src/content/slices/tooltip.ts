@@ -1,6 +1,9 @@
+import {TooltipMode} from "../Tooltip/Tooltip";
+
 export type TooltipState = {
     selection: Selection | null;
     target: string | number | null;
+    mode: TooltipMode;
     visible: boolean;
     top: number;
     left: number;
@@ -10,6 +13,7 @@ export type TooltipState = {
 export type TooltipEvent
     = { type: "selection", selection: Selection | null }
     | { type: "click", id: string | number, top: number, left: number, bottom: number }
+    | { type: "mode", mode: TooltipMode }
     | { type: "resize-selection" }
     | { type: "resize-clicked", id: string | number, top: number, left: number, bottom: number }
     | { type: "hide" }
@@ -23,12 +27,14 @@ export const tooltipReducer = (state: TooltipState, event: TooltipEvent): Toolti
     if (event.type === "selection") {
         const selection = event.selection;
         if (!selection || selection.type !== "Range" || selection.toString() === "") {
-            return { ...state, visible: false, selection };
+            return { ...state, visible: state.target ? state.visible : false, selection };
         }
         const { top, left, bottom } = selectionCoords(selection);
         return { ...state, target: null, visible: true, top, left, bottom, selection };
     } else if (event.type === "click") {
-        return { ...state, visible: true, target: event.id, top: event.top, left: event.left, bottom: event.bottom };
+        return { ...state, visible: true, mode: TooltipMode.Click, target: event.id, top: event.top, left: event.left, bottom: event.bottom };
+    } else if (event.type === "mode") {
+        return { ...state, mode: event.mode };
     } else if (event.type === "resize-selection") {
         if (!state.selection || state.target !== null) return state;
         const { top, left, bottom } = selectionCoords(state.selection);
@@ -45,6 +51,7 @@ export const tooltipReducer = (state: TooltipState, event: TooltipEvent): Toolti
 export const tooltipInitialState = {
     selection: null,
     target: null,
+    mode: TooltipMode.Click,
     visible: false,
     top: 0,
     left: 0,
