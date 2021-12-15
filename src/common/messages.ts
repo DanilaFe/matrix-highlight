@@ -1,5 +1,5 @@
 export * from "./model";
-import {Room, User, Highlight, HighlightContent} from "./model";
+import {Room, User, Highlight, HighlightContent, Message} from "./model";
 
 export type RoomMembership = "invite" | "join" | "leave" | "ban"
 
@@ -51,6 +51,12 @@ export type ToContentMessage = {
     roomId: string,
     highlightId: number | string,
     visibility: boolean,
+} | {
+    type: "thread-message",
+    roomId: string,
+    threadId: string,
+    txnId: number | undefined,
+    message: Message
 }
 
 export type FromContentMessage = {
@@ -77,4 +83,11 @@ export type FromContentMessage = {
     roomId: string,
     highlightId: string,
     visibility: boolean
+} | {
+    type: "send-message",
+    roomId: string,
+    threadId: string,
+    plainBody: string,
+    formattedBody: string,
+    txnId: number
 }

@@ -1,4 +1,4 @@
-import {Page, Highlight, Room, User} from "../../common/model";
+import {Page, Highlight, Room, User, Message} from "../../common/model";
 import {ToContentMessage} from "../../common/messages";
 import {produce} from "immer";
 
@@ -9,6 +9,7 @@ export type HighlightDataState = {
 
 export type HighlightDataEvent = ToContentMessage
     | { type: "local-highlight", roomId: string, highlight: Highlight }
+    | { type: "local-message", roomId: string, threadId: string | number, message: Message }
     | { type: "switch-room", newId: string | null }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
@@ -29,6 +30,10 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
             draft.changeRoom(event.roomId, room => room.addUser(User.fromOther(event.user)));
         } else if (event.type === "user-membership") {
             draft.changeRoom(event.roomId, room => room.changeUser(event.userId, u => u.membership = event.membership));
+        } else if (event.type === "local-message") {
+            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(event.message)));
+        } else if (event.type === "thread-message") {
+            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(event.message, event.txnId)));
         }
     });
     let currentRoomId = state.currentRoomId;

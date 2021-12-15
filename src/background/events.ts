@@ -1,4 +1,4 @@
-import {Room, User, Highlight, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
+import {Room, User, Highlight, Message, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
 import {RoomMembership, ToContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
 
@@ -41,20 +41,23 @@ export function processMember(roomId: string, oldMembership: RoomMembership | nu
     }
 };
 
+function extractTxnId(event: sdk.MatrixEvent): number | undefined {
+    let localId = undefined;
+    const transactionId = event.getUnsigned().transaction_id;
+    if (transactionId) {
+        const number = parseInt(transactionId);
+        if (number !== NaN) localId = number;
+    }
+    return localId;
+}
 
 export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
     switch (event.getType()) {
         case HIGHLIGHT_EVENT_TYPE:
-            let localId = undefined;
-            const transactionId = event.getUnsigned().transaction_id;
-            if (transactionId) {
-                const number = parseInt(transactionId);
-                if (number !== NaN) localId = number;
-            }
             return {
                 type: "highlight",
                 roomId: event.getRoomId(),
-                txnId: localId,
+                txnId: extractTxnId(event),
                 highlight: new Highlight(event.getId(), event.getContent<HighlightContent>())
             };
         case HIGHLIGHT_HIDE_EVENT_TYPE:
@@ -65,6 +68,20 @@ export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
                 roomId: event.getRoomId(),
                 visibility: !hidden,
                 highlightId: key,
+            };
+        case "m.room.message":
+            if (!event.isThreadRelation || event.isThreadRoot) return null;
+            return {
+                type: "thread-message",
+                roomId: event.getRoomId(),
+                threadId: event.threadRootId,
+                txnId: extractTxnId(event),
+                message: new Message({
+                    id: event.getId(),
+                    plainBody: event.getContent().body,
+                    formattedBody: event.getContent().formatted_body,
+                    userId: event.getSender(),
+                })
             };
         default: return null;
     }
