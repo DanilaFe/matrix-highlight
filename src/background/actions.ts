@@ -31,10 +31,14 @@ export async function sendHighlight(client: sdk.MatrixClient, roomId: string, co
 }
 
 export async function sendMessage(client: sdk.MatrixClient, roomId: string, threadId: string, plainBody: string, formattedBody: string, txnId: number): Promise<void> {
-    await client.sendEvent(roomId, threadId, "m.room.message", {
+    await client.sendEvent(roomId, "m.room.message", {
         "msgtype": "m.text",
         "body": plainBody,
-        "formatted_body": formattedBody
+        "formatted_body": formattedBody,
+        "m.relates_to": {
+            "rel_type": "io.element.thread",
+            "event_id": threadId,
+        }
     }, txnId.toString());
 }
 
