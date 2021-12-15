@@ -5,6 +5,7 @@ import {Trash} from "react-feather";
 export type TooltipProps = {
     left: number;
     top: number;
+    bottom: number;
     target: string | number | null;
     highlight: (color: string) => void;
     hide: (id: string | number) => void;

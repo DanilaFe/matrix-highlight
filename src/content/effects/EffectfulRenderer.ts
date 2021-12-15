@@ -7,9 +7,11 @@ class HighlightData {
     private _highlights: HTMLElement[] = [];
     private _left: number = 0
     private _top: number = 0
+    private _bottom: number = 0;
 
     get top(): number { return this._top; }
     get left(): number { return this._left; }
+    get bottom(): number { return this._bottom; }
     get id(): number | string { return this._highlight.id; }
     get active(): boolean { return this._highlight.active; }
 
@@ -25,13 +27,16 @@ class HighlightData {
     recalculateOffset() {
         let left = Infinity;
         let top = Infinity;
+        let bottom = 0;
         for (const highlightElement of this._highlights) {
             const boundingRect = highlightElement.getBoundingClientRect();
             left = Math.min(left, boundingRect.left);
             top = Math.min(top, boundingRect.top);
+            bottom = Math.max(bottom, boundingRect.bottom);
         }
         this._left = left + window.scrollX;
         this._top = top + window.scrollY;
+        this._bottom = bottom + window.scrollY;
     }
 
     show() {
@@ -48,7 +53,7 @@ class HighlightData {
             if (!newElements) continue;
             newElements.highlight.onmouseenter = () => { this._renderer._hoverBegin(this._highlight.id); };
             newElements.highlight.onmouseleave = () => { this._renderer._hoverEnd(this._highlight.id); };
-            newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id, this._top, this._left); };
+            newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id, this._top, this._left, this._bottom); };
             newElements.highlight.classList.toggle("active", this._highlight.active);
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
@@ -66,8 +71,8 @@ class HighlightData {
 
 export type RendererSubscriber = {
     activeChange?(id: number | string | null): void;
-    click?(id: number | string, top: number, left: number): void;
-    move?(id: number | string, top: number, left: number): void;
+    click?(id: number | string, top: number, left: number, bottom: number): void;
+    move?(id: number | string, top: number, left: number, bottom: number): void;
 };
 
 class EffectfulRenderer {
@@ -80,7 +85,7 @@ class EffectfulRenderer {
         window.addEventListener("resize", () => {
             for (const data of this._highlightData) {
                 data.recalculateOffset();
-                subscriber.move?.(data.id, data.top, data.left);
+                subscriber.move?.(data.id, data.top, data.left, data.bottom);
             }
         });
     }
@@ -105,8 +110,8 @@ class EffectfulRenderer {
         }
     }
 
-    _clicked(id: number | string, top: number, left: number) {
-        this._subscriber?.click?.(id, top, left);
+    _clicked(id: number | string, top: number, left: number, bottom: number) {
+        this._subscriber?.click?.(id, top, left, bottom);
     }
 
     private _pushHighlight(highlight: Highlight) {

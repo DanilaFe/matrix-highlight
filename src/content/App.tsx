@@ -132,8 +132,8 @@ const App = () => {
     useEffect(() => {
         Renderer.subscribe({
             activeChange(id) { highlightDispatch({ type: "set-active", id }) },
-            click(id, top, left) { tooltipDispatch({ type: "click", id, top, left }); },
-            move(id, top, left) { tooltipDispatch({ type: "resize-clicked", id, top, left }); }
+            click(id, top, left, bottom) { tooltipDispatch({ type: "click", id, top, left, bottom }); },
+            move(id, top, left, bottom) { tooltipDispatch({ type: "resize-clicked", id, top, left, bottom }); }
         });
     }, [tooltipDispatch]);
 
@@ -181,7 +181,7 @@ const App = () => {
                     target={tooltip.target}
                     hide={hideHighlight}
                     highlight={makeNewHighlight}
-                    top={tooltip.top} left={tooltip.left}/> :
+                    top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
                 null}
         </> :
         <Window onClose={() => setShowMenu(false)}>
