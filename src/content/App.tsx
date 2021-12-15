@@ -131,7 +131,7 @@ const App = () => {
 
     useEffect(() => {
         Renderer.subscribe({
-            activeChange(id) {},
+            activeChange(id) { highlightDispatch({ type: "set-active", id }) },
             click(id, top, left) { tooltipDispatch({ type: "click", id, top, left }); },
             move(id, top, left) { tooltipDispatch({ type: "resize-clicked", id, top, left }); }
         });

@@ -11,6 +11,7 @@ export type HighlightDataEvent = ToContentMessage
     | { type: "local-highlight", roomId: string, highlight: Highlight }
     | { type: "local-message", roomId: string, threadId: string | number, message: Message }
     | { type: "switch-room", newId: string | null }
+    | { type: "set-active", id: string | number | null }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
     const page = produce(state.page, draft => {
@@ -34,6 +35,11 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
             draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(event.message)));
         } else if (event.type === "thread-message") {
             draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(event.message, event.txnId)));
+        } else if (event.type === "set-active") {
+            if (!state.currentRoomId) return;
+            draft.changeRoom(state.currentRoomId, room => {
+                room.highlights.forEach(hl => hl.active = hl.id === event.id);
+            });
         }
     });
     let currentRoomId = state.currentRoomId;
