@@ -1,7 +1,9 @@
 import {useState, PropsWithChildren} from "react";
 import {COLORS} from "../../common/model/matrix";
+import 'draft-js/dist/Draft.css';
 import "./Tooltip.scss";
 import {Trash, MessageSquare} from "react-feather";
+import {Editor, EditorState, RichUtils} from "draft-js";
 
 export enum TooltipMode {
     Click = "click",
@@ -17,6 +19,20 @@ export type TooltipProps = {
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
     reply: (id: string | number) => void;
+}
+
+function DraftEditor() {
+  const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
+  const [focused, setFocused] = useState(false);
+  const handleKeyCommand = (command: string, editorState: EditorState) => {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+        setEditorState(newState);
+        return 'handled';
+    }
+    return 'not-handled';
+  }
+  return <div className={`editor ${focused ? "focused" : ""}`}><Editor onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} editorState={editorState} onChange={setEditorState} handleKeyCommand={handleKeyCommand}/></div>;
 }
 
 const SmallTooltip = (props: PropsWithChildren<TooltipProps>) => {
@@ -46,5 +62,11 @@ export const Tooltip = (props: TooltipProps) => {
             </SmallTooltip>
         );
     }
-    return <LargeTooltip {...props}>Not yet implemented.</LargeTooltip>
+    return (
+        <LargeTooltip {...props}>
+            <h3>Comments</h3>
+            <span className="notice">Leave a comment</span>
+            <DraftEditor/>
+        </LargeTooltip>
+    );
 }

@@ -18,14 +18,14 @@
     
 .matrix-highlight {
     all: initial;
-    *:not(svg,path,circle,line) {
+    *:not(svg,path,circle,line,.DraftEditor-root *) {
         all: revert;
     }
     svg {
         fill: none;
     }
 
-    input[type="text"], input[type="password"] {
+    input[type="text"], input[type="password"], .editor {
         @include bordered-block;
         margin: 0.5rem 0 0.5rem 0;
         max-width: 30rem;
@@ -33,7 +33,7 @@
         padding: 0.5rem;
         transition: box-shadow 0.25s, border-color 0.25s;
     
-        &:focus {
+        &:focus, &.focused {
             outline: none;
             border-color: $primary-color;
             box-shadow: 0px 0px 5px rgba($primary-color, 0.4);
