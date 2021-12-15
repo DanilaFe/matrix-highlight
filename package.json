@@ -6,6 +6,7 @@
   "author": "Danila Fedorin <danila.fedorin@gmail.com>",
   "private": true,
   "dependencies": {
+    "draft-js": "^0.11.7",
     "immer": "^9.0.6",
     "matrix-js-sdk": "^15.0.0",
     "qs": "^6.10.1",
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.163",
+    "@types/draft-js": "^0.11.7",
     "@types/node": "^12.0.0",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.0",
