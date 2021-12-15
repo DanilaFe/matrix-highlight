@@ -1,6 +1,6 @@
 import * as sdk from "matrix-js-sdk";
 import {PORT_POP, PORT_TAB, PORT_RENEW, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
-import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom} from "./actions";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom, sendMessage} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
 
@@ -173,6 +173,8 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             sendHighlight(client!, message.roomId, message.highlight, message.txnId);
         } else if (message.type === "set-highlight-visibility") {
             setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
+        } else if (message.type === "send-message") {
+            sendMessage(client!, message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
         }
     });
 }

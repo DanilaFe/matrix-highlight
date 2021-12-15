@@ -30,6 +30,14 @@ export async function sendHighlight(client: sdk.MatrixClient, roomId: string, co
     await client.sendEvent(roomId, HIGHLIGHT_EVENT_TYPE, content, txnId.toString());
 }
 
+export async function sendMessage(client: sdk.MatrixClient, roomId: string, threadId: string, plainBody: string, formattedBody: string, txnId: number): Promise<void> {
+    await client.sendEvent(roomId, threadId, "m.room.message", {
+        "msgtype": "m.text",
+        "body": plainBody,
+        "formatted_body": formattedBody
+    }, txnId.toString());
+}
+
 export async function setHighlightVisibility(client: sdk.MatrixClient, roomId: string, highlightId: string, visibility: boolean): Promise<void> {
     await client.sendStateEvent(roomId, HIGHLIGHT_HIDE_EVENT_TYPE, { [HIGHLIGHT_HIDDEN_KEY]: !visibility }, highlightId);
 }
