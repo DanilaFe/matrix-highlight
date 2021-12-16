@@ -185,6 +185,7 @@ const App = () => {
             {tooltip.visible ?
                 <Tooltip
                     target={highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id === tooltip.target) || null}
+                    users={highlight.page.getRoom(highlight.currentRoomId)?.users || []}
                     hide={hideHighlight}
                     mode={tooltip.mode}
                     reply={startReplyHighlight}

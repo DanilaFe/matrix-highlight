@@ -1,5 +1,5 @@
 import {useState, PropsWithChildren} from "react";
-import {Highlight} from "../../common/model";
+import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import 'draft-js/dist/Draft.css';
 import "./Tooltip.scss";
@@ -16,6 +16,7 @@ export type TooltipProps = {
     top: number;
     bottom: number;
     target: Highlight | null;
+    users: User[];
     mode: TooltipMode;
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
@@ -26,6 +27,7 @@ function DraftEditor() {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [focused, setFocused] = useState(false);
   const handleKeyCommand = (command: string, editorState: EditorState) => {
+    console.log("Command", command);
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
         setEditorState(newState);
@@ -65,7 +67,7 @@ export const Tooltip = (props: TooltipProps) => {
     }
     const comments = props.target!.messages.map(msg =>
         <div className="comment" key={msg.id}>
-            <div className="sender">{msg.userId}:</div>
+            <div className="sender">{props.users.find(u => u.id === msg.userId)?.name || msg.userId}:</div>
             {msg.plainBody}
         </div>
     );
