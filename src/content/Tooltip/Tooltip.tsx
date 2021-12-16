@@ -3,7 +3,9 @@ import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
 import {Trash, MessageSquare} from "react-feather";
-import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState} from "draft-js";
+import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState, convertToRaw} from "draft-js";
+import draftToHtml from 'draftjs-to-html';
+import sanitizeHtml from 'sanitize-html';
 const {hasCommandModifier} = KeyBindingUtil;
 
 export enum TooltipMode {
@@ -44,7 +46,8 @@ const DraftEditor = (props: { sendReply(plain: string, formatted: string): void 
         return 'handled';
     } else if (command === SEND_COMMAND) {
         const plainText = editorState.getCurrentContent().getPlainText();
-        props.sendReply(plainText, plainText);
+        const formattedText = sanitizeHtml(draftToHtml(convertToRaw(editorState.getCurrentContent())));
+        props.sendReply(plainText, formattedText);
         setEditorState(EditorState.push(editorState, ContentState.createFromText(""), 'remove-range'));
         return 'handled'
     }
@@ -83,7 +86,7 @@ export const Tooltip = (props: TooltipProps) => {
     const comments = props.target!.messages.map(msg =>
         <div className="comment" key={msg.id}>
             <div className="sender">{props.users.find(u => u.id === msg.userId)?.name || msg.userId}:</div>
-            {msg.plainBody}
+            {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>msg.plainBody</p> }
         </div>
     );
     return (
