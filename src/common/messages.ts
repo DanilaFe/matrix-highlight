@@ -57,6 +57,9 @@ export type ToContentMessage = {
     threadId: string,
     txnId: number | undefined,
     message: Message
+} | {
+    type: "logged-in",
+    userId: string
 }
 
 export type FromContentMessage = {

@@ -14,6 +14,13 @@ const hookedTabs: Map<number, chrome.runtime.Port> = new Map();
 
 let attemptedLogin: boolean = false;
 
+async function broadcast(event: ToContentMessage | ToContentMessage[]): Promise<void> {
+    const events = Array.isArray(event) ? event : [event];
+    hookedTabs.forEach((port, tabId) => {
+        events.forEach(event => port.postMessage(event));
+    });
+}
+
 async function broadcastUrl(url: string, event: ToContentMessage | ToContentMessage[]): Promise<void> {
     const tabs = await chrome.tabs.query({ url });
     const events = Array.isArray(event) ? event : [event];
@@ -45,6 +52,7 @@ async function emitMember(roomId: string, oldMembership: RoomMembership | null, 
 
 async function setupClient(newClient: sdk.MatrixClient) {
     client = newClient;
+    broadcast({ type: "logged-in", userId: newClient.getUserId() });
     newClient.on("sync", state => {
         if (state !== "PREPARED") return;
         // During initial sync, we receive events from rooms. That's nice,
@@ -146,6 +154,7 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     hookedTabs.set(tab.id, port);
     // Catch new page with existing pages
     if (client && initial) {
+        port.postMessage({ type: "logged-in", userId: client.getUserId() });
         for (const room of client.getRooms()) {
             const url = checkRoom(room);
             if (!url || url !== tab.url) continue;

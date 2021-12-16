@@ -11,6 +11,7 @@ import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 
 export enum IndicatorStatus {
+    NoLogin = "noLogin",
     NoRoom = "noRoom",
     Queued = "queued",
     Synced = "synced",
@@ -49,7 +50,9 @@ const App = () => {
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
 
     let status: IndicatorStatus
-    if (!highlight.currentRoomId) {
+    if (!highlight.userId) {
+        status = IndicatorStatus.NoLogin;
+    } else if (!highlight.currentRoomId) {
         status = IndicatorStatus.NoRoom;
     } else if (!highlight.currentRoomId ||
         highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {

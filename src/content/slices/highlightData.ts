@@ -4,6 +4,7 @@ import {produce} from "immer";
 
 export type HighlightDataState = {
     currentRoomId: string | null;
+    userId: string | null;
     page: Page;
 }
 
@@ -52,10 +53,17 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
     } else if (event.type === "switch-room") {
         currentRoomId = event.newId;
     }
-    return { page, currentRoomId };
+
+    let userId = state.userId;
+    if (event.type === "logged-in") {
+        userId = event.userId;
+    }
+
+    return { page, currentRoomId, userId };
 }
 
 export const highlightInitialState = {
     page: new Page({}),
+    userId: null,
     currentRoomId: null
 }
