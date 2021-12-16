@@ -4,7 +4,7 @@ import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip, TooltipMode} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
-import {Highlight, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY} from "../common/model";
+import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
@@ -131,9 +131,16 @@ const App = () => {
     };
 
     const sendReply = async (id: string | number, plainBody: string, formattedBody: string) => {
-        if (!highlight.currentRoomId) return;
+        if (!highlight.userId || !highlight.currentRoomId) return;
         if (typeof(id) !== "string") return;
+        
         const txnId = await freshTxnId();
+        const localMessage = new Message({
+            id: txnId,
+            userId: highlight.userId,
+            plainBody, formattedBody
+        });
+        highlightDispatch({ type: "local-message", roomId: highlight.currentRoomId, threadId: id, message: localMessage });
         sendToBackground(port, { type: "send-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
     }
 
