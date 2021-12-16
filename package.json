@@ -7,20 +7,24 @@
   "private": true,
   "dependencies": {
     "draft-js": "^0.11.7",
+    "draftjs-to-html": "^0.9.1",
     "immer": "^9.0.6",
     "matrix-js-sdk": "^15.0.0",
     "qs": "^6.10.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-feather": "^2.0.9"
+    "react-feather": "^2.0.9",
+    "sanitize-html": "^2.6.1"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.163",
     "@types/draft-js": "^0.11.7",
+    "@types/draftjs-to-html": "^0.8.1",
     "@types/node": "^12.0.0",
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/sanitize-html": "^2.6.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.5.1",
     "node-polyfill-webpack-plugin": "^1.1.4",
