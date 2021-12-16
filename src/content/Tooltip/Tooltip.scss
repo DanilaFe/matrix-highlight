@@ -8,6 +8,27 @@
     display: inline-block;
     position: absolute;
 
+
+    .comment-list, .no-comments {
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-list {
+        @include bordered-block;
+
+        .comment {
+            padding: 0.5rem;
+            &:not(:last-child) {
+                border-bottom: $default-border;
+            }
+        }
+
+        .sender {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+    }
+
     h3 {
         margin-top: 0;
         margin-bottom: 0.25rem;

@@ -1,4 +1,5 @@
 import {useState, PropsWithChildren} from "react";
+import {Highlight} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import 'draft-js/dist/Draft.css';
 import "./Tooltip.scss";
@@ -14,7 +15,7 @@ export type TooltipProps = {
     left: number;
     top: number;
     bottom: number;
-    target: string | number | null;
+    target: Highlight | null;
     mode: TooltipMode;
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
@@ -56,15 +57,22 @@ export const Tooltip = (props: TooltipProps) => {
         return (
             <SmallTooltip {...props}>
                 <button className="destructive"
-                    onClick={() => props.hide(props.target!)}><Trash/></button>
+                    onClick={() => props.hide(props.target!.id)}><Trash/></button>
                 <button
-                    onClick={() => props.reply(props.target!)}><MessageSquare/></button>
+                    onClick={() => props.reply(props.target!.id)}><MessageSquare/></button>
             </SmallTooltip>
         );
     }
+    const comments = props.target!.messages.map(msg =>
+        <div className="comment" key={msg.id}>
+            <div className="sender">{msg.userId}:</div>
+            {msg.plainBody}
+        </div>
+    );
     return (
         <LargeTooltip {...props}>
-            <h3>Comments</h3>
+            <h3>Comments</h3> 
+            {comments.length === 0 ? <div className="no-comments">No comments yet</div> : <div className="comment-list">{comments}</div>}
             <span className="notice">Leave a comment</span>
             <DraftEditor/>
         </LargeTooltip>
