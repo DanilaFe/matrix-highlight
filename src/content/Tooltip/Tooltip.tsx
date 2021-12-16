@@ -1,7 +1,6 @@
 import {useState, PropsWithChildren, SyntheticEvent} from "react";
 import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
-import 'draft-js/dist/Draft.css';
 import "./Tooltip.scss";
 import {Trash, MessageSquare} from "react-feather";
 import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState} from "draft-js";
@@ -39,7 +38,6 @@ const DraftEditor = (props: { sendReply(plain: string, formatted: string): void 
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [focused, setFocused] = useState(false);
   const handleKeyCommand = (command: string, editorState: EditorState) => {
-    console.log("Command", command);
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
         setEditorState(newState);

@@ -18,10 +18,18 @@
     
 .matrix-highlight {
     all: initial;
+
     *:not(svg,path,circle,line,.DraftEditor-root *) {
         all: revert;
     }
-    svg {
+
+    /* Increasing specificity to circumvent all: revert */
+    *:not(.impossible) {
+        z-index: 999;
+    }
+
+    /* Increasing specificity to circumvent all: revert */
+    svg:not(.impossible) {
         fill: none;
     }
 
@@ -68,11 +76,13 @@
         }
     }
     
-    fieldset {
+    /* Increasing specificity to circumvent all: revert */
+    fieldset:not(.impossible) {
         border: none;
     }
     
-    button, input[type="submit"] {
+    /* Increasing specificity to circumvent all: revert */
+    button:not(.impossible), input[type="submit"] {
         @include bordered-block;
         background: white;
         padding: 0.5rem;

@@ -17,7 +17,6 @@ export enum IndicatorStatus {
 }
 
 export function sendToBackground(port: chrome.runtime.Port | null, event: FromContentMessage): void {
-    if (!port) console.log("No port :(");
     port?.postMessage(event);
 }
 

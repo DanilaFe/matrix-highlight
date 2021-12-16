@@ -143,7 +143,6 @@ function setupPopupPort(port: chrome.runtime.Port) {
 function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
     if (!tab?.id) return;
-    console.log("Got new connection!");
     hookedTabs.set(tab.id, port);
     // Catch new page with existing pages
     if (client && initial) {
@@ -152,14 +151,10 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             if (!url || url !== tab.url) continue;
             const roomEvents = processRoom(client, room);
             for (const event of roomEvents) {
-                console.log("Sending event", event);
                 port.postMessage(event);
             }
         }
     }
-    port.onDisconnect.addListener(() => {
-        hookedTabs.delete(tab.id!);
-    });
     port.onMessage.addListener((message: FromContentMessage) => {
         if (message.type === "create-room") {
             createRoom(client!, message.name, message.url);
