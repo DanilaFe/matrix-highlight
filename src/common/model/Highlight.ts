@@ -12,6 +12,8 @@ export class Highlight {
     localMessages: Message[] = [];
     remoteMessages: Message[] = [];
 
+    get messages(): Message[] { return [...this.remoteMessages, ...this.localMessages]; }
+
     constructor(
         public id: string | number,
         public content: HighlightContent,
