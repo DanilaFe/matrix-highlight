@@ -1,10 +1,11 @@
-import {useState, PropsWithChildren} from "react";
+import {useState, PropsWithChildren, SyntheticEvent} from "react";
 import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import 'draft-js/dist/Draft.css';
 import "./Tooltip.scss";
 import {Trash, MessageSquare} from "react-feather";
-import {Editor, EditorState, RichUtils} from "draft-js";
+import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState} from "draft-js";
+const {hasCommandModifier} = KeyBindingUtil;
 
 export enum TooltipMode {
     Click = "click",
@@ -21,9 +22,20 @@ export type TooltipProps = {
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
     reply: (id: string | number) => void;
+    sendReply: (id: string | number, plainBody: string, formattedBody: string) => void;
 }
 
-function DraftEditor() {
+export const SEND_COMMAND = 'draft-editor-send';
+
+/* No idea where to get SyntheticKeyboardEvent. */
+function keyBindingFn(e: Parameters<typeof hasCommandModifier>[0]) {
+    if (e.code === "Enter" && !e.shiftKey) {
+        return SEND_COMMAND;
+    }
+    return getDefaultKeyBinding(e); 
+}
+
+const DraftEditor = (props: { sendReply(plain: string, formatted: string): void }) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [focused, setFocused] = useState(false);
   const handleKeyCommand = (command: string, editorState: EditorState) => {
@@ -32,10 +44,15 @@ function DraftEditor() {
     if (newState) {
         setEditorState(newState);
         return 'handled';
+    } else if (command === SEND_COMMAND) {
+        const plainText = editorState.getCurrentContent().getPlainText();
+        props.sendReply(plainText, plainText);
+        setEditorState(EditorState.push(editorState, ContentState.createFromText(""), 'remove-range'));
+        return 'handled'
     }
     return 'not-handled';
   }
-  return <div className={`editor ${focused ? "focused" : ""}`}><Editor onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} editorState={editorState} onChange={setEditorState} handleKeyCommand={handleKeyCommand}/></div>;
+  return <div className={`editor ${focused ? "focused" : ""}`}><Editor keyBindingFn={keyBindingFn} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} editorState={editorState} onChange={setEditorState} handleKeyCommand={handleKeyCommand}/></div>;
 }
 
 const SmallTooltip = (props: PropsWithChildren<TooltipProps>) => {
@@ -76,7 +93,7 @@ export const Tooltip = (props: TooltipProps) => {
             <h3>Comments</h3> 
             {comments.length === 0 ? <div className="no-comments">No comments yet</div> : <div className="comment-list">{comments}</div>}
             <span className="notice">Leave a comment</span>
-            <DraftEditor/>
+            <DraftEditor sendReply={(plain, formatted) => props.sendReply(props.target!.id, plain, formatted) }/>
         </LargeTooltip>
     );
 }

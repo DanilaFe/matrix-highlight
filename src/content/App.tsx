@@ -21,6 +21,12 @@ export function sendToBackground(port: chrome.runtime.Port | null, event: FromCo
     port?.postMessage(event);
 }
 
+async function freshTxnId(): Promise<number> {
+    const txnId = (await chrome.storage.sync.get([ "txnId" ]))["txnId"] || 0;
+    await chrome.storage.sync.set({ txnId: txnId + 1 });
+    return txnId;
+}
+
 function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chrome.runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void): void {
     const port = chrome.runtime.connect({ name: str });
     setPort(port);
@@ -89,8 +95,7 @@ const App = () => {
         const skeletonEvent = makeEvent(tooltip.selection);
         if (skeletonEvent) {
             const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
-            const txnId = (await chrome.storage.sync.get([ "txnId" ]))["txnId"] || 0;
-            await chrome.storage.sync.set({ txnId: txnId + 1 });
+            const txnId = await freshTxnId();
 
             sendToBackground(port, { type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
             highlightDispatch({
@@ -122,6 +127,13 @@ const App = () => {
     const startReplyHighlight = () => {
         tooltipDispatch({ type: "mode", mode: TooltipMode.Reply });
     };
+
+    const sendReply = async (id: string | number, plainBody: string, formattedBody: string) => {
+        if (!highlight.currentRoomId) return;
+        if (typeof(id) !== "string") return;
+        const txnId = await freshTxnId();
+        sendToBackground(port, { type: "send-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
+    }
 
     useEffect(() => {
         setTimeout(() => {
@@ -189,6 +201,7 @@ const App = () => {
                     hide={hideHighlight}
                     mode={tooltip.mode}
                     reply={startReplyHighlight}
+                    sendReply={sendReply}
                     highlight={makeNewHighlight}
                     top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
                 null}
