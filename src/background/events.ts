@@ -46,7 +46,7 @@ function extractTxnId(event: sdk.MatrixEvent): number | undefined {
     const transactionId = event.getUnsigned().transaction_id;
     if (transactionId) {
         const number = parseInt(transactionId);
-        if (number !== NaN) localId = number;
+        if (!isNaN(number)) localId = number;
     }
     return localId;
 }
