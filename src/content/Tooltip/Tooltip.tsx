@@ -66,8 +66,8 @@ const DeleteButton = (props: { onClick(): void } ) => {
     return <button className="round destructive" onClick={props.onClick}><Trash/></button>
 }
 
-const ColorButton = (props: { color: string, onClick(): void }) => {
-    return <button onClick={props.onClick} className={`${props.color} color-switch round`}/>;
+const ColorButton = (props: { color: string, onClick(): void, selectedColor?: string }) => {
+    return <button onClick={props.onClick} className={`${props.color} color-switch round ${props.color === props.selectedColor ? "current" : ""}`}/>;
 }
 
 export const Tooltip = (props: TooltipProps) => {
@@ -82,7 +82,7 @@ export const Tooltip = (props: TooltipProps) => {
             {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>msg.plainBody</p> }
         </div>
     );
-    const highlightButtons = COLORS.map(color => <ColorButton onClick={() => props.changeColor(props.target!.id, color)} key={color} color={color}/>);
+    const highlightButtons = COLORS.map(color => <ColorButton onClick={() => props.changeColor(props.target!.id, color)} key={color} color={color} selectedColor={props.target!.color}/>);
     return (
         <LargeTooltip {...props}>
             <div className="buttons">

@@ -80,6 +80,12 @@
         border-radius: 100%;
         border: 0.08rem solid rgba(0, 0, 0, 0.10);
 
+        &.current {
+            background-color: rgba(var(--highlight-color), 0.2);
+            border-color: rgba(0,0,0,0.5);
+            border-style: dashed;
+        }
+
         &:hover {
             background-color: rgba(var(--highlight-color), 0.4);
         }
