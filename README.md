@@ -30,7 +30,7 @@ __Quote List View__
 ![Quote List View](./pictures/mhl_quotelist.png)
 
 __User List View__
-![User List View](./pictures/mhl_quotelist.png)
+![User List View](./pictures/mhl_userlist.png)
 
 __Multi-user collaboration__
 ![Multi-user collaboration](./pictures/mhl_multi.png)
