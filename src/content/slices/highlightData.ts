@@ -24,6 +24,9 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         } else if (event.type === "highlight-visibility") {
             draft.changeRoom(event.roomId,
                 room => room.setHighlightVisibility(event.highlightId, event.visibility));
+        } else if (event.type === "highlight-content") {
+            draft.changeRoom(event.roomId,
+                room => room.changeHighlight(event.highlightId, hl => hl.content = event.highlight));
         } else if (event.type === "add-room") {
             draft.addRoom(Room.fromOther(event.room));
         } else if (event.type === "room-membership") {

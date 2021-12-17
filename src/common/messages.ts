@@ -52,6 +52,11 @@ export type ToContentMessage = {
     highlightId: number | string,
     visibility: boolean,
 } | {
+    type: "highlight-content",
+    roomId: string,
+    highlightId: number | string,
+    highlight: HighlightContent
+} | {
     type: "thread-message",
     roomId: string,
     threadId: string,
@@ -86,6 +91,11 @@ export type FromContentMessage = {
     roomId: string,
     highlightId: string,
     visibility: boolean
+} | {
+    type: "edit-highlight",
+    roomId: string,
+    highlightId: string,
+    highlight: HighlightContent
 } | {
     type: "send-message",
     roomId: string,

@@ -86,3 +86,14 @@ export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
         default: return null;
     }
 };
+
+export function processReplacedEvent(event: sdk.MatrixEvent): ToContentMessage | null {
+    const processedEvent = processEvent(event);
+    if (!processedEvent || processedEvent.type !== "highlight") return null;
+    return {
+        type: "highlight-content",
+        roomId: processedEvent.roomId,
+        highlightId: processedEvent.highlight.id,
+        highlight: processedEvent.highlight.content
+    };
+}

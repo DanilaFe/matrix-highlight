@@ -18,6 +18,12 @@ class HighlightData {
     constructor(private _renderer: EffectfulRenderer, private _highlight: Highlight) {}
 
     replaceHighlight(newHighlight: Highlight) {
+        if (this._highlight.color !== newHighlight.color) {
+            for (const highlight of this._highlights) {
+                highlight.classList.toggle(this._highlight.color, false);
+                highlight.classList.toggle(newHighlight.color, true);
+            }
+        }
         this._highlight = newHighlight;
         for (const highlight of this._highlights) {
             highlight.classList.toggle("active", this._highlight.active);

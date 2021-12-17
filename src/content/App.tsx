@@ -4,7 +4,7 @@ import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
-import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY} from "../common/model";
+import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY, COLORS} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
@@ -126,6 +126,23 @@ const App = () => {
         });
     }
 
+    const setHighlightColor = (id : string | number, color: typeof COLORS[number]) => {
+        if (!highlight.currentRoomId) return;
+        const existingHighlight = highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id == id);
+        if (!existingHighlight) return;
+
+        const newContent = { ...existingHighlight.content, [HIGHLIGHT_COLOR_KEY]: color };
+        if (typeof id === "string") {
+            sendToBackground(port, { type: "edit-highlight", roomId: highlight.currentRoomId, highlightId: id, highlight: newContent });
+        }
+        highlightDispatch({
+            type: "highlight-content",
+            roomId: highlight.currentRoomId,
+            highlightId: id,
+            highlight: newContent
+        });
+    }
+
     const sendReply = async (id: string | number, plainBody: string, formattedBody: string) => {
         if (!highlight.userId || !highlight.currentRoomId) return;
         if (typeof(id) !== "string") return;
@@ -205,6 +222,7 @@ const App = () => {
                     users={highlight.page.getRoom(highlight.currentRoomId)?.users || []}
                     hide={hideHighlight}
                     reply={sendReply}
+                    changeColor={setHighlightColor}
                     highlight={makeNewHighlight}
                     top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
                 null}

@@ -1,8 +1,8 @@
 import * as sdk from "matrix-js-sdk";
 import {PORT_POP, PORT_TAB, PORT_RENEW, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
-import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, checkRoom, sendMessage} from "./actions";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendMessage} from "./actions";
 import {fetchRequest} from "./fetch-request";
-import {processRoom, processMember, processEvent} from "./events";
+import {processRoom, processMember, processEvent, processReplacedEvent} from "./events";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
@@ -46,6 +46,10 @@ async function emitEvent(event: sdk.MatrixEvent): Promise<void> {
     await broadcastRoom(event.getRoomId(), processEvent(event));
 };
 
+async function emitReplacedEvent(event: sdk.MatrixEvent): Promise<void> {
+    await broadcastRoom(event.getRoomId(), processReplacedEvent(event));
+}
+
 async function emitMember(roomId: string, oldMembership: RoomMembership | null, member: sdk.RoomMember): Promise<void>{
     await broadcastRoom(roomId, processMember(roomId, oldMembership, member));
 }
@@ -72,6 +76,9 @@ async function setupClient(newClient: sdk.MatrixClient) {
         newClient.on("event", (event: sdk.MatrixEvent) => {
             emitEvent(event);
         });
+        newClient.on("Event.replaced", (event: sdk.MatrixEvent) => {
+            emitReplacedEvent(event);
+        });
         newClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: RoomMembership | null) => {
             emitMember(event.getRoomId(), oldMembership, member);
         });
@@ -91,6 +98,7 @@ async function fetchLogin() {
     if (id && token) {
         const server = id.substring(id.indexOf(":") + 1);
         setupClient(sdk.createClient({
+            unstableClientRelationAggregation: true,
             baseUrl: `https://${server}`,
             userId: id,
             accessToken: token
@@ -177,6 +185,8 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             sendHighlight(client!, message.roomId, message.highlight, message.txnId);
         } else if (message.type === "set-highlight-visibility") {
             setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
+        } else if (message.type === "edit-highlight") {
+            sendHighlightEdit(client!, message.roomId, message.highlightId, message.highlight);
         } else if (message.type === "send-message") {
             sendMessage(client!, message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
         }

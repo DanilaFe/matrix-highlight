@@ -17,6 +17,7 @@ export type TooltipProps = {
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
     reply: (id: string | number, plainBody: string, formattedBody: string) => void;
+    changeColor: (id: string | number, color: typeof COLORS[number]) => void;
 }
 
 export const SEND_COMMAND = 'draft-editor-send';
@@ -81,7 +82,7 @@ export const Tooltip = (props: TooltipProps) => {
             {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>msg.plainBody</p> }
         </div>
     );
-    const highlightButtons = COLORS.map(color => <ColorButton onClick={() =>{}} key={color} color={color}/>);
+    const highlightButtons = COLORS.map(color => <ColorButton onClick={() => props.changeColor(props.target!.id, color)} key={color} color={color}/>);
     return (
         <LargeTooltip {...props}>
             <div className="buttons">
