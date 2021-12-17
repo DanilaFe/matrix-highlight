@@ -85,8 +85,8 @@ export const Tooltip = (props: TooltipProps) => {
     return (
         <LargeTooltip {...props}>
             <div className="buttons">
-                <DeleteButton onClick={() => props.hide(props.target!.id)}/>
                 <span className="color-buttons">{highlightButtons}</span>
+                <DeleteButton onClick={() => props.hide(props.target!.id)}/>
             </div>
             <h3>Comments</h3> 
             {comments.length === 0 ? <div className="no-comments">No comments yet</div> : <div className="comment-list">{comments}</div>}

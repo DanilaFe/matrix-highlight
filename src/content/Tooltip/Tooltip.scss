@@ -34,6 +34,7 @@
     }
 
     h3 {
+        font-size: 1.35rem;
         margin-top: 0;
         margin-bottom: 0.25rem;
     }
@@ -46,10 +47,11 @@
     .buttons {
         display: flex;
         align-items: center;
+        margin-bottom: 0.5rem;
     }
     
     .color-buttons {
-        margin-left: auto;
+        margin-right: auto;
     }
 
     button.round {
