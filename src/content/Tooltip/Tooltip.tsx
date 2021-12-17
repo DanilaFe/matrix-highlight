@@ -8,22 +8,15 @@ import draftToHtml from 'draftjs-to-html';
 import sanitizeHtml from 'sanitize-html';
 const {hasCommandModifier} = KeyBindingUtil;
 
-export enum TooltipMode {
-    Click = "click",
-    Reply = "reply",
-};
-
 export type TooltipProps = {
     left: number;
     top: number;
     bottom: number;
     target: Highlight | null;
     users: User[];
-    mode: TooltipMode;
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
-    reply: (id: string | number) => void;
-    sendReply: (id: string | number, plainBody: string, formattedBody: string) => void;
+    reply: (id: string | number, plainBody: string, formattedBody: string) => void;
 }
 
 export const SEND_COMMAND = 'draft-editor-send';
@@ -68,20 +61,19 @@ const LargeTooltip = (props: PropsWithChildren<TooltipProps>) => {
         onMouseUp={e => e.stopPropagation()}>{props.children}</div>;
 }
 
+const DeleteButton = (props: { onClick(): void } ) => {
+    return <button className="round destructive" onClick={props.onClick}><Trash/></button>
+}
+
+const ColorButton = (props: { color: string, onClick(): void }) => {
+    return <button onClick={props.onClick} className={`${props.color} color-switch round`}/>;
+}
+
 export const Tooltip = (props: TooltipProps) => {
     if (!props.target) {
         const highlightButtons = COLORS.map(color =>
-                <button onClick={() => props.highlight(color)} key={color} className={`${color} color-switch`}/>);
+                <ColorButton onClick={() => props.highlight(color)} color={color} key={color}/>);
         return <SmallTooltip {...props}>{highlightButtons}</SmallTooltip>;
-    } else if (props.mode === TooltipMode.Click) {
-        return (
-            <SmallTooltip {...props}>
-                <button className="destructive"
-                    onClick={() => props.hide(props.target!.id)}><Trash/></button>
-                <button
-                    onClick={() => props.reply(props.target!.id)}><MessageSquare/></button>
-            </SmallTooltip>
-        );
     }
     const comments = props.target!.messages.map(msg =>
         <div className="comment" key={msg.id}>
@@ -89,12 +81,17 @@ export const Tooltip = (props: TooltipProps) => {
             {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>msg.plainBody</p> }
         </div>
     );
+    const highlightButtons = COLORS.map(color => <ColorButton onClick={() =>{}} key={color} color={color}/>);
     return (
         <LargeTooltip {...props}>
+            <div className="buttons">
+                <DeleteButton onClick={() => props.hide(props.target!.id)}/>
+                <span className="color-buttons">{highlightButtons}</span>
+            </div>
             <h3>Comments</h3> 
             {comments.length === 0 ? <div className="no-comments">No comments yet</div> : <div className="comment-list">{comments}</div>}
             <span className="notice">Leave a comment</span>
-            <DraftEditor sendReply={(plain, formatted) => props.sendReply(props.target!.id, plain, formatted) }/>
+            <DraftEditor sendReply={(plain, formatted) => props.reply(props.target!.id, plain, formatted) }/>
         </LargeTooltip>
     );
 }
