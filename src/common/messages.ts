@@ -65,6 +65,8 @@ export type ToContentMessage = {
 } | {
     type: "logged-in",
     userId: string
+} | {
+    type: "sync-complete"
 }
 
 export type FromContentMessage = {

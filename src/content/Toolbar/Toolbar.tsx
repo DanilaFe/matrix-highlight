@@ -1,7 +1,7 @@
 import React from "react";
 import "./Toolbar.scss";
 import { IndicatorStatus } from "../App";
-import { UserX, Folder, UploadCloud, Cloud, Users, AlertTriangle, AlignLeft, Settings } from "react-feather";
+import { UserX, Folder, UploadCloud, Cloud, Users, AlertTriangle, AlignLeft, Settings, Clock } from "react-feather";
 
 export type ToolbarProps = {
     status: IndicatorStatus;
@@ -15,6 +15,7 @@ export type ToolbarProps = {
 function statusToIcon(status: string) {
     switch (status) {
         case IndicatorStatus.NoLogin: return <UserX className="feather"/>;
+        case IndicatorStatus.NoSync: return <Clock className="feather"/>;
         case IndicatorStatus.NoRoom: return <AlertTriangle className="feather"/>;
         case IndicatorStatus.Queued: return <UploadCloud className="feather"/>
         default: return <Cloud className="feather"/>

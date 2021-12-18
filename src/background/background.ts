@@ -59,6 +59,7 @@ async function setupClient(newClient: sdk.MatrixClient) {
     broadcast({ type: "logged-in", userId: newClient.getUserId() });
     newClient.on("sync", state => {
         if (state !== "PREPARED") return;
+        broadcast({ type: "sync-complete" });
         // During initial sync, we receive events from rooms. That's nice,
         // but if we also process the timelines of rooms we select, we end
         // up double-counting events. So instead, ignore events from initial
@@ -163,6 +164,9 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     // Catch new page with existing pages
     if (client && initial) {
         port.postMessage({ type: "logged-in", userId: client.getUserId() });
+        if (client.isInitialSyncComplete()) {
+            port.postMessage({ type: "sync-complete" });
+        }
         for (const room of client.getRooms()) {
             const url = checkRoom(room);
             if (!url || url !== tab.url) continue;

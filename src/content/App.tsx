@@ -12,6 +12,7 @@ import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",
+    NoSync = "noSync",
     NoRoom = "noRoom",
     Queued = "queued",
     Synced = "synced",
@@ -52,10 +53,11 @@ const App = () => {
     let status: IndicatorStatus
     if (!highlight.userId) {
         status = IndicatorStatus.NoLogin;
+    } else if (!highlight.syncComplete) {
+        status = IndicatorStatus.NoSync;
     } else if (!highlight.currentRoomId) {
         status = IndicatorStatus.NoRoom;
-    } else if (!highlight.currentRoomId ||
-        highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
+    } else if (highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
         status = IndicatorStatus.Queued;
     } else {
         status = IndicatorStatus.Synced;

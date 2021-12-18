@@ -4,6 +4,7 @@ import {produce} from "immer";
 
 export type HighlightDataState = {
     currentRoomId: string | null;
+    syncComplete: boolean;
     userId: string | null;
     page: Page;
 }
@@ -62,11 +63,17 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         userId = event.userId;
     }
 
-    return { page, currentRoomId, userId };
+    let syncComplete = state.syncComplete;
+    if (event.type === "sync-complete") {
+        syncComplete = true;
+    }
+
+    return { page, currentRoomId, userId, syncComplete };
 }
 
 export const highlightInitialState = {
     page: new Page({}),
     userId: null,
+    syncComplete: false,
     currentRoomId: null
 }
