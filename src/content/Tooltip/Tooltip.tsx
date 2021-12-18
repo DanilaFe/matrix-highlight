@@ -79,7 +79,7 @@ export const Tooltip = (props: TooltipProps) => {
     const comments = props.target!.messages.map(msg =>
         <div className="comment" key={msg.id}>
             <div className="sender">{props.users.find(u => u.id === msg.userId)?.name || msg.userId}:</div>
-            {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>msg.plainBody</p> }
+            {msg.formattedBody ? <div dangerouslySetInnerHTML={{__html: sanitizeHtml(msg.formattedBody) }}></div> : <p>{msg.plainBody}</p> }
         </div>
     );
     const highlightButtons = COLORS.map(color => <ColorButton onClick={() => props.changeColor(props.target!.id, color)} key={color} color={color} selectedColor={props.target!.color}/>);
