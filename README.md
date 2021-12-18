@@ -1,6 +1,6 @@
 # Matrix Highlight
 A decentralized and federated way of annotating the web based on [Matrix](https://matrix.org).
-Watch a quick [demo video](https://youtu.be/Q3h5A0DsE1s), or read the [introductory post](https://danilafe.com/blog/introducing_highlight/).
+Watch a quick demo video below, or read the [introductory post](https://danilafe.com/blog/introducing_highlight/).
 If you're on Matrix, come chat with us at [`#matrix-highlight:matrix.danilafe.com`](https://matrix.to/#/#matrix-highlight:matrix.danilafe.com).
 
 ![Image](./pictures/mhl_many.png)
@@ -34,6 +34,9 @@ __User List View__
 
 __Multi-user collaboration__
 ![Multi-user collaboration](./pictures/mhl_multi.png)
+
+## Demo Video
+https://user-images.githubusercontent.com/4361282/146517732-d3205964-7d63-4f35-baae-aeab3a9d178c.mp4
 
 ## See Also
 Also check out [Populus](https://github.com/opentower/populus-viewer), which is a tool in similar spirit, but with a focus on annotating files.
