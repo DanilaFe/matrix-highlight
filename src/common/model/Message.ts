@@ -21,4 +21,13 @@ export class Message {
         this.formattedBody = props.formattedBody;
         this.userId = props.userId;
     }
+
+    static fromOther(other: Message): Message {
+        return new Message({
+            id: other.id,
+            plainBody: other.plainBody,
+            formattedBody: other.formattedBody,
+            userId: other.userId
+        });
+    }
 }
