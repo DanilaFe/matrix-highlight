@@ -156,7 +156,7 @@ const App = () => {
             plainBody, formattedBody
         });
         highlightDispatch({ type: "local-message", roomId: highlight.currentRoomId, threadId: id, message: localMessage });
-        sendToBackground(port, { type: "send-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
+        sendToBackground(port, { type: "send-thread-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
     }
 
     useEffect(() => {

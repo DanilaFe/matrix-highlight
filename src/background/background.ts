@@ -1,6 +1,6 @@
 import * as sdk from "matrix-js-sdk";
 import {PORT_POP, PORT_TAB, PORT_RENEW, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
-import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendMessage} from "./actions";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendThreadMessage} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent, processReplacedEvent} from "./events";
 
@@ -191,8 +191,8 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
         } else if (message.type === "edit-highlight") {
             sendHighlightEdit(client!, message.roomId, message.highlightId, message.highlight);
-        } else if (message.type === "send-message") {
-            sendMessage(client!, message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
+        } else if (message.type === "send-thread-message") {
+            sendThreadMessage(client!, message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
         }
     });
 }

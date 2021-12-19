@@ -99,7 +99,7 @@ export type FromContentMessage = {
     highlightId: string,
     highlight: HighlightContent
 } | {
-    type: "send-message",
+    type: "send-thread-message",
     roomId: string,
     threadId: string,
     plainBody: string,
