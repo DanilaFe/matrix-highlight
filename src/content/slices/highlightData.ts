@@ -37,9 +37,9 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         } else if (event.type === "user-membership") {
             draft.changeRoom(event.roomId, room => room.changeUser(event.userId, u => u.membership = event.membership));
         } else if (event.type === "local-message") {
-            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(event.message)));
+            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(Message.fromOther(event.message))));
         } else if (event.type === "thread-message") {
-            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(event.message, event.txnId)));
+            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(Message.fromOther(event.message), event.txnId)));
         } else if (event.type === "set-active") {
             if (!state.currentRoomId) return;
             draft.changeRoom(state.currentRoomId, room => {
