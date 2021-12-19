@@ -2,7 +2,7 @@ import {useState, PropsWithChildren, SyntheticEvent} from "react";
 import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
-import {Trash, MessageSquare} from "react-feather";
+import {Trash, MessageSquare, Bold, Italic, Code} from "react-feather";
 import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState, convertToRaw} from "draft-js";
 import draftToHtml from 'draftjs-to-html';
 import sanitizeHtml from 'sanitize-html';
@@ -30,6 +30,15 @@ function keyBindingFn(e: Parameters<typeof hasCommandModifier>[0]) {
     return getDefaultKeyBinding(e); 
 }
 
+const EditorButton = (props: React.PropsWithChildren<{ toggleStyle(style: string): void, style: string, currentStyles: ReturnType<EditorState['getCurrentInlineStyle']> }>) => {
+    return (
+        <button onClick={() => props.toggleStyle(props.style)}
+            className={props.currentStyles.has(props.style) ? "current" : ""}>
+            {props.children}
+        </button>
+    );
+};
+
 const DraftEditor = (props: { sendReply(plain: string, formatted: string): void }) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
   const [focused, setFocused] = useState(false);
@@ -47,7 +56,33 @@ const DraftEditor = (props: { sendReply(plain: string, formatted: string): void 
     }
     return 'not-handled';
   }
-  return <div className={`editor ${focused ? "focused" : ""}`}><Editor keyBindingFn={keyBindingFn} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} editorState={editorState} onChange={setEditorState} handleKeyCommand={handleKeyCommand}/></div>;
+  const toggleStyle = (style: string) => {
+        setEditorState(RichUtils.toggleInlineStyle(editorState, style));
+  };
+  const inlineStyles = editorState.getCurrentInlineStyle();
+  return (
+    <div className={`editor ${focused ? "focused" : ""}`}>
+        <div className="editor-buttons">
+            <EditorButton toggleStyle={toggleStyle} style="BOLD" currentStyles={inlineStyles}>
+                <Bold className="feather"/>
+            </EditorButton>
+            <EditorButton toggleStyle={toggleStyle} style="ITALIC" currentStyles={inlineStyles}>
+                <Italic className="feather"/>
+            </EditorButton>
+            <EditorButton toggleStyle={toggleStyle} style="CODE" currentStyles={inlineStyles}>
+                <Code className="feather"/>
+            </EditorButton>
+        </div>
+        <div className={`editor-box`}>
+            <Editor keyBindingFn={keyBindingFn}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                editorState={editorState}
+                onChange={setEditorState}
+                handleKeyCommand={handleKeyCommand}/>
+        </div>
+    </div>
+  );
 }
 
 const SmallTooltip = (props: PropsWithChildren<TooltipProps>) => {
