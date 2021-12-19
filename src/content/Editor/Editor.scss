@@ -1,0 +1,25 @@
+@import "../../common/utils.scss";
+
+.matrix-highlight .editor {
+    /* Most styles are inherited from common.scss and shared with text inputs. */
+    padding: 0;
+
+    .editor-buttons {
+        border-bottom: $default-border;
+        padding: 0.25rem;
+
+        button {
+            border-color: rgba(0,0,0,0);
+            min-width: 0;
+            padding: 0.25rem;
+
+            &.current {
+                border: $default-border;
+            }
+        }
+    }
+
+    .editor-box {
+        padding: 0.5rem;
+    }
+}
