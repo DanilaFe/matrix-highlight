@@ -2,7 +2,7 @@ import {useState, PropsWithChildren, SyntheticEvent} from "react";
 import {Highlight, User} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
-import {Trash, MessageSquare, Bold, Italic, Code} from "react-feather";
+import {Icon, Trash, MessageSquare, Bold, Italic, Code} from "react-feather";
 import {Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil, ContentState, convertToRaw} from "draft-js";
 import draftToHtml from 'draftjs-to-html';
 import sanitizeHtml from 'sanitize-html';
@@ -30,14 +30,26 @@ function keyBindingFn(e: Parameters<typeof hasCommandModifier>[0]) {
     return getDefaultKeyBinding(e); 
 }
 
-const EditorButton = (props: React.PropsWithChildren<{ toggleStyle(style: string): void, style: string, currentStyles: ReturnType<EditorState['getCurrentInlineStyle']> }>) => {
+type EditorButtonProps = {
+    toggleStyle(style: string): void,
+    icon: Icon,
+    style: string,
+    currentStyles: ReturnType<EditorState['getCurrentInlineStyle']>
+}
+
+const EditorButton = (props: EditorButtonProps) => {
+    const MyIcon = props.icon;
     return (
         <button onClick={() => props.toggleStyle(props.style)}
             className={props.currentStyles.has(props.style) ? "current" : ""}>
-            {props.children}
+            <MyIcon className="feather"/>
         </button>
     );
 };
+
+const EDITOR_ICONS = [
+    ['BOLD', Bold], ['ITALIC', Italic], ['CODE', Code]
+] as const;
 
 const DraftEditor = (props: { sendReply(plain: string, formatted: string): void }) => {
   const [editorState, setEditorState] = useState(() => EditorState.createEmpty());
@@ -63,15 +75,7 @@ const DraftEditor = (props: { sendReply(plain: string, formatted: string): void 
   return (
     <div className={`editor ${focused ? "focused" : ""}`}>
         <div className="editor-buttons">
-            <EditorButton toggleStyle={toggleStyle} style="BOLD" currentStyles={inlineStyles}>
-                <Bold className="feather"/>
-            </EditorButton>
-            <EditorButton toggleStyle={toggleStyle} style="ITALIC" currentStyles={inlineStyles}>
-                <Italic className="feather"/>
-            </EditorButton>
-            <EditorButton toggleStyle={toggleStyle} style="CODE" currentStyles={inlineStyles}>
-                <Code className="feather"/>
-            </EditorButton>
+            { EDITOR_ICONS.map(([string, icon]) => <EditorButton toggleStyle={toggleStyle} currentStyles={inlineStyles} style={string} icon={icon}/>) }
         </div>
         <div className={`editor-box`}>
             <Editor keyBindingFn={keyBindingFn}
