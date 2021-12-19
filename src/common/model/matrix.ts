@@ -4,6 +4,8 @@ export const HIGHLIGHT_EVENT_TYPE = "com.danilafe.highlight";
 export const HIGHLIGHT_PAGE_EVENT_TYPE = "com.danilafe.highlight_page";
 export const HIGHLIGHT_HIDE_EVENT_TYPE = "com.danilafe.highlight_hide";
 
+export const HIGHLIGHT_EDIT_MARKER_KEY = "com.danilafe.highlight_edit";
+
 export const HIGHLIGHT_PAGE_KEY = "com.danilafe.page_url";
 
 export const HIGHLIGHT_NODE_PATH_KEY = "com.danilafe.node_path";
