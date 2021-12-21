@@ -242,7 +242,8 @@ const App = () => {
         return (
             <Window onClose={() => setShowMenu(false)}>
                  <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
-                     attemptLogin={attemptLogin} attemptSignup={() => {}}/>
+                     attemptLogin={attemptLogin} attemptSignup={() => {}}
+                     loginError={auth.loginError}/>
             </Window>
         );
     } else {

@@ -1,3 +1,5 @@
+@import "../../common/scss/helpers.scss";
+
 .matrix-highlight #LoginForm {
     text-align: left;
     margin: 0 auto 0 auto;
@@ -6,5 +8,12 @@
     input[type="text"], input[type="password"] {
         width: 100%;
         box-sizing: border-box;
+    }
+
+    .login-error {
+        @include bordered-block;
+        color: tomato;
+        border-color: tomato;
+        padding: 0.625rem;
     }
 }

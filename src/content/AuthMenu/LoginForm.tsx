@@ -3,6 +3,7 @@ import "./LoginForm.scss";
 
 export type LoginFormProps = {
     authEnabled: boolean;
+    loginError: string | null;
     attemptLogin(username: string, password: string, homeserver: string): void;
 }
 
@@ -14,6 +15,7 @@ export const LoginForm = (props: LoginFormProps) => {
 
     return (
         <form id="LoginForm" onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
+            { props.loginError ? <p className="login-error">{props.loginError}</p> : <></> }
             <fieldset disabled={!props.authEnabled}>
                 <label htmlFor="username">Matrix Username</label>
                 <input placeholder="your-matrix-username" id="username" type="text"
