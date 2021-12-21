@@ -8,6 +8,6 @@
     },
     "permissions": [ "storage", "contextMenus", "activeTab", "scripting", "tabs" ],
     "action": {
-        "default_popup": "popup.html"
+        "default_title": "Highlight with Matrix"
     }
 }

@@ -138,13 +138,19 @@ chrome.runtime.onInstalled.addListener(async () => {
     });
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+const activate = async (tab?: chrome.tabs.Tab) => {
     if (!tab?.id) return;
     await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: [ "content.js" ]
     });
+}
+
+chrome.contextMenus.onClicked.addListener((_, tab) => {
+    activate(tab);
 });
+
+chrome.action.onClicked.addListener(activate);
 
 function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
