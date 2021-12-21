@@ -4,7 +4,7 @@ import "./CommentList.scss";
 
 export type CommentListProps = {
     users: User[];
-    messages: Message[];
+    messages: readonly Message[];
 }
 
 export const CommentList = (props: CommentListProps) => {
