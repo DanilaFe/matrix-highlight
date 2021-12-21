@@ -46,9 +46,9 @@ function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chro
 const App = () => {
     const [port, setPort] = useState<chrome.runtime.Port | null>(null);
 
-    const [menuMode, setMenuMode] = useState<"tools" | "auth" | null>(null);
+    const [showMenu, setShowMenu] = useState(false);
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
-    const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
+    const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("rooms");
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
@@ -70,17 +70,12 @@ const App = () => {
 
     const openTools = (tab: "quotes" | "rooms" | "users") => {
         setToolsTab(tab)
-        setMenuMode("tools");
-    }
-
-    const openAuth = (tab: "login" | "signup") => {
-        setAuthTab(tab)
-        setMenuMode("auth");
+        setShowMenu(true);
     }
 
     const handleIndicator = () => {
         switch (status) {
-            case IndicatorStatus.NoLogin: openAuth("login"); return;
+            case IndicatorStatus.NoLogin: setShowMenu(true); return;
             case IndicatorStatus.NoRoom: openTools("rooms"); return;
             default: return;
         }
@@ -197,7 +192,7 @@ const App = () => {
     useEffect(() => {
         document.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
-            setMenuMode(null);
+            setShowMenu(false);
         });
         document.addEventListener("selectionchange", (e) => {
             const selection = window.getSelection();
@@ -226,35 +221,40 @@ const App = () => {
         Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
     });
 
-    return (!menuMode || (auth.userId && menuMode === "auth")) ?
-        <>
+    if (!showMenu) {
+        const toolbarComp = 
             <Toolbar status={status} onIndicatorClick={handleIndicator}
-                onOpenMenu={() => { setMenuMode("tools") }}
                 onShowQuotes={() => openTools("quotes")}
                 onShowRooms={() => openTools("rooms")}
-                onShowUsers={() => openTools("users")}
-                />
-            {tooltip.visible ?
-                <Tooltip
-                    target={highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id === tooltip.target) || null}
-                    users={highlight.page.getRoom(highlight.currentRoomId)?.users || []}
-                    hide={hideHighlight}
-                    reply={sendReply}
-                    changeColor={setHighlightColor}
-                    highlight={makeNewHighlight}
-                    top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
-                null}
-        </> :
-        <Window onClose={() => setMenuMode(null)}>
-            { menuMode === "tools" ?
+                onShowUsers={() => openTools("users")}/>;
+        const tooltipComp = tooltip.visible ?
+            <Tooltip
+                target={highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id === tooltip.target) || null}
+                users={highlight.page.getRoom(highlight.currentRoomId)?.users || []}
+                hide={hideHighlight}
+                reply={sendReply}
+                changeColor={setHighlightColor}
+                highlight={makeNewHighlight}
+                top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
+            null;
+        return <>{toolbarComp}{tooltipComp}</>;
+    } else if (!auth.userId) {
+        return (
+            <Window onClose={() => setShowMenu(false)}>
+                 <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
+                     attemptLogin={attemptLogin} attemptSignup={() => {}}/>
+            </Window>
+        );
+    } else {
+        return (
+            <Window onClose={() => setShowMenu(false)}>
                 <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                     onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
                     page={highlight.page} currentRoomId={highlight.currentRoomId}/> :
-                <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
-                    attemptLogin={attemptLogin} attemptSignup={() => {}}/>
-            }
-        </Window>;
+            </Window>
+        );
+    }
 }
 
 export default App;

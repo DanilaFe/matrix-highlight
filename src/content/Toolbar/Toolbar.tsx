@@ -1,11 +1,9 @@
-import React from "react";
 import "./Toolbar.scss";
 import { IndicatorStatus } from "../App";
 import { UserX, Folder, UploadCloud, Cloud, Users, AlertTriangle, AlignLeft, Settings, Clock } from "react-feather";
 
 export type ToolbarProps = {
     status: IndicatorStatus;
-    onOpenMenu(): void;
     onShowQuotes(): void;
     onShowRooms(): void;
     onShowUsers(): void;
@@ -23,7 +21,6 @@ function statusToIcon(status: string) {
 }
 
 export const Toolbar = (props: ToolbarProps) => {
-    // <button onClick={props.onOpenMenu}>⋯</button>
     return (
         <div className="toolbar-main">
             <button><Settings className="feather"/></button>
