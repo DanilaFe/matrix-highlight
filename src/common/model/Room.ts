@@ -1,6 +1,7 @@
 import {User} from "./User";
 import {Highlight} from "./Highlight";
 import {immerable} from "immer";
+import {EchoStore} from "./EchoStore";
 
 export type RoomFields = {
     id: string;
@@ -18,11 +19,12 @@ export class Room {
     name: string;
     membership: string;
     users: User[];
-    localHighlights: Highlight[];
-    remoteHighlights: Highlight[];
+    highlightStore: EchoStore<Highlight>;
 
     get joinedUsers() { return this.users.filter(u => u.membership === "join"); }
-    get highlights() { return [...this.remoteHighlights, ...this.localHighlights]; }
+    get localHighlights(): readonly Highlight[] { return this.highlightStore.local; };
+    get remoteHighlights(): readonly Highlight[] { return this.highlightStore.remote; };
+    get highlights(): readonly Highlight[] { return this.highlightStore.all; }
 
     static fromOther(other: Room) {
         return new Room({
@@ -30,8 +32,8 @@ export class Room {
             name: other.name,
             membership: other.membership,
             users: other.users.map(u => User.fromOther(u)),
-            localHighlights: other.localHighlights.map(h => Highlight.fromOther(h)),
-            remoteHighlights: other.remoteHighlights.map(h => Highlight.fromOther(h)),
+            localHighlights: other.highlightStore.local.map(h => Highlight.fromOther(h)),
+            remoteHighlights: other.highlightStore.remote.map(h => Highlight.fromOther(h)),
         });
     }
     
@@ -40,8 +42,9 @@ export class Room {
         this.name = props.name;
         this.membership = props.membership;
         this.users = props.users || [];
-        this.localHighlights = props.localHighlights || [];
-        this.remoteHighlights = props.remoteHighlights || [];
+        const localHighlights = props.localHighlights || [];
+        const remoteHighlights = props.remoteHighlights || [];
+        this.highlightStore = new EchoStore(localHighlights, remoteHighlights);
     }
 
     addUser(user: User) {
@@ -55,15 +58,11 @@ export class Room {
     }
 
     addLocalHighlight(highlight: Highlight) {
-        this.localHighlights.push(highlight);
+        this.highlightStore.addLocal(highlight);
     }
 
-    addRemoteHighlight(highlight: Highlight, txnId?: number) {
-        const localIndex = this.localHighlights.findIndex(h => h.id === txnId);
-        if (localIndex !== -1) {
-            this.localHighlights.splice(localIndex, 1);
-        }
-        this.remoteHighlights.push(highlight);
+    addRemoteHighlight(highlight: Highlight, txnId: number | undefined, placeAtTop: boolean = false) {
+        this.highlightStore.addRemote(highlight, txnId, placeAtTop);
     }
 
     setHighlightVisibility(id: string | number, visibility: boolean) {
@@ -71,10 +70,6 @@ export class Room {
     }
 
     changeHighlight(id : string | number, transform: (h: Highlight) => void): void {
-        const doTransform = (hl: Highlight) => {
-            if (hl.id === id) transform(hl);
-        }
-        this.localHighlights.forEach(doTransform);
-        this.remoteHighlights.forEach(doTransform);
+        this.highlightStore.change(id, transform);
     }
 }

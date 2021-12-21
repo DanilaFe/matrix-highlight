@@ -2,7 +2,7 @@ import {Highlight} from "../../common/model";
 import "./QuoteList.scss";
 
 export type QuoteListProps = {
-    highlights: Highlight[];
+    highlights: readonly Highlight[];
 };
 
 export const QuoteList = (props: QuoteListProps) => {

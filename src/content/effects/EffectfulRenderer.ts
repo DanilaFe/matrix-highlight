@@ -126,7 +126,7 @@ class EffectfulRenderer {
         newData.show();
     }
 
-    private _rerender(highlights: Highlight[]) {
+    private _rerender(highlights: readonly Highlight[]) {
         for (const data of this._highlightData.slice().reverse()) {
             data.hide();
         }
@@ -136,7 +136,7 @@ class EffectfulRenderer {
         }
     }
 
-    apply(highlights: Highlight[]) {
+    apply(highlights: readonly Highlight[]) {
         let i = 0;
         for (const highlight of highlights) {
             if (!highlight.visible) continue;
