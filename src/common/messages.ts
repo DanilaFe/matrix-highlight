@@ -27,6 +27,7 @@ export type ToContentMessage = {
     roomId: string,
     highlight: Highlight,
     txnId: number | undefined,
+    placeAtTop: boolean,
 } | {
     type: "highlight-visibility",
     roomId: string,
@@ -42,7 +43,8 @@ export type ToContentMessage = {
     roomId: string,
     threadId: string,
     txnId: number | undefined,
-    message: Message
+    message: Message,
+    placeAtTop: boolean
 } | {
     type: "logged-in",
     userId: string,

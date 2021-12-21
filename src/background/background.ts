@@ -42,8 +42,8 @@ async function emitRoom(client: sdk.MatrixClient, room: sdk.Room): Promise<void>
     await broadcastRoom(room.roomId, processRoom(client, room));
 }
 
-async function emitEvent(event: sdk.MatrixEvent): Promise<void> {
-    await broadcastRoom(event.getRoomId(), processEvent(event));
+async function emitEvent(event: sdk.MatrixEvent, placeAtTop: boolean): Promise<void> {
+    await broadcastRoom(event.getRoomId(), processEvent(event, placeAtTop));
 };
 
 async function emitReplacedEvent(event: sdk.MatrixEvent): Promise<void> {
@@ -79,10 +79,10 @@ async function setupClient(newClient: sdk.MatrixClient) {
             });
         });
         newClient.on("event", (event: sdk.MatrixEvent) => {
-            emitEvent(event);
+            emitEvent(event, false);
         });
         newClient.on("Room.timeline", (event: sdk.MatrixEvent, room: sdk.Room, toStartOfTimeline: boolean, removed: boolean, data: {liveEvent: boolean}) => {
-            if (!data.liveEvent) emitEvent(event);
+            if (!data.liveEvent) emitEvent(event, toStartOfTimeline);
         });
         newClient.on("Event.replaced", (event: sdk.MatrixEvent) => {
             emitReplacedEvent(event);

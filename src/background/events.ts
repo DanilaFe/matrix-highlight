@@ -51,14 +51,15 @@ function extractTxnId(event: sdk.MatrixEvent): number | undefined {
     return localId;
 }
 
-export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
+export function processEvent(event: sdk.MatrixEvent, placeAtTop: boolean = false): ToContentMessage | null {
     switch (event.getType()) {
         case HIGHLIGHT_EVENT_TYPE:
             return {
                 type: "highlight",
                 roomId: event.getRoomId(),
                 txnId: extractTxnId(event),
-                highlight: new Highlight(event.getId(), event.getContent<HighlightContent>())
+                highlight: new Highlight(event.getId(), event.getContent<HighlightContent>()),
+                placeAtTop,
             };
         case HIGHLIGHT_HIDE_EVENT_TYPE:
             const key = event.getStateKey()!;
@@ -81,7 +82,8 @@ export function processEvent(event: sdk.MatrixEvent): ToContentMessage | null {
                     plainBody: event.getContent().body,
                     formattedBody: event.getContent().formatted_body,
                     userId: event.getSender(),
-                })
+                }),
+                placeAtTop,
             };
         default: return null;
     }

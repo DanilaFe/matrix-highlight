@@ -34,7 +34,7 @@ export class Highlight {
         this.messageStore.addLocal(message);
     }
 
-    addRemoteMessage(message: Message, txnId: number | undefined) {
-        this.messageStore.addRemote(message, txnId);
+    addRemoteMessage(message: Message, txnId: number | undefined, placeAtTop: boolean = false) {
+        this.messageStore.addRemote(message, txnId, placeAtTop);
     }
 }

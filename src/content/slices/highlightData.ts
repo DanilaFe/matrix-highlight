@@ -18,7 +18,7 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
     const page = produce(state.page, draft => {
         if (event.type === "highlight") {
             draft.changeRoom(event.roomId,
-                room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId));
+                room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId, event.placeAtTop));
         } else if (event.type === "local-highlight") {
             draft.changeRoom(event.roomId, room => room.addLocalHighlight(Highlight.fromOther(event.highlight)));
         } else if (event.type === "highlight-visibility") {
@@ -38,7 +38,7 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         } else if (event.type === "local-message") {
             draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(Message.fromOther(event.message))));
         } else if (event.type === "thread-message") {
-            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(Message.fromOther(event.message), event.txnId)));
+            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(Message.fromOther(event.message), event.txnId, event.placeAtTop)));
         } else if (event.type === "set-active") {
             if (!state.currentRoomId) return;
             draft.changeRoom(state.currentRoomId, room => {
