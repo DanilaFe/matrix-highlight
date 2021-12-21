@@ -8,6 +8,10 @@ export class EchoStore<T extends EchoItem> {
 
     get all(): readonly T[] { return [...this.remote, ...this.local]; }
 
+    static fromOther<T extends EchoItem>(other: EchoStore<T>, clone: (item: T) => T): EchoStore<T> {
+        return new EchoStore(other.local.map(clone), other.remote.map(clone));
+    }
+
     constructor(local: T[], remote: T[]) {
         this.local = local;
         this.remote = remote;
