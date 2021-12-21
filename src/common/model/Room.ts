@@ -8,8 +8,7 @@ export type RoomFields = {
     name: string;
     membership: string;
     users?: User[];
-    localHighlights?: Highlight[];
-    remoteHighlights?: Highlight[];
+    highlightStore?: EchoStore<Highlight>
 }
 
 export class Room {
@@ -32,8 +31,7 @@ export class Room {
             name: other.name,
             membership: other.membership,
             users: other.users.map(u => User.fromOther(u)),
-            localHighlights: other.highlightStore.local.map(h => Highlight.fromOther(h)),
-            remoteHighlights: other.highlightStore.remote.map(h => Highlight.fromOther(h)),
+            highlightStore: EchoStore.fromOther(other.highlightStore, Highlight.fromOther)
         });
     }
     
@@ -42,9 +40,7 @@ export class Room {
         this.name = props.name;
         this.membership = props.membership;
         this.users = props.users || [];
-        const localHighlights = props.localHighlights || [];
-        const remoteHighlights = props.remoteHighlights || [];
-        this.highlightStore = new EchoStore(localHighlights, remoteHighlights);
+        this.highlightStore = props.highlightStore || new EchoStore([], []);
     }
 
     addUser(user: User) {
