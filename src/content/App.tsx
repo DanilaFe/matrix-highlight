@@ -173,6 +173,15 @@ const App = () => {
         sendToBackground(port, { type: "attempt-login", username, password, homeserver });
     }
 
+    const switchRoom = (roomId: string) => {
+        highlightDispatch({ type: "switch-room", newId: roomId })
+    }
+
+    useEffect(() => {
+        if (!highlight.currentRoomId) return;
+        sendToBackground(port, { type: "load-room", roomId: highlight.currentRoomId });
+    }, [highlight.currentRoomId]);
+
     useEffect(() => {
         setTimeout(() => {
             openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch);
@@ -254,7 +263,7 @@ const App = () => {
         return (
             <Window onClose={() => setShowMenu(false)}>
                 <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
-                    onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
+                    onRoomSwitch={switchRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
                     page={highlight.page} currentRoomId={highlight.currentRoomId}/> :
             </Window>

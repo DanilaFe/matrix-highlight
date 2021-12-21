@@ -1,6 +1,6 @@
 import * as sdk from "matrix-js-sdk";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembership} from "../common/messages";
-import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendThreadMessage} from "./actions";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendThreadMessage, loadRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent, processReplacedEvent} from "./events";
 
@@ -80,6 +80,9 @@ async function setupClient(newClient: sdk.MatrixClient) {
         });
         newClient.on("event", (event: sdk.MatrixEvent) => {
             emitEvent(event);
+        });
+        newClient.on("Room.timeline", (event: sdk.MatrixEvent, room: sdk.Room, toStartOfTimeline: boolean, removed: boolean, data: {liveEvent: boolean}) => {
+            if (!data.liveEvent) emitEvent(event);
         });
         newClient.on("Event.replaced", (event: sdk.MatrixEvent) => {
             emitReplacedEvent(event);
@@ -190,6 +193,8 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             sendHighlightEdit(client!, message.roomId, message.highlightId, message.highlight);
         } else if (message.type === "send-thread-message") {
             sendThreadMessage(client!, message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
+        } else if (message.type === "load-room") {
+            loadRoom(client!, message.roomId);
         }
     });
 }

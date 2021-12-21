@@ -95,4 +95,7 @@ export type FromContentMessage = {
     plainBody: string,
     formattedBody: string,
     txnId: number
+} | {
+    type: "load-room"
+    roomId: string
 }

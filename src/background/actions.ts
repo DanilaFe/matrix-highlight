@@ -58,6 +58,16 @@ export async function setHighlightVisibility(client: sdk.MatrixClient, roomId: s
     await client.sendStateEvent(roomId, HIGHLIGHT_HIDE_EVENT_TYPE, { [HIGHLIGHT_HIDDEN_KEY]: !visibility }, highlightId);
 }
 
+export async function loadRoom(client: sdk.MatrixClient, roomId: string) {
+    const room = client.getRoom(roomId);
+    if (!room) return;
+    const continuePagination = async () => {
+        const more = await client.paginateEventTimeline(room.getLiveTimeline(), {backwards: true, limit: 100});
+        if (more) await continuePagination();
+    }
+    await continuePagination();
+}
+
 export function checkRoom(room: sdk.Room): string | undefined {
     const state = room.getLiveTimeline().getState(sdk.EventTimeline.FORWARDS);
     const event = state.getStateEvents("m.room.create", "");
