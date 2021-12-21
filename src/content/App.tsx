@@ -2,6 +2,7 @@ import { useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
+import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
 import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY, COLORS} from "../common/model";
@@ -9,6 +10,7 @@ import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
+import {authReducer, authInitialState} from "./slices/auth";
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",
@@ -28,30 +30,33 @@ async function freshTxnId(): Promise<number> {
     return txnId;
 }
 
-function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chrome.runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void): void {
+function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chrome.runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void, authDispatch: (event: ToContentMessage) => void): void {
     const port = chrome.runtime.connect({ name: str });
     setPort(port);
     port.onDisconnect.addListener(() => {
-        openPort(PORT_RENEW, setPort, highlightDispatch) /* Do not retrieve all data on reconnect */
+        openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch) /* Do not retrieve all data on reconnect */
     });
     port.onMessage.addListener((message: ToContentMessage) => {
         // response(true);
         highlightDispatch(message); 
+        authDispatch(message);
     });
 };
 
 const App = () => {
     const [port, setPort] = useState<chrome.runtime.Port | null>(null);
 
-    const [showMenu, setShowMenu] = useState(false);
+    const [menuMode, setMenuMode] = useState<"tools" | "auth" | null>(null);
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
     const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("quotes");
+    const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
+    const [auth, authDispatch] = useReducer(authReducer, authInitialState);
 
     let status: IndicatorStatus
-    if (!highlight.userId) {
+    if (!auth.userId) {
         status = IndicatorStatus.NoLogin;
     } else if (!highlight.syncComplete) {
         status = IndicatorStatus.NoSync;
@@ -65,11 +70,17 @@ const App = () => {
 
     const openTools = (tab: "quotes" | "rooms" | "users") => {
         setToolsTab(tab)
-        setShowMenu(true);
+        setMenuMode("tools");
+    }
+
+    const openAuth = (tab: "login" | "signup") => {
+        setAuthTab(tab)
+        setMenuMode("auth");
     }
 
     const handleIndicator = () => {
         switch (status) {
+            case IndicatorStatus.NoLogin: openAuth("login"); return;
             case IndicatorStatus.NoRoom: openTools("rooms"); return;
             default: return;
         }
@@ -146,28 +157,33 @@ const App = () => {
     }
 
     const sendReply = async (id: string | number, plainBody: string, formattedBody: string) => {
-        if (!highlight.userId || !highlight.currentRoomId) return;
+        if (!auth.userId || !highlight.currentRoomId) return;
         if (typeof(id) !== "string") return;
         
         const txnId = await freshTxnId();
         const localMessage = new Message({
             id: txnId,
-            userId: highlight.userId,
+            userId: auth.userId,
             plainBody, formattedBody
         });
         highlightDispatch({ type: "local-message", roomId: highlight.currentRoomId, threadId: id, message: localMessage });
         sendToBackground(port, { type: "send-thread-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
     }
 
+    const attemptLogin = async (username: string, password: string, homeserver: string) => {
+        authDispatch({type: "begin-login-attempt"});
+        sendToBackground(port, { type: "attempt-login", username, password, homeserver });
+    }
+
     useEffect(() => {
         setTimeout(() => {
-            openPort(PORT_RENEW, setPort, highlightDispatch);
+            openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch);
             port?.disconnect();
         }, 1000 * 60 * 4);
     }, [port, setPort, highlightDispatch]);
 
     useEffect(() => {
-        openPort(PORT_TAB, setPort, highlightDispatch);
+        openPort(PORT_TAB, setPort, highlightDispatch, authDispatch);
     }, [setPort, highlightDispatch]);
 
     useEffect(() => {
@@ -181,7 +197,7 @@ const App = () => {
     useEffect(() => {
         document.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
-            setShowMenu(false);
+            setMenuMode(null);
         });
         document.addEventListener("selectionchange", (e) => {
             const selection = window.getSelection();
@@ -210,10 +226,10 @@ const App = () => {
         Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
     });
 
-    return !showMenu ?
+    return (!menuMode || (auth.userId && menuMode === "auth")) ?
         <>
             <Toolbar status={status} onIndicatorClick={handleIndicator}
-                onOpenMenu={() => { setShowMenu(true) }}
+                onOpenMenu={() => { setMenuMode("tools") }}
                 onShowQuotes={() => openTools("quotes")}
                 onShowRooms={() => openTools("rooms")}
                 onShowUsers={() => openTools("users")}
@@ -229,11 +245,15 @@ const App = () => {
                     top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
                 null}
         </> :
-        <Window onClose={() => setShowMenu(false)}>
-            <ToolsMenu modeId="tools" createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
-                onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
-                onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
-                page={highlight.page} currentRoomId={highlight.currentRoomId}/>
+        <Window onClose={() => setMenuMode(null)}>
+            { menuMode === "tools" ?
+                <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
+                    onRoomSwitch={newId => highlightDispatch({ type: "switch-room", newId })}
+                    onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
+                    page={highlight.page} currentRoomId={highlight.currentRoomId}/> :
+                <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
+                    attemptLogin={attemptLogin} attemptSignup={() => {}}/>
+            }
         </Window>;
 }
 

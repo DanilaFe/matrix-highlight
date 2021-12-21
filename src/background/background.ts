@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {PORT_POP, PORT_TAB, PORT_RENEW, FromContentMessage, FromPopupMessage, ToPopupMessage, ToContentMessage, RoomMembership} from "../common/messages";
+import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembership} from "../common/messages";
 import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendThreadMessage} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent, processReplacedEvent} from "./events";
@@ -56,7 +56,11 @@ async function emitMember(roomId: string, oldMembership: RoomMembership | null, 
 
 async function setupClient(newClient: sdk.MatrixClient) {
     client = newClient;
-    broadcast({ type: "logged-in", userId: newClient.getUserId() });
+    broadcast({
+        type: "logged-in",
+        userId: newClient.getUserId(),
+        homeserver: client.getHomeserverUrl()
+    });
     newClient.on("sync", state => {
         if (state !== "PREPARED") return;
         broadcast({ type: "sync-complete" });
@@ -107,6 +111,25 @@ async function fetchLogin() {
     }
 }
 
+async function passwordLogin(port: chrome.runtime.Port, username: string, password: string, homeserver: string) {
+    const newClient = sdk.createClient({ baseUrl: `https://${homeserver}` });
+    let result;
+    try {
+        result = await newClient.loginWithPassword(username, password);
+    } catch (e: any) {
+        port.postMessage({ type: "login-failed", loginError: "Invalid username or password." });
+        return;
+    }
+
+    chrome.storage.sync.set({
+        [LOCALSTORAGE_ID_KEY]: result.user_id,
+        [LOCALSTORAGE_TOKEN_KEY]: result.access_token
+    });
+    await setupClient(newClient);
+    const name = newClient.getUser(newClient.getUserId()).displayName;
+    port.postMessage({ type: "login-successful", username, homeserver, name });
+}
+
 chrome.runtime.onInstalled.addListener(async () => {
     chrome.contextMenus.create({
         title: "Highlight using Matrix",
@@ -123,47 +146,13 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     });
 });
 
-function sendToPopup(port: chrome.runtime.Port, message: ToPopupMessage) {
-    port.postMessage(message);
-}
-
-function setupPopupPort(port: chrome.runtime.Port) {
-    if (client) {
-        const username = client.getUserId();
-        const homeserver = client.getHomeserverUrl();
-        const name = client.getUser(username).displayName;
-        sendToPopup(port, { type: "login-successful", username, homeserver, name });
-    } else {
-        sendToPopup(port, { type: "login-required" });
-    }
-    port.onMessage.addListener(async (message: FromPopupMessage) => {
-        if (message.type === "attempt-login") {
-            const {username, password, homeserver} = message;
-            const newClient = sdk.createClient({ baseUrl: `https://${homeserver}` });
-            const result = await newClient.loginWithPassword(username, password);
-            if (result.errcode) {
-                sendToPopup(port, { type: "login-failed" });
-                return;
-            }
-
-            chrome.storage.sync.set({
-                [LOCALSTORAGE_ID_KEY]: result.user_id,
-                [LOCALSTORAGE_TOKEN_KEY]: result.access_token
-            });
-            await setupClient(newClient);
-            const name = newClient.getUser(newClient.getUserId()).displayName;
-            sendToPopup(port, { type: "login-successful", username, homeserver, name });
-        }
-    });
-}
-
 function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
     if (!tab?.id) return;
     hookedTabs.set(tab.id, port);
     // Catch new page with existing pages
     if (client && initial) {
-        port.postMessage({ type: "logged-in", userId: client.getUserId() });
+        port.postMessage({ type: "logged-in", userId: client.getUserId(), homeserver: client.getHomeserverUrl() });
         if (client.isInitialSyncComplete()) {
             port.postMessage({ type: "sync-complete" });
         }
@@ -177,7 +166,9 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
         }
     }
     port.onMessage.addListener((message: FromContentMessage) => {
-        if (message.type === "create-room") {
+        if (message.type === "attempt-login") {
+            passwordLogin(port, message.username, message.password, message.homeserver);
+        } else if (message.type === "create-room") {
             createRoom(client!, message.name, message.url);
         } else if (message.type === "join-room") {
             joinRoom(client!, message.roomId);
@@ -199,6 +190,5 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
 
 chrome.runtime.onConnect.addListener(async port => {
     await fetchLogin();
-    if (port.name === PORT_POP) setupPopupPort(port);
-    else if (port.name === PORT_TAB || port.name === PORT_RENEW) setupTabPort(port, port.name === PORT_TAB);
+    if (port.name === PORT_TAB || port.name === PORT_RENEW) setupTabPort(port, port.name === PORT_TAB);
 });

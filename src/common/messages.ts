@@ -5,25 +5,6 @@ export type RoomMembership = "invite" | "join" | "leave" | "ban"
 
 export const PORT_TAB = "port-tab";
 export const PORT_RENEW = "port-renew";
-export const PORT_POP = "port-pop";
-
-export type ToPopupMessage = {
-    type: "login-successful",
-    username: string,
-    name: string
-    homeserver: string,
-} | {
-    type: "login-failed"
-} | {
-    type: "login-required"
-}
-
-export type FromPopupMessage = {
-    type: "attempt-login",
-    username: string,
-    password: string,
-    homeserver: string
-}
 
 export type ToContentMessage = {
     type: "add-room",
@@ -64,12 +45,21 @@ export type ToContentMessage = {
     message: Message
 } | {
     type: "logged-in",
-    userId: string
+    userId: string,
+    homeserver: string,
+} | {
+    type: "login-failed",
+    loginError: string
 } | {
     type: "sync-complete"
 }
 
 export type FromContentMessage = {
+    type: "attempt-login",
+    username: string,
+    password: string,
+    homeserver: string
+} | {
     type: "create-room",
     name: string,
     url: string,

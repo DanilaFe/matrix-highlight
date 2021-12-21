@@ -5,7 +5,6 @@ import {produce} from "immer";
 export type HighlightDataState = {
     currentRoomId: string | null;
     syncComplete: boolean;
-    userId: string | null;
     page: Page;
 }
 
@@ -58,17 +57,12 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
         currentRoomId = event.newId;
     }
 
-    let userId = state.userId;
-    if (event.type === "logged-in") {
-        userId = event.userId;
-    }
-
     let syncComplete = state.syncComplete;
     if (event.type === "sync-complete") {
         syncComplete = true;
     }
 
-    return { page, currentRoomId, userId, syncComplete };
+    return { page, currentRoomId, syncComplete };
 }
 
 export const highlightInitialState = {

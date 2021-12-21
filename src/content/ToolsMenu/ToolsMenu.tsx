@@ -7,7 +7,6 @@ import {UserList} from "./UserList";
 export type ToolsMenuTab = "quotes" | "rooms" | "users";
 
 export type ToolsMenuProps = {
-    modeId: string;
     tab: ToolsMenuTab;
     createRoomEnabled: boolean;
     onTabClick(tab: ToolsMenuTab): void;
