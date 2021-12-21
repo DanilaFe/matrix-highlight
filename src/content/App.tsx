@@ -69,13 +69,16 @@ const App = () => {
     }
 
     const openTools = (tab: "quotes" | "rooms" | "users") => {
+        if (!auth.userId) {
+            authDispatch({ type: "set-show-login", showLogin: true });
+        }
         setToolsTab(tab)
         setShowMenu(true);
     }
 
     const handleIndicator = () => {
         switch (status) {
-            case IndicatorStatus.NoLogin: setShowMenu(true); return;
+            case IndicatorStatus.NoLogin: authDispatch({ type: "set-show-login", showLogin: true }); return;
             case IndicatorStatus.NoRoom: openTools("rooms"); return;
             default: return;
         }
@@ -193,6 +196,7 @@ const App = () => {
         document.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
             setShowMenu(false);
+            authDispatch({ type: "set-show-login", showLogin: false });
         });
         document.addEventListener("selectionchange", (e) => {
             const selection = window.getSelection();
@@ -221,7 +225,7 @@ const App = () => {
         Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
     });
 
-    if (!showMenu) {
+    if (!showMenu && !auth.showLogin) {
         const toolbarComp = 
             <Toolbar status={status} onIndicatorClick={handleIndicator}
                 onShowQuotes={() => openTools("quotes")}
@@ -238,7 +242,7 @@ const App = () => {
                 top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
             null;
         return <>{toolbarComp}{tooltipComp}</>;
-    } else if (!auth.userId) {
+    } else if (auth.showLogin) {
         return (
             <Window onClose={() => setShowMenu(false)}>
                  <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
