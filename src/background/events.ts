@@ -1,4 +1,4 @@
-import {Room, User, Highlight, Message, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
+import {Room, User, Highlight, Message, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
 import {RoomMembership, ToContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
 
@@ -69,11 +69,21 @@ function addExistingReplies(client: sdk.MatrixClient, event: sdk.MatrixEvent, hi
     }
 }
 
+function useLatestContent(client: sdk.MatrixClient, event: sdk.MatrixEvent, highlight: Highlight): void {
+    const timelineSet = client.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
+    const edits = timelineSet.getRelationsForEvent(event.getId(), HIGHLIGHT_EDIT_REL_TYPE as any, HIGHLIGHT_EDIT_EVENT_TYPE);
+    if (!edits) return;
+    const sortedEdits = edits.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs());
+    const lastEdit = sortedEdits[sortedEdits.length - 1]
+    highlight.content = lastEdit.getContent()[HIGHLIGHT_NEW_HIGHLIGHT_KEY];
+}
+
 export function processEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, placeAtTop: boolean = false): ToContentMessage | null {
     switch (event.getType()) {
         case HIGHLIGHT_EVENT_TYPE:
             const highlight = new Highlight(event.getId(), event.getContent<HighlightContent>());
             addExistingReplies(client, event, highlight);
+            useLatestContent(client, event, highlight);
             return {
                 type: "highlight",
                 roomId: event.getRoomId(),
