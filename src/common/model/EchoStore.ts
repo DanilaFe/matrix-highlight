@@ -22,6 +22,7 @@ export class EchoStore<T extends EchoItem> {
     }
 
     addLocal(local: T) {
+        if (this.local.findIndex(it => it.id === local.id) !== -1) return;
         this.local.push(local);
     }
 
@@ -30,6 +31,7 @@ export class EchoStore<T extends EchoItem> {
         if (localIndex !== -1) {
             this.local.splice(localIndex, 1);
         }
+        if (this.remote.findIndex(it => it.id === remote.id) !== -1) return;
         if (placeAtTop) {
             this.remote.splice(0, 0, remote);
         } else {
