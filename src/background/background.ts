@@ -108,7 +108,7 @@ async function fetchLogin() {
 }
 
 async function passwordLogin(port: chrome.runtime.Port, username: string, password: string, homeserver: string) {
-    const newClient = sdk.createClient({ baseUrl: `https://${homeserver}` });
+    const newClient = sdk.createClient({ baseUrl: `https://${homeserver}`, unstableClientRelationAggregation: true });
     let result;
     try {
         result = await newClient.loginWithPassword(username, password);
