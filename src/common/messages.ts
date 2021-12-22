@@ -29,11 +29,6 @@ export type ToContentMessage = {
     txnId: number | undefined,
     placeAtTop: boolean,
 } | {
-    type: "highlight-visibility",
-    roomId: string,
-    highlightId: number | string,
-    visibility: boolean,
-} | {
     type: "highlight-content",
     roomId: string,
     highlightId: number | string,
@@ -80,11 +75,6 @@ export type FromContentMessage = {
     roomId: string,
     highlight: HighlightContent,
     txnId: number
-} | {
-    type: "set-highlight-visibility",
-    roomId: string,
-    highlightId: string,
-    visibility: boolean
 } | {
     type: "edit-highlight",
     roomId: string,

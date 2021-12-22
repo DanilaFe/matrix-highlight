@@ -21,9 +21,6 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
                 room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId, event.placeAtTop));
         } else if (event.type === "local-highlight") {
             draft.changeRoom(event.roomId, room => room.addLocalHighlight(Highlight.fromOther(event.highlight)));
-        } else if (event.type === "highlight-visibility") {
-            draft.changeRoom(event.roomId,
-                room => room.setHighlightVisibility(event.highlightId, event.visibility));
         } else if (event.type === "highlight-content") {
             draft.changeRoom(event.roomId,
                 room => room.changeHighlight(event.highlightId, hl => hl.content = event.highlight));

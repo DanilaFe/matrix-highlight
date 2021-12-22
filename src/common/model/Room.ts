@@ -61,10 +61,6 @@ export class Room {
         this.highlightStore.addRemote(highlight, txnId, placeAtTop);
     }
 
-    setHighlightVisibility(id: string | number, visibility: boolean) {
-        this.changeHighlight(id, hl => hl.visible = visibility);
-    }
-
     changeHighlight(id : string | number, transform: (h: Highlight) => void): void {
         this.highlightStore.change(id, transform);
     }

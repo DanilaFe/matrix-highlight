@@ -1,4 +1,4 @@
-import {Room, User, Highlight, Message, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_HIDE_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
+import {Room, User, Highlight, Message, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
 import {RoomMembership, ToContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
 
@@ -81,14 +81,15 @@ export function processEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, p
                 highlight: highlight,
                 placeAtTop,
             };
-        case HIGHLIGHT_HIDE_EVENT_TYPE:
-            const key = event.getStateKey()!;
-            const hidden = !!event.getContent()[HIGHLIGHT_HIDDEN_KEY];
+        case HIGHLIGHT_EDIT_EVENT_TYPE:
+            const highlightId = event.getRelation()?.["event_id"];
+            const newContent = event.getContent()[HIGHLIGHT_NEW_HIGHLIGHT_KEY] as HighlightContent
+            if (!highlightId) return null;
             return {
-                type: "highlight-visibility",
+                type: "highlight-content",
                 roomId: event.getRoomId(),
-                visibility: !hidden,
-                highlightId: key,
+                highlightId,
+                highlight: newContent
             };
         case "m.room.message":
             if (!event.isThreadRelation || event.isThreadRoot) return null;
@@ -103,14 +104,3 @@ export function processEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, p
         default: return null;
     }
 };
-
-export function processReplacedEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent): ToContentMessage | null {
-    const processedEvent = processEvent(client, event);
-    if (!processedEvent || processedEvent.type !== "highlight") return null;
-    return {
-        type: "highlight-content",
-        roomId: processedEvent.roomId,
-        highlightId: processedEvent.highlight.id,
-        highlight: processedEvent.highlight.content
-    };
-}

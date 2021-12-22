@@ -1,8 +1,12 @@
+import {immerable} from "immer";
+
 export interface EchoItem {
     id: number | string
 }
 
 export class EchoStore<T extends EchoItem> {
+    [immerable] = true;
+
     local: T[];
     remote: T[];
 

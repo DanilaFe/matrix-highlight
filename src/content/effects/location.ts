@@ -1,6 +1,6 @@
 import {isInserted, getLength} from "./dom";
 import {
-    HIGHLIGHT_NODE_PATH_KEY, HIGHLIGHT_NODE_OFFSET_KEY,
+    HIGHLIGHT_NODE_PATH_KEY, HIGHLIGHT_NODE_OFFSET_KEY, HIGHLIGHT_HIDDEN_KEY,
     HIGHLIGHT_COLOR_KEY, HIGHLIGHT_START_KEY, HIGHLIGHT_END_KEY, HIGHLIGHT_TEXT_KEY,
     NodeData, HighlightContent
 } from "../../common/model/matrix";
@@ -115,6 +115,7 @@ export function makeEvent(selection: Selection): Omit<HighlightContent, typeof H
         [HIGHLIGHT_TEXT_KEY]: textPieces,
         [HIGHLIGHT_START_KEY]: smaller,
         [HIGHLIGHT_END_KEY]: bigger,
+        [HIGHLIGHT_HIDDEN_KEY]: false,
     }
 }
 

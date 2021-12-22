@@ -1,8 +1,8 @@
 import * as sdk from "matrix-js-sdk";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembership} from "../common/messages";
-import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, setHighlightVisibility, sendHighlightEdit, checkRoom, sendThreadMessage, loadRoom} from "./actions";
+import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, sendHighlightEdit, checkRoom, sendThreadMessage, loadRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
-import {processRoom, processMember, processEvent, processReplacedEvent} from "./events";
+import {processRoom, processMember, processEvent} from "./events";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
@@ -46,10 +46,6 @@ async function emitEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, place
     await broadcastRoom(event.getRoomId(), processEvent(client, event, placeAtTop));
 };
 
-async function emitReplacedEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent): Promise<void> {
-    await broadcastRoom(event.getRoomId(), processReplacedEvent(client, event));
-}
-
 async function emitMember(roomId: string, oldMembership: RoomMembership | null, member: sdk.RoomMember): Promise<void>{
     await broadcastRoom(roomId, processMember(roomId, oldMembership, member));
 }
@@ -83,9 +79,6 @@ async function setupClient(newClient: sdk.MatrixClient) {
         });
         newClient.on("Room.timeline", (event: sdk.MatrixEvent, room: sdk.Room, toStartOfTimeline: boolean, removed: boolean, data: {liveEvent: boolean}) => {
             if (!data.liveEvent) emitEvent(newClient, event, toStartOfTimeline);
-        });
-        newClient.on("Event.replaced", (event: sdk.MatrixEvent) => {
-            emitReplacedEvent(newClient, event);
         });
         newClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: RoomMembership | null) => {
             emitMember(event.getRoomId(), oldMembership, member);
@@ -187,8 +180,6 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
             inviteUser(client!, message.roomId, message.userId);
         } else if (message.type === "send-highlight") {
             sendHighlight(client!, message.roomId, message.highlight, message.txnId);
-        } else if (message.type === "set-highlight-visibility") {
-            setHighlightVisibility(client!, message.roomId, message.highlightId, message.visibility);
         } else if (message.type === "edit-highlight") {
             sendHighlightEdit(client!, message.roomId, message.highlightId, message.highlight);
         } else if (message.type === "send-thread-message") {

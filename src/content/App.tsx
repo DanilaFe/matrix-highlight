@@ -5,7 +5,7 @@ import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
 import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
-import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_TEXT_KEY, COLORS} from "../common/model";
+import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_HIDDEN_KEY, COLORS} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
@@ -124,16 +124,19 @@ const App = () => {
 
     const hideHighlight = (id: string | number) => {
         if (!highlight.currentRoomId) return;
+        const existingHighlight = highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id == id);
+        if (!existingHighlight) return;
 
+        const newContent = { ...existingHighlight.content, [HIGHLIGHT_HIDDEN_KEY]: true };
         if (typeof id === "string") {
-            sendToBackground(port, { type: "set-highlight-visibility",  roomId: highlight.currentRoomId, highlightId: id, visibility: false });
+            sendToBackground(port, { type: "edit-highlight", roomId: highlight.currentRoomId, highlightId: id, highlight: newContent });
         }
         tooltipDispatch({ type: "hide" });
         highlightDispatch({
-            type: "highlight-visibility",
+            type: "highlight-content",
             roomId: highlight.currentRoomId,
             highlightId: id,
-            visibility: false
+            highlight: newContent
         });
     }
 
