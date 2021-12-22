@@ -14,7 +14,7 @@ export function processRoom(client: sdk.MatrixClient, room: sdk.Room): ToContent
         })
     });
     for (const event of room.getLiveTimeline().getEvents()) {
-        const contentEvent = processEvent(event);
+        const contentEvent = processEvent(client, event);
         if (contentEvent) events.push(contentEvent);
     }
     for (const member of room.getMembers()) {
@@ -51,14 +51,34 @@ function extractTxnId(event: sdk.MatrixEvent): number | undefined {
     return localId;
 }
 
-export function processEvent(event: sdk.MatrixEvent, placeAtTop: boolean = false): ToContentMessage | null {
+function eventToMessage(event: sdk.MatrixEvent): Message {
+    return new Message({
+        id: event.getId(),
+        plainBody: event.getContent().body,
+        formattedBody: event.getContent().formatted_body,
+        userId: event.getSender(),
+    });
+}
+
+function addExistingReplies(client: sdk.MatrixClient, event: sdk.MatrixEvent, highlight: Highlight): void {
+    const timelineSet = client.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
+    const threadReplies = timelineSet.getRelationsForEvent(event.getId(), sdk.RelationType.Thread, "m.room.message");
+    if (!threadReplies) return;
+    for (const threadEvent of threadReplies.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs())) {
+        highlight.addRemoteMessage(eventToMessage(threadEvent), undefined);
+    }
+}
+
+export function processEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, placeAtTop: boolean = false): ToContentMessage | null {
     switch (event.getType()) {
         case HIGHLIGHT_EVENT_TYPE:
+            const highlight = new Highlight(event.getId(), event.getContent<HighlightContent>());
+            addExistingReplies(client, event, highlight);
             return {
                 type: "highlight",
                 roomId: event.getRoomId(),
                 txnId: extractTxnId(event),
-                highlight: new Highlight(event.getId(), event.getContent<HighlightContent>()),
+                highlight: highlight,
                 placeAtTop,
             };
         case HIGHLIGHT_HIDE_EVENT_TYPE:
@@ -77,20 +97,15 @@ export function processEvent(event: sdk.MatrixEvent, placeAtTop: boolean = false
                 roomId: event.getRoomId(),
                 threadId: event.threadRootId,
                 txnId: extractTxnId(event),
-                message: new Message({
-                    id: event.getId(),
-                    plainBody: event.getContent().body,
-                    formattedBody: event.getContent().formatted_body,
-                    userId: event.getSender(),
-                }),
+                message: eventToMessage(event),
                 placeAtTop,
             };
         default: return null;
     }
 };
 
-export function processReplacedEvent(event: sdk.MatrixEvent): ToContentMessage | null {
-    const processedEvent = processEvent(event);
+export function processReplacedEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent): ToContentMessage | null {
+    const processedEvent = processEvent(client, event);
     if (!processedEvent || processedEvent.type !== "highlight") return null;
     return {
         type: "highlight-content",

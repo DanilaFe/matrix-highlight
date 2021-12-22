@@ -42,12 +42,12 @@ async function emitRoom(client: sdk.MatrixClient, room: sdk.Room): Promise<void>
     await broadcastRoom(room.roomId, processRoom(client, room));
 }
 
-async function emitEvent(event: sdk.MatrixEvent, placeAtTop: boolean): Promise<void> {
-    await broadcastRoom(event.getRoomId(), processEvent(event, placeAtTop));
+async function emitEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent, placeAtTop: boolean): Promise<void> {
+    await broadcastRoom(event.getRoomId(), processEvent(client, event, placeAtTop));
 };
 
-async function emitReplacedEvent(event: sdk.MatrixEvent): Promise<void> {
-    await broadcastRoom(event.getRoomId(), processReplacedEvent(event));
+async function emitReplacedEvent(client: sdk.MatrixClient, event: sdk.MatrixEvent): Promise<void> {
+    await broadcastRoom(event.getRoomId(), processReplacedEvent(client, event));
 }
 
 async function emitMember(roomId: string, oldMembership: RoomMembership | null, member: sdk.RoomMember): Promise<void>{
@@ -79,13 +79,13 @@ async function setupClient(newClient: sdk.MatrixClient) {
             });
         });
         newClient.on("event", (event: sdk.MatrixEvent) => {
-            emitEvent(event, false);
+            emitEvent(newClient, event, false);
         });
         newClient.on("Room.timeline", (event: sdk.MatrixEvent, room: sdk.Room, toStartOfTimeline: boolean, removed: boolean, data: {liveEvent: boolean}) => {
-            if (!data.liveEvent) emitEvent(event, toStartOfTimeline);
+            if (!data.liveEvent) emitEvent(newClient, event, toStartOfTimeline);
         });
         newClient.on("Event.replaced", (event: sdk.MatrixEvent) => {
-            emitReplacedEvent(event);
+            emitReplacedEvent(newClient, event);
         });
         newClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: RoomMembership | null) => {
             emitMember(event.getRoomId(), oldMembership, member);
