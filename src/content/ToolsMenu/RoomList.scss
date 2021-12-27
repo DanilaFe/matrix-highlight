@@ -1,5 +1,12 @@
 @import "../../common/utils.scss";
 
+.matrix-highlight  .room-select {
+    input:focus {
+        /* Fix the fake input created by react-select */
+        box-shadow: none;
+    }
+}
+
 .matrix-highlight .room-list {
     @include padded-list;
     margin-bottom: 1rem;
@@ -12,7 +19,7 @@
             border-bottom: none;
         }
     }
-    
+
     .room-current {
         border: 0.08rem solid rgba(0, 0, 0, 0.1);
         border-radius: 1rem;
