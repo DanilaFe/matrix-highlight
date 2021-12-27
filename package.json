@@ -15,7 +15,8 @@
     "react-dom": "^17.0.2",
     "react-feather": "^2.0.9",
     "sanitize-html": "^2.6.1",
-    "webextension-polyfill": "^0.8.0"
+    "webextension-polyfill": "^0.8.0",
+    "react-select": "^5.2.1"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.163",
