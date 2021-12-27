@@ -34,8 +34,8 @@ export const RoomList = (props: RoomListProps) => {
     if (props.joinedRooms.length + props.invitedRooms.length === 0) {
         return (
             <div id="FirstGroupMessage">
-                Your highlights are stored in groups. Each group contains its own highlights, and can be shared with other users (or not shared at all).
-                <button disabled={!props.createRoomEnabled} className="primary" onClick={props.onCreateRoom}>Create a group!</button>
+                Your highlights are stored in rooms. Each rooms contains its own highlights, and can be shared with other users (or not shared at all).
+                <button disabled={!props.createRoomEnabled} className="primary" onClick={props.onCreateRoom}>Create a room!</button>
             </div>
         );
     }
