@@ -3,6 +3,7 @@ import {Room} from "../../common/model";
 import {Folder, FolderPlus, FolderMinus} from "react-feather";
 import Select from 'react-select'
 import "./RoomList.scss";
+import * as variables from "../../common/scss/variables.scss";
 
 export type RoomListProps = {
     joinedRooms: Room[];
@@ -49,9 +50,27 @@ export const RoomList = (props: RoomListProps) => {
         );
     }
     const options = props.joinedRooms.map(room => { return { value: room.id, label: room.name, data: room } });
+    const currentRoom = props.joinedRooms.find(r => r.id === props.currentRoomId);
+    const defaultOption = currentRoom ? { value: currentRoom.id, label: currentRoom.name, data: currentRoom } : null;
     return (
         <>
-            <Select className="room-select" options={options}/>
+            <Select className="room-select" options={options} defaultValue={defaultOption}
+                onChange={newValue => props.onRoomClick(newValue?.value || null)}
+                styles={{
+                    option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isSelected ? '#3072c7' : (state.isFocused ? '#cbddf2' : 'white')
+                    }),
+                    control: (provided, state) => ({
+                        ...provided,
+                        border: state.menuIsOpen ? '0.08rem solid #3072c7' : '0.08rem solid #cacaca',
+                        boxShadow: state.menuIsOpen ? '0px 0px 5px rgba(#3072c7, 0.4)' : 'none',
+                    }),
+                    menu: (provided, state) => ({
+                        ...provided,
+                        zIndex: 10000
+                    })
+                }}/>
         </>
     );
 }

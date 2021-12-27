@@ -19,17 +19,16 @@
 .matrix-highlight {
     all: initial;
 
-    *:not(svg,path,circle,line,.room-select*, .DraftEditor-root *) {
+    *:not(svg,path,circle,line,.room-select,.room-select *,.DraftEditor-root *) {
         all: revert;
     }
 
-    /* Increasing specificity to circumvent all: revert */
-    *:not(.impossible) {
+    .toolbar-main, .window {
         z-index: 999;
     }
 
     /* Increasing specificity to circumvent all: revert */
-    svg:not(.impossible) {
+    svg.feather {
         fill: none;
     }
 
