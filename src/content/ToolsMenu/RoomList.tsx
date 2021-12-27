@@ -1,6 +1,7 @@
 import {PropsWithChildren} from "react";
 import {Room} from "../../common/model";
 import {Folder, FolderPlus, FolderMinus} from "react-feather";
+import Select from 'react-select'
 import "./RoomList.scss";
 
 export type RoomListProps = {
@@ -47,19 +48,10 @@ export const RoomList = (props: RoomListProps) => {
             </div>
         );
     }
-    const rooms = props.joinedRooms.map(r => <RoomItem key={r.id} room={r} current={r.id === props.currentRoomId} onClick={() => props.onRoomClick(r.id)}/>);
-    const invites = props.invitedRooms.map(r =>
-        <RoomItem key={r.id} room={r} current={false} onClick={() => {}}>
-            <button className="accept-button" onClick={() => props.onJoinRoom(r.id)}>Accept</button>
-            <button className="reject-button" onClick={() => props.onIgnoreRoom(r.id)}>Reject</button>
-        </RoomItem>
-    );
+    const options = props.joinedRooms.map(room => { return { value: room.id, label: room.name, data: room } });
     return (
         <>
-            <h3>Manage Rooms</h3>
-            <RoomToolbar/>
-            { rooms.length === 0 ? <></> : <><h3>Joined Rooms</h3><div className="room-list">{rooms}</div></> }
-            { invites.length === 0 ? <></> : <><h3>Invited Rooms</h3><div className="room-list">{invites}</div></> }
+            <Select className="room-select" options={options}/>
         </>
     );
 }
