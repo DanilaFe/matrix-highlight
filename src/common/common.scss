@@ -92,6 +92,15 @@
         transition: background-color 0.1s;
         border-color: rgba(0, 0, 0, 0.20);
         min-width: 5rem;
+
+        &.labeled-icon-button {
+            display: inline-flex;
+            align-items: center;
+
+            .feather {
+                margin-right: 0.5rem;
+            }
+        }
         
         &:hover {
             background-color: #f0f0f0;

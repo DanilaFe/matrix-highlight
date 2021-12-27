@@ -1,6 +1,6 @@
 import {PropsWithChildren} from "react";
 import {Room} from "../../common/model";
-import {Folder} from "react-feather";
+import {Folder, FolderPlus, FolderMinus} from "react-feather";
 import "./RoomList.scss";
 
 export type RoomListProps = {
@@ -30,6 +30,14 @@ const RoomItem = (props: PropsWithChildren<{room: Room, onClick(): void, current
     );
 }
 
+const RoomToolbar = (props: {}) => {
+    return (
+        <div className="input-group">
+            <button className="labeled-icon-button"><FolderPlus className="feather"/>Add room</button>
+        </div>
+    );
+};
+
 export const RoomList = (props: RoomListProps) => {
     if (props.joinedRooms.length + props.invitedRooms.length === 0) {
         return (
@@ -48,6 +56,8 @@ export const RoomList = (props: RoomListProps) => {
     );
     return (
         <>
+            <h3>Manage Rooms</h3>
+            <RoomToolbar/>
             { rooms.length === 0 ? <></> : <><h3>Joined Rooms</h3><div className="room-list">{rooms}</div></> }
             { invites.length === 0 ? <></> : <><h3>Invited Rooms</h3><div className="room-list">{invites}</div></> }
         </>
