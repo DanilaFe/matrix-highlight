@@ -1,7 +1,7 @@
 import { useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
-import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
+import {ToolsMenu, ToolsMenuTab} from "./ToolsMenu/ToolsMenu";
 import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
@@ -49,7 +49,7 @@ const App = () => {
 
     const [showMenu, setShowMenu] = useState(false);
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
-    const [toolsTab, setToolsTab] = useState<"quotes" | "rooms" | "users">("rooms");
+    const [toolsTab, setToolsTab] = useState<ToolsMenuTab | null>(null);
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
@@ -69,7 +69,7 @@ const App = () => {
         status = IndicatorStatus.Synced;
     }
 
-    const openTools = (tab: "quotes" | "rooms" | "users") => {
+    const openTools = (tab: ToolsMenuTab | null) => {
         if (!auth.userId) {
             authDispatch({ type: "set-show-login", showLogin: true });
         }
@@ -80,7 +80,7 @@ const App = () => {
     const handleIndicator = () => {
         switch (status) {
             case IndicatorStatus.NoLogin: authDispatch({ type: "set-show-login", showLogin: true }); return;
-            case IndicatorStatus.NoRoom: openTools("rooms"); return;
+            case IndicatorStatus.NoRoom: openTools(null); return;
             default: return;
         }
     };
@@ -241,8 +241,8 @@ const App = () => {
     if (!showMenu && !auth.showLogin) {
         const toolbarComp = 
             <Toolbar status={status} onIndicatorClick={handleIndicator}
+                onShowRooms={() => openTools(null)}
                 onShowQuotes={() => openTools("quotes")}
-                onShowRooms={() => openTools("rooms")}
                 onShowUsers={() => openTools("users")}/>;
         const tooltipComp = tooltip.visible ?
             <Tooltip
@@ -267,9 +267,9 @@ const App = () => {
         return (
             <Window onClose={() => setShowMenu(false)}>
                 <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
-                    onRoomSwitch={switchRoom}
+                    onSelectRoom={switchRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
-                    page={highlight.page} currentRoomId={highlight.currentRoomId}/> :
+                    page={highlight.page} currentRoom={highlight.page.getRoom(highlight.currentRoomId) || null}/> :
             </Window>
         );
     }

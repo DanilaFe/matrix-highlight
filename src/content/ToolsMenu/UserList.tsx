@@ -4,15 +4,13 @@ import {Room} from "../../common/model";
 import {User} from "react-feather";
 
 export type UserListProps = {
-    currentRoom: Room | null;   
+    currentRoom: Room;   
     onInviteUser(roomId: string, userId: string): void;
 }
 
 export const UserList = (props: UserListProps) => {
     const [inviteString, setInviteString] = useState("");
-    
     const currentRoom = props.currentRoom;
-    if (!currentRoom) return <></>;
 
     const users = currentRoom.joinedUsers.map(u =>
         <div key={u.id} className="user">
