@@ -42,16 +42,20 @@ const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick
     );
 };
 
-const NavBar = (props: { title: string, currentRoom: Room, onPressBack(): void }) => {
+const NavBar = (props: { title: string, subtitle: string, onPressBack(): void }) => {
     return (
         <nav>
             <ArrowLeft className="feather" onClick={props.onPressBack}/>
             <div className="nav-text">
                 <h1>{props.title}</h1>
-                <span>{`For room: "${props.currentRoom.name}"`}</span>
+                <span>{props.subtitle}</span>
             </div>
         </nav>
     );
+}
+
+const RoomNavBar = (props: { title: string, currentRoom: Room, onPressBack(): void }) => {
+    return <NavBar title={props.title} subtitle={`For room: "${props.currentRoom.name}"`} onPressBack={props.onPressBack}/>;
 }
 
 const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}>) => {
@@ -72,10 +76,21 @@ const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): 
     );
 }
 
+const InviteView = (props: { page: Page, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void, onPressBack(): void }) => {
+    return (
+        <>
+            <NavBar title="Invites" subtitle="Invites are shown only for the current page." {...props}/>
+            <div className="room-list">
+                {props.page.invitedRooms.map(r => <RoomItem room={r} {...props}/>)}
+            </div>
+        </>
+    );
+}
+
 const QuoteListView = (props: {currentRoom: Room, onPressBack(): void }) => {
     return (
         <>
-            <NavBar title="Quotes" {...props}/>
+            <RoomNavBar title="Quotes" {...props}/>
             <QuoteList highlights={props.currentRoom.highlights}/>
         </>
     );
@@ -84,7 +99,7 @@ const QuoteListView = (props: {currentRoom: Room, onPressBack(): void }) => {
 const UserListView = (props: {currentRoom: Room, onPressBack(): void, onInviteUser(roomId: string, userId: string): void }) => {
     return (
         <>
-            <NavBar title="Users" {...props}/>
+            <RoomNavBar title="Users" {...props}/>
             <UserList {...props}/>
         </>
     );
@@ -140,7 +155,10 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
     const pressBack = () => props.onTabClick(null);
     let view: ReactElement;
     if (!props.currentRoom) {
-        view = <DefaultView {...props}/>;
+        switch (props.tab) {
+            case "invites": view = <InviteView onPressBack={pressBack} {...props}/>; break;
+            default: view = <DefaultView {...props}/>;
+        }
     } else {
         switch (props.tab) {
             case "quotes": view = <QuoteListView currentRoom={props.currentRoom} onPressBack={pressBack}/>; break;
