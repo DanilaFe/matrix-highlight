@@ -1,41 +1,56 @@
-import {PropsWithChildren} from "react";
 import {Room} from "../../common/model";
-import {Folder, FolderPlus, FolderMinus} from "react-feather";
+import {Plus, FolderPlus, Icon, Settings, Users, AlignLeft, MessageSquare, Bell} from "react-feather";
 import Select from 'react-select'
 import "./RoomList.scss";
-import * as variables from "../../common/scss/variables.scss";
 
 export type RoomListProps = {
     joinedRooms: Room[];
     invitedRooms: Room[];
     createRoomEnabled: boolean;
     currentRoomId: string | null;
-    onRoomClick(room: string | null): void;
+    onSelectRoom(room: string | null): void;
     onCreateRoom(): void;
     onJoinRoom(roomId: string): void;
     onIgnoreRoom(roomId: string): void;
 };
 
-const RoomItem = (props: PropsWithChildren<{room: Room, onClick(): void, current: boolean}>) => {
+/* const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}>) => {
     return (
-        <div className="room" onClick={props.onClick}>
+        <div className="room">
             <div className="room-icon"><Folder/></div>
             <div className="room-name">
                 {props.room.name}
-                {props.current ? <span className="room-current">Current</span> : null}
             </div>
             <div className="room-info">
                 Users: {props.room.joinedUsers.map(u => u.name).join(", ")}
-                { props.children ? <p>{props.children}</p> : <></> }
+                <p>
+                    <button className="accept-button" onClick={() => props.onJoinRoom(r.id)}>Accept</button>
+                    <button className="reject-button" onClick={() => props.onIgnoreRoom(r.id)}>Reject</button>
+                </p>
             </div>
         </div>
     );
-}
+} */
+// const invites = props.joinedRooms.map(r => <RoomItem key={r.id} room={r} onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>);
+// { currentRoom ? <><h3>Quotes</h3><QuoteList highlights={currentRoom.highlights}/></> : undefined }
 
-const RoomToolbar = (props: {}) => {
+const RoomToolbar = (props: { onCreateRoom(): void, onJoinRoom(): void, onInviteOpen(): void, showInvites: boolean }) => {
     return (
         <div className="input-group">
-            <button className="labeled-icon-button"><FolderPlus className="feather"/>Add room</button>
+            <button className="labeled-icon-button" onClick={props.onCreateRoom}><Plus className="feather"/>Create room</button>
+            <button className="labeled-icon-button" onClick={props.onJoinRoom}><FolderPlus className="feather"/>Join room</button>
+            { props.showInvites ? <button className="labeled-icon-button" onClick={props.onInviteOpen}><Bell className="feather"/>View Invites</button> : null }
+        </div>
+    );
+};
+
+const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick(): void }) => {
+    const MyIcon = props.icon;
+    return (
+        <div className="menu-button" onClick={props.onClick}>
+            <div className="menu-button-icon"><MyIcon/></div>
+            <div className="menu-button-title">{props.title}</div>
+            <div className="menu-button-subtitle">{props.subtitle}</div>
         </div>
     );
 };
@@ -49,13 +64,15 @@ export const RoomList = (props: RoomListProps) => {
             </div>
         );
     }
-    const options = props.joinedRooms.map(room => { return { value: room.id, label: room.name, data: room } });
+    const options = props.joinedRooms.map(r => { return { value: r.id, label: r.name, data: r } });
     const currentRoom = props.joinedRooms.find(r => r.id === props.currentRoomId);
     const defaultOption = currentRoom ? { value: currentRoom.id, label: currentRoom.name, data: currentRoom } : null;
     return (
         <>
+            <h3>Select Room</h3>
+            <RoomToolbar onCreateRoom={() => {}} onJoinRoom={() => {}} onInviteOpen={() => {}} showInvites={props.invitedRooms.length !== 0}/>
             <Select className="room-select" options={options} defaultValue={defaultOption}
-                onChange={newValue => props.onRoomClick(newValue?.value || null)}
+                onChange={newValue => props.onSelectRoom(newValue?.value || null)}
                 styles={{
                     option: (provided, state) => ({
                         ...provided,
@@ -71,6 +88,11 @@ export const RoomList = (props: RoomListProps) => {
                         zIndex: 10000
                     })
                 }}/>
+            <h3>Current Room</h3>
+            <RoomButton icon={Settings} title="Settings" subtitle="Configure room name, description, etc." onClick={() => {}}/>
+            <RoomButton icon={Users} title="Users" subtitle="View or invite users." onClick={() => {}}/>
+            <RoomButton icon={AlignLeft} title="Quotes" subtitle="See and discuss what has been highlighted on the page." onClick={() => {}}/>
+            <RoomButton icon={MessageSquare} title="Comments" subtitle="View conversation about this page." onClick={() => {}}/>
         </>
     );
 }

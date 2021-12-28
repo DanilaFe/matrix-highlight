@@ -7,6 +7,24 @@
     }
 }
 
+.matrix-highlight .menu-button {
+    @include padded-list-item;
+    @include bordered-block;
+    margin-bottom: 0.5rem;
+
+    .menu-button-icon {
+        @include padded-list-icon;
+    }
+
+    .menu-button-title {
+        @include padded-list-name;
+    }
+
+    .menu-button-subtitle {
+        @include padded-list-body;
+    }
+}
+
 .matrix-highlight .room-list {
     @include padded-list;
     margin-bottom: 1rem;
@@ -19,15 +37,6 @@
             border-bottom: none;
         }
     }
-
-    .room-current {
-        border: 0.08rem solid rgba(0, 0, 0, 0.1);
-        border-radius: 1rem;
-        margin-left: 0.25rem;
-        padding: 0 0.25rem 0 0.25rem;
-        background-color: rgba(52, 156, 235, 0.4);
-    }
-
     .room-icon {
         @include padded-list-icon;
     }
