@@ -4,7 +4,7 @@ import {UserList} from "./UserList";
 import {Plus, Folder, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare, ArrowLeft} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
-import {useContext, ReactElement } from "react";
+import {useContext} from "react";
 import {AppContext} from "../AppContext";
 import {ToolsMenuContext} from "./ToolsMenuContext";
 
@@ -96,6 +96,14 @@ const QuoteListView = () => {
 const UserListView = (props: { onInviteUser(roomId: string, userId: string): void }) => {
     return <><RoomNavBar title="Users"/><UserList onInviteUser={props.onInviteUser}/></>;
 }
+const NoRoomsView = () => {
+    return (
+        <div id="FirstGroupMessage">
+            Your highlights are stored in rooms. Each rooms contains its own highlights, and can be shared with other users (or not shared at all).
+            <RoomToolbar/>
+        </div>
+    );
+}
 
 const DefaultView = (props: ToolsMenuProps) => {
     const {page, currentRoom} = useContext(AppContext);
@@ -135,36 +143,22 @@ const DefaultView = (props: ToolsMenuProps) => {
     );
 }
 
-export const ToolsMenu = (props: ToolsMenuProps) => {
-    const {page, currentRoom} = useContext(AppContext);
+const ToolView = (props: ToolsMenuProps) => {
     const {tab} = useContext(ToolsMenuContext);
+    const {currentRoom, page} = useContext(AppContext);
+
     if (page.joinedRooms.length + page.invitedRooms.length === 0) {
-        return (
-            <div className="tools-menu">
-                <div id="FirstGroupMessage">
-                    Your highlights are stored in rooms. Each rooms contains its own highlights, and can be shared with other users (or not shared at all).
-                    <RoomToolbar/>
-                </div>
-            </div>
-        );
+        return <NoRoomsView/>;
+    } else if (tab === "invites") {
+        return <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>;
+    } else if (currentRoom && tab === "quotes") {
+        return <QuoteListView/>;
+    } else if (currentRoom && tab === "users") {
+        return <UserListView onInviteUser={props.onInviteUser}/>; 
     }
-    let view: ReactElement;
-    if (!currentRoom) {
-        switch (tab) {
-            case "invites": view = <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>; break;
-            default: view = <DefaultView {...props}/>;
-        }
-    } else {
-        switch (tab) {
-            case "quotes": view = <QuoteListView/>; break;
-            case "users": view = <UserListView onInviteUser={props.onInviteUser}/>; break;
-            case "invites": view = <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>; break;
-            default: view = <DefaultView {...props}/>;
-        }
-    }
-    return (
-        <div className="tools-menu">
-            {view}
-        </div>
-    );
+    return <DefaultView {...props}/>;
+}
+
+export const ToolsMenu = (props: ToolsMenuProps) => {
+    return <div className="tools-menu"><ToolView {...props}/></div>;
 }
