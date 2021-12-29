@@ -1,6 +1,7 @@
 import {QuoteList} from "./QuoteList";
 import {UserList} from "./UserList";
 import {InviteList} from "./InviteList";
+import {RoomCreator} from "./RoomCreator";
 import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
@@ -41,6 +42,15 @@ const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick
         </div>
     );
 };
+
+const RoomCreatorView = (props: { createRoomEnabled: boolean, onCreateRoom(): void,  }) => {
+    return (
+        <>
+            <NavBar title="Create Room" subtitle="Create and join an empty room all to yourself."/>
+            <RoomCreator {...props}/>
+        </>
+    );
+}
 
 const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: string): void }) => {
     const {page} = useContext(AppContext);
@@ -111,7 +121,9 @@ const ToolView = (props: ToolsMenuProps) => {
     const {tab} = useContext(ToolsMenuContext);
     const {currentRoom, page} = useContext(AppContext);
 
-    if (page.joinedRooms.length + page.invitedRooms.length === 0) {
+    if (tab === "create") {
+        return <RoomCreatorView createRoomEnabled={props.createRoomEnabled} onCreateRoom={props.onCreateRoom}/>
+    } else if (page.joinedRooms.length + page.invitedRooms.length === 0) {
         return <NoRoomsView/>;
     } else if (tab === "invites") {
         return <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>;

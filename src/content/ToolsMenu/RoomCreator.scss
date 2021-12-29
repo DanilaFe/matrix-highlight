@@ -1,0 +1,6 @@
+@import "../../common/utils.scss";
+
+.matrix-highlight #CreateRoom {
+    @include bordered-block;
+    padding: 1rem;
+}

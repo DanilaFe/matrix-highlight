@@ -74,6 +74,18 @@
             }
         }
     }
+
+    /* Increasing specificity to circumvent all: revert */
+    form:not(.impossible) {
+        text-align: left;
+        margin: 0 auto 0 auto;
+        max-width: 25rem;
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
     
     /* Increasing specificity to circumvent all: revert */
     fieldset:not(.impossible) {
