@@ -85,6 +85,7 @@ class EffectfulRenderer {
     private _highlightData: HighlightData[] = [];
     private _hoverStack: (number | string)[] = [];
     private _subscriber: RendererSubscriber | null = null;
+    private _timer: ReturnType<typeof setTimeout> | null = null;
 
     subscribe(subscriber: RendererSubscriber) {
         this._subscriber = subscriber;
@@ -136,7 +137,7 @@ class EffectfulRenderer {
         }
     }
 
-    apply(highlights: readonly Highlight[]) {
+    _apply(highlights: readonly Highlight[]) {
         let i = 0;
         for (const highlight of highlights) {
             if (!highlight.visible) continue;
@@ -165,6 +166,14 @@ class EffectfulRenderer {
             }
             this._highlightData.length = i;
         }
+    }
+
+    apply(highlights: readonly Highlight[]) {
+        if (this._timer) clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            this._apply(highlights);
+            this._timer = null;
+        }, 10);
     }
 }
 
