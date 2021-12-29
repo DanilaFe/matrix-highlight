@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import {Highlight, User} from "../../common/model";
+import {Highlight} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
 import {Trash} from "react-feather";
@@ -11,7 +11,6 @@ export type TooltipProps = {
     top: number;
     bottom: number;
     target: Highlight | null;
-    users: User[];
     highlight: (color: string) => void;
     hide: (id: string | number) => void;
     reply: (id: string | number, plainBody: string, formattedBody: string) => void;
@@ -59,7 +58,7 @@ export const Tooltip = (props: TooltipProps) => {
                 <DeleteButton onClick={() => props.hide(props.target!.id)}/>
             </div>
             <h3>Comments</h3> 
-            <CommentList users={props.users} messages={props.target.messages}/>
+            <CommentList messages={props.target.messages}/>
             <span className="notice">Leave a comment</span>
             <Editor sendReply={(plain, formatted) => props.reply(props.target!.id, plain, formatted) }/>
         </LargeTooltip>

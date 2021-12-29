@@ -259,8 +259,7 @@ const App = () => {
                 onShowUsers={() => openTools("users")}/>;
         const tooltipComp = tooltip.visible ?
             <Tooltip
-                target={highlight.page.getRoom(highlight.currentRoomId)?.highlights.find(hl => hl.id === tooltip.target) || null}
-                users={highlight.page.getRoom(highlight.currentRoomId)?.users || []}
+                target={currentRoom?.highlights?.find(hl => hl.id === tooltip.target) || null}
                 hide={hideHighlight}
                 reply={sendReply}
                 changeColor={setHighlightColor}
