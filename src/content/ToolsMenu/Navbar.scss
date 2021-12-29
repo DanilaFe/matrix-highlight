@@ -1,0 +1,17 @@
+.matrix-highlight .tools-menu nav {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+
+    h1 {
+        margin: 0;
+        margin-bottom: 0.2rem;
+    }
+
+    .feather {
+        height: 1.5rem;
+        width: 1.5rem;
+        margin-right: 1rem;
+        cursor: pointer;
+    }
+}

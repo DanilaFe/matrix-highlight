@@ -1,12 +1,13 @@
-import {Room} from "../../common/model";
 import {QuoteList} from "./QuoteList";
 import {UserList} from "./UserList";
-import {Plus, Folder, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare, ArrowLeft} from "react-feather";
+import {InviteList} from "./InviteList";
+import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
 import {useContext} from "react";
 import {AppContext} from "../AppContext";
 import {ToolsMenuContext} from "./ToolsMenuContext";
+import {NavBar, RoomNavBar} from "./Navbar";
 
 export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
 
@@ -41,50 +42,12 @@ const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick
     );
 };
 
-const NavBar = (props: { title: string, subtitle: string }) => {
-    const { openTab } = useContext(ToolsMenuContext);
-    return (
-        <nav>
-            <ArrowLeft className="feather" onClick={() => openTab(null)}/>
-            <div className="nav-text">
-                <h1>{props.title}</h1>
-                <span>{props.subtitle}</span>
-            </div>
-        </nav>
-    );
-}
-
-const RoomNavBar = (props: { title: string }) => {
-    const { currentRoom } = useContext(AppContext);
-    return <NavBar title={props.title} subtitle={`For room: "${currentRoom?.name || ""}"`}/>;
-}
-
-const RoomItem = (props: {room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}) => {
-    return (
-        <div className="room">
-            <div className="room-icon"><Folder/></div>
-            <div className="room-name">
-                {props.room.name}
-            </div>
-            <div className="room-info">
-                Users: {props.room.joinedUsers.map(u => u.name).join(", ")}
-                <p>
-                    <button className="accept-button" onClick={() => props.onJoinRoom(props.room.id)}>Accept</button>
-                    <button className="reject-button" onClick={() => props.onIgnoreRoom(props.room.id)}>Reject</button>
-                </p>
-            </div>
-        </div>
-    );
-}
-
 const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: string): void }) => {
     const {page} = useContext(AppContext);
     return (
         <>
             <NavBar title="Invites" subtitle="Invites are shown only for the current page."/>
-            <div className="room-list">
-                {page.invitedRooms.map(r => <RoomItem room={r} {...props}/>)}
-            </div>
+            <InviteList invitedRooms={page.invitedRooms} onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>
         </>
     );
 }
@@ -99,7 +62,8 @@ const UserListView = (props: { onInviteUser(roomId: string, userId: string): voi
 const NoRoomsView = () => {
     return (
         <div id="FirstGroupMessage">
-            Your highlights are stored in rooms. Each rooms contains its own highlights, and can be shared with other users (or not shared at all).
+            Your highlights are stored in rooms. Each rooms contains its own highlights,
+            and can be shared with other users (or not shared at all).
             <RoomToolbar/>
         </div>
     );
