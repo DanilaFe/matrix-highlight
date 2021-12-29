@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu, ToolsMenuTab} from "./ToolsMenu/ToolsMenu";
+import {ToolsMenuContext} from "./ToolsMenu/ToolsMenuContext";
 import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
@@ -246,17 +247,16 @@ const App = () => {
     const wrapInProviders = (element: ReactElement) => {
         return (
             <AppContext.Provider value={{ page: highlight.page, currentRoom, currentUserId: auth.userId }}>
-                {element}
+                <ToolsMenuContext.Provider value={{ tab: toolsTab, openTab: openTools, showInvites: highlight.page.invitedRooms.length !== 0 }}>
+                    {element}
+                </ToolsMenuContext.Provider>
             </AppContext.Provider>
         );
     };
 
     if (!showMenu && !auth.showLogin) {
         const toolbarComp = 
-            <Toolbar status={status} onIndicatorClick={handleIndicator}
-                onShowRooms={() => openTools(null)}
-                onShowQuotes={() => openTools("quotes")}
-                onShowUsers={() => openTools("users")}/>;
+            <Toolbar status={status} onIndicatorClick={handleIndicator}/>;
         const tooltipComp = tooltip.visible ?
             <Tooltip
                 target={currentRoom?.highlights?.find(hl => hl.id === tooltip.target) || null}
@@ -278,8 +278,8 @@ const App = () => {
     } else {
         return wrapInProviders(
             <Window onClose={() => setShowMenu(false)}>
-                <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
-                    onSelectRoom={switchRoom}
+                <ToolsMenu createRoomEnabled={createRoomEnabled} 
+                    onSelectRoom={switchRoom} onCreateRoom={createRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
             </Window>
         );

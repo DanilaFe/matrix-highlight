@@ -1,18 +1,17 @@
-import {Page, Room} from "../../common/model";
+import {Room} from "../../common/model";
 import {QuoteList} from "./QuoteList";
 import {UserList} from "./UserList";
 import {Plus, Folder, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare, ArrowLeft} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
-import {useContext, ReactElement, PropsWithChildren} from "react";
+import {useContext, ReactElement } from "react";
 import {AppContext} from "../AppContext";
+import {ToolsMenuContext} from "./ToolsMenuContext";
 
 export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
 
 export type ToolsMenuProps = {
-    tab: ToolsMenuTab | null;
     createRoomEnabled: boolean;
-    onTabClick(tab: ToolsMenuTab | null): void;
     onSelectRoom(roomId: string | null): void;
     onCreateRoom(): void;
     onJoinRoom(id: string): void;
@@ -20,12 +19,13 @@ export type ToolsMenuProps = {
     onInviteUser(roomId: string, userId: string): void;
 }
 
-const RoomToolbar = (props: { onCreateRoom(): void, onJoinRoom(): void, onInviteOpen(): void, showInvites: boolean }) => {
+const RoomToolbar = () => {
+    const { openTab, showInvites } = useContext(ToolsMenuContext);
     return (
         <div className="input-group">
-            <button className="labeled-icon-button" onClick={props.onCreateRoom}><Plus className="feather"/>Create room</button>
-            <button className="labeled-icon-button" onClick={props.onJoinRoom}><FolderPlus className="feather"/>Join room</button>
-            { props.showInvites ? <button className="labeled-icon-button" onClick={props.onInviteOpen}><Bell className="feather"/>View Invites</button> : null }
+            <button className="labeled-icon-button" onClick={() => openTab("create")}><Plus className="feather"/>Create room</button>
+            <button className="labeled-icon-button" onClick={() => openTab("join")}><FolderPlus className="feather"/>Join room</button>
+            { showInvites ? <button className="labeled-icon-button" onClick={() => openTab("invites")}><Bell className="feather"/>View Invites</button> : null }
         </div>
     );
 };
@@ -41,10 +41,11 @@ const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick
     );
 };
 
-const NavBar = (props: { title: string, subtitle: string, onPressBack(): void }) => {
+const NavBar = (props: { title: string, subtitle: string }) => {
+    const { openTab } = useContext(ToolsMenuContext);
     return (
         <nav>
-            <ArrowLeft className="feather" onClick={props.onPressBack}/>
+            <ArrowLeft className="feather" onClick={() => openTab(null)}/>
             <div className="nav-text">
                 <h1>{props.title}</h1>
                 <span>{props.subtitle}</span>
@@ -53,12 +54,12 @@ const NavBar = (props: { title: string, subtitle: string, onPressBack(): void })
     );
 }
 
-const RoomNavBar = (props: { title: string, onPressBack(): void }) => {
+const RoomNavBar = (props: { title: string }) => {
     const { currentRoom } = useContext(AppContext);
-    return <NavBar title={props.title} subtitle={`For room: "${currentRoom?.name || ""}"`} onPressBack={props.onPressBack}/>;
+    return <NavBar title={props.title} subtitle={`For room: "${currentRoom?.name || ""}"`}/>;
 }
 
-const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}>) => {
+const RoomItem = (props: {room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}) => {
     return (
         <div className="room">
             <div className="room-icon"><Folder/></div>
@@ -76,11 +77,11 @@ const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): 
     );
 }
 
-const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: string): void, onPressBack(): void }) => {
+const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: string): void }) => {
     const {page} = useContext(AppContext);
     return (
         <>
-            <NavBar title="Invites" subtitle="Invites are shown only for the current page." {...props}/>
+            <NavBar title="Invites" subtitle="Invites are shown only for the current page."/>
             <div className="room-list">
                 {page.invitedRooms.map(r => <RoomItem room={r} {...props}/>)}
             </div>
@@ -88,33 +89,23 @@ const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: stri
     );
 }
 
-const QuoteListView = (props: {onPressBack(): void }) => {
-    return (
-        <>
-            <RoomNavBar title="Quotes" {...props}/>
-            <QuoteList/>
-        </>
-    );
+const QuoteListView = () => {
+    return <><RoomNavBar title="Quotes"/><QuoteList/></>;
 }
 
-const UserListView = (props: {onPressBack(): void, onInviteUser(roomId: string, userId: string): void }) => {
-    return (
-        <>
-            <RoomNavBar title="Users" {...props}/>
-            <UserList {...props}/>
-        </>
-    );
+const UserListView = (props: { onInviteUser(roomId: string, userId: string): void }) => {
+    return <><RoomNavBar title="Users"/><UserList onInviteUser={props.onInviteUser}/></>;
 }
 
 const DefaultView = (props: ToolsMenuProps) => {
     const {page, currentRoom} = useContext(AppContext);
+    const {openTab} = useContext(ToolsMenuContext);
     const options = page.joinedRooms.map(r => { return { value: r.id, label: r.name, data: r } });
     const defaultOption = currentRoom ? { value: currentRoom.id, label: currentRoom.name } : null;
-    const showInvites = page.invitedRooms.length !== 0;
     return (
         <>
             <h3>Select Room</h3>
-            <RoomToolbar onCreateRoom={() => {}} onJoinRoom={() => {}} onInviteOpen={() => props.onTabClick("invites")} showInvites={showInvites}/>
+            <RoomToolbar/>
             <Select className="room-select" options={options} defaultValue={defaultOption}
                 onChange={newValue => props.onSelectRoom(newValue?.value || null)}
                 styles={{
@@ -135,10 +126,10 @@ const DefaultView = (props: ToolsMenuProps) => {
             { currentRoom ?
                 <>
                     <h3>Current Room</h3>
-                    <RoomButton icon={Settings} title="Settings" subtitle="Configure room name, description, etc." onClick={() => props.onTabClick("settings")}/>
-                    <RoomButton icon={Users} title="Users" subtitle="View or invite users." onClick={() => props.onTabClick("users")}/>
-                    <RoomButton icon={AlignLeft} title="Quotes" subtitle="See and discuss what has been highlighted on the page." onClick={() => props.onTabClick("quotes")}/>
-                    <RoomButton icon={MessageSquare} title="Comments" subtitle="View conversation about this page." onClick={() => props.onTabClick("comments")}/>
+                    <RoomButton icon={Settings} title="Settings" subtitle="Configure room name, description, etc." onClick={() => openTab("settings")}/>
+                    <RoomButton icon={Users} title="Users" subtitle="View or invite users." onClick={() => openTab("users")}/>
+                    <RoomButton icon={AlignLeft} title="Quotes" subtitle="See and discuss what has been highlighted on the page." onClick={() => openTab("quotes")}/>
+                    <RoomButton icon={MessageSquare} title="Comments" subtitle="View conversation about this page." onClick={() => openTab("comments")}/>
                 </> : null }
         </>
     );
@@ -146,6 +137,7 @@ const DefaultView = (props: ToolsMenuProps) => {
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
     const {page, currentRoom} = useContext(AppContext);
+    const {tab} = useContext(ToolsMenuContext);
     if (page.joinedRooms.length + page.invitedRooms.length === 0) {
         return (
             <div className="tools-menu">
@@ -156,17 +148,16 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
             </div>
         );
     }
-    const pressBack = () => props.onTabClick(null);
     let view: ReactElement;
     if (!currentRoom) {
-        switch (props.tab) {
-            case "invites": view = <InviteView onPressBack={pressBack} {...props}/>; break;
+        switch (tab) {
+            case "invites": view = <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>; break;
             default: view = <DefaultView {...props}/>;
         }
     } else {
-        switch (props.tab) {
-            case "quotes": view = <QuoteListView onPressBack={pressBack}/>; break;
-            case "users": view = <UserListView onPressBack={pressBack} onInviteUser={props.onInviteUser}/>; break;
+        switch (tab) {
+            case "quotes": view = <QuoteListView/>; break;
+            case "users": view = <UserListView onInviteUser={props.onInviteUser}/>; break;
             default: view = <DefaultView {...props}/>;
         }
     }

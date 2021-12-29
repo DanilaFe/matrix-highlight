@@ -4,8 +4,8 @@ export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" 
 
 export type ToolsMenuState = {
     tab: ToolsMenuTab | null;
+    openTab(tab: ToolsMenuTab | null): void;
     showInvites: boolean;
-    setTab(tab: ToolsMenuTab | null): void;
 };
 
-export const ToolsMenuContext = createContext<ToolsMenuState>({ tab: null, showInvites: false, setTab: () => {}});
+export const ToolsMenuContext = createContext<ToolsMenuState>({ tab: null, openTab: () => {}, showInvites: false });
