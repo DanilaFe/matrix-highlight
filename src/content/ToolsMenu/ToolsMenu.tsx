@@ -4,7 +4,8 @@ import {UserList} from "./UserList";
 import {Plus, Folder, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare, ArrowLeft} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
-import {useState, ReactElement, PropsWithChildren} from "react";
+import {useContext, ReactElement, PropsWithChildren} from "react";
+import {AppContext} from "../AppContext";
 
 export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
 
@@ -12,8 +13,6 @@ export type ToolsMenuProps = {
     tab: ToolsMenuTab | null;
     createRoomEnabled: boolean;
     onTabClick(tab: ToolsMenuTab | null): void;
-    page: Page;
-    currentRoom: Room | null;
     onSelectRoom(roomId: string | null): void;
     onCreateRoom(): void;
     onJoinRoom(id: string): void;
@@ -54,8 +53,9 @@ const NavBar = (props: { title: string, subtitle: string, onPressBack(): void })
     );
 }
 
-const RoomNavBar = (props: { title: string, currentRoom: Room, onPressBack(): void }) => {
-    return <NavBar title={props.title} subtitle={`For room: "${props.currentRoom.name}"`} onPressBack={props.onPressBack}/>;
+const RoomNavBar = (props: { title: string, onPressBack(): void }) => {
+    const { currentRoom } = useContext(AppContext);
+    return <NavBar title={props.title} subtitle={`For room: "${currentRoom?.name || ""}"`} onPressBack={props.onPressBack}/>;
 }
 
 const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void}>) => {
@@ -76,27 +76,28 @@ const RoomItem = (props: PropsWithChildren<{room: Room, onJoinRoom(id: string): 
     );
 }
 
-const InviteView = (props: { page: Page, onJoinRoom(id: string): void, onIgnoreRoom(id: string): void, onPressBack(): void }) => {
+const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: string): void, onPressBack(): void }) => {
+    const {page} = useContext(AppContext);
     return (
         <>
             <NavBar title="Invites" subtitle="Invites are shown only for the current page." {...props}/>
             <div className="room-list">
-                {props.page.invitedRooms.map(r => <RoomItem room={r} {...props}/>)}
+                {page.invitedRooms.map(r => <RoomItem room={r} {...props}/>)}
             </div>
         </>
     );
 }
 
-const QuoteListView = (props: {currentRoom: Room, onPressBack(): void }) => {
+const QuoteListView = (props: {onPressBack(): void }) => {
     return (
         <>
             <RoomNavBar title="Quotes" {...props}/>
-            <QuoteList highlights={props.currentRoom.highlights}/>
+            <QuoteList/>
         </>
     );
 }
 
-const UserListView = (props: {currentRoom: Room, onPressBack(): void, onInviteUser(roomId: string, userId: string): void }) => {
+const UserListView = (props: {onPressBack(): void, onInviteUser(roomId: string, userId: string): void }) => {
     return (
         <>
             <RoomNavBar title="Users" {...props}/>
@@ -106,12 +107,14 @@ const UserListView = (props: {currentRoom: Room, onPressBack(): void, onInviteUs
 }
 
 const DefaultView = (props: ToolsMenuProps) => {
-    const options = props.page.joinedRooms.map(r => { return { value: r.id, label: r.name, data: r } });
-    const defaultOption = props.currentRoom ? { value: props.currentRoom.id, label: props.currentRoom.name } : null;
+    const {page, currentRoom} = useContext(AppContext);
+    const options = page.joinedRooms.map(r => { return { value: r.id, label: r.name, data: r } });
+    const defaultOption = currentRoom ? { value: currentRoom.id, label: currentRoom.name } : null;
+    const showInvites = page.invitedRooms.length !== 0;
     return (
         <>
             <h3>Select Room</h3>
-            <RoomToolbar onCreateRoom={() => {}} onJoinRoom={() => {}} onInviteOpen={() => props.onTabClick("invites")} showInvites={props.page.invitedRooms.length !== 0}/>
+            <RoomToolbar onCreateRoom={() => {}} onJoinRoom={() => {}} onInviteOpen={() => props.onTabClick("invites")} showInvites={showInvites}/>
             <Select className="room-select" options={options} defaultValue={defaultOption}
                 onChange={newValue => props.onSelectRoom(newValue?.value || null)}
                 styles={{
@@ -129,7 +132,7 @@ const DefaultView = (props: ToolsMenuProps) => {
                         zIndex: 10000
                     })
                 }}/>
-            { props.currentRoom ?
+            { currentRoom ?
                 <>
                     <h3>Current Room</h3>
                     <RoomButton icon={Settings} title="Settings" subtitle="Configure room name, description, etc." onClick={() => props.onTabClick("settings")}/>
@@ -142,7 +145,8 @@ const DefaultView = (props: ToolsMenuProps) => {
 }
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
-    if (props.page.joinedRooms.length + props.page.invitedRooms.length === 0) {
+    const {page, currentRoom} = useContext(AppContext);
+    if (page.joinedRooms.length + page.invitedRooms.length === 0) {
         return (
             <div className="tools-menu">
                 <div id="FirstGroupMessage">
@@ -154,15 +158,15 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
     }
     const pressBack = () => props.onTabClick(null);
     let view: ReactElement;
-    if (!props.currentRoom) {
+    if (!currentRoom) {
         switch (props.tab) {
             case "invites": view = <InviteView onPressBack={pressBack} {...props}/>; break;
             default: view = <DefaultView {...props}/>;
         }
     } else {
         switch (props.tab) {
-            case "quotes": view = <QuoteListView currentRoom={props.currentRoom} onPressBack={pressBack}/>; break;
-            case "users": view = <UserListView currentRoom={props.currentRoom} onPressBack={pressBack} onInviteUser={props.onInviteUser}/>; break;
+            case "quotes": view = <QuoteListView onPressBack={pressBack}/>; break;
+            case "users": view = <UserListView onPressBack={pressBack} onInviteUser={props.onInviteUser}/>; break;
             default: view = <DefaultView {...props}/>;
         }
     }

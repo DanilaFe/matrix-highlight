@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react';
+import { ReactElement, useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
 import {ToolsMenu, ToolsMenuTab} from "./ToolsMenu/ToolsMenu";
@@ -12,6 +12,7 @@ import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 import {authReducer, authInitialState} from "./slices/auth";
 import * as browser from "webextension-polyfill";
+import {AppContext} from "./AppContext";
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",
@@ -44,6 +45,20 @@ function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: brow
     });
 };
 
+function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): IndicatorStatus {
+    if (!auth.userId) {
+        return IndicatorStatus.NoLogin;
+    } else if (!highlight.syncComplete) {
+        return IndicatorStatus.NoSync;
+    } else if (!highlight.currentRoomId) {
+        return IndicatorStatus.NoRoom;
+    } else if (highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
+        return IndicatorStatus.Queued;
+    } else {
+        return IndicatorStatus.Synced;
+    }
+}
+
 const App = () => {
     const [port, setPort] = useState<browser.Runtime.Port | null>(null);
 
@@ -56,18 +71,8 @@ const App = () => {
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
     const [auth, authDispatch] = useReducer(authReducer, authInitialState);
 
-    let status: IndicatorStatus
-    if (!auth.userId) {
-        status = IndicatorStatus.NoLogin;
-    } else if (!highlight.syncComplete) {
-        status = IndicatorStatus.NoSync;
-    } else if (!highlight.currentRoomId) {
-        status = IndicatorStatus.NoRoom;
-    } else if (highlight.page.getRoom(highlight.currentRoomId)?.localHighlights?.length !== 0) {
-        status = IndicatorStatus.Queued;
-    } else {
-        status = IndicatorStatus.Synced;
-    }
+    const currentRoom = highlight.page.getRoom(highlight.currentRoomId);
+    const status: IndicatorStatus = getIndicatorStatus(auth, highlight);
 
     const openTools = (tab: ToolsMenuTab | null) => {
         if (!auth.userId) {
@@ -238,6 +243,14 @@ const App = () => {
         Renderer.apply(highlight.page.getRoom(highlight.currentRoomId)?.highlights || []);
     });
 
+    const wrapInProviders = (element: ReactElement) => {
+        return (
+            <AppContext.Provider value={{ page: highlight.page, currentRoom, currentUserId: auth.userId }}>
+                {element}
+            </AppContext.Provider>
+        );
+    };
+
     if (!showMenu && !auth.showLogin) {
         const toolbarComp = 
             <Toolbar status={status} onIndicatorClick={handleIndicator}
@@ -254,9 +267,9 @@ const App = () => {
                 highlight={makeNewHighlight}
                 top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
             null;
-        return <>{toolbarComp}{tooltipComp}</>;
+        return wrapInProviders(<>{toolbarComp}{tooltipComp}</>);
     } else if (auth.showLogin) {
-        return (
+        return wrapInProviders(
             <Window onClose={() => setShowMenu(false)}>
                  <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
                      attemptLogin={attemptLogin} attemptSignup={() => {}}
@@ -264,12 +277,11 @@ const App = () => {
             </Window>
         );
     } else {
-        return (
+        return wrapInProviders(
             <Window onClose={() => setShowMenu(false)}>
                 <ToolsMenu createRoomEnabled={createRoomEnabled} tab={toolsTab} onTabClick={setToolsTab} onCreateRoom={createRoom}
                     onSelectRoom={switchRoom}
-                    onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}
-                    page={highlight.page} currentRoom={highlight.page.getRoom(highlight.currentRoomId) || null}/> :
+                    onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
             </Window>
         );
     }

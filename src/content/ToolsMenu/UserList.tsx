@@ -1,16 +1,18 @@
 import { useState } from "react";
 import "./UserList.scss";
-import {Room} from "../../common/model";
 import {User} from "react-feather";
+import {useContext} from "react";
+import {AppContext} from "../AppContext";
 
 export type UserListProps = {
-    currentRoom: Room;   
     onInviteUser(roomId: string, userId: string): void;
 }
 
 export const UserList = (props: UserListProps) => {
     const [inviteString, setInviteString] = useState("");
-    const currentRoom = props.currentRoom;
+    const currentRoom = useContext(AppContext).currentRoom;
+
+    if (!currentRoom) return <></>;
 
     const users = currentRoom.joinedUsers.map(u =>
         <div key={u.id} className="user">
