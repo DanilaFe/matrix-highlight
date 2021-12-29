@@ -143,7 +143,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
             <div className="tools-menu">
                 <div id="FirstGroupMessage">
                     Your highlights are stored in rooms. Each rooms contains its own highlights, and can be shared with other users (or not shared at all).
-                    <button disabled={!props.createRoomEnabled} className="primary" onClick={props.onCreateRoom}>Create a room!</button>
+                    <RoomToolbar/>
                 </div>
             </div>
         );
