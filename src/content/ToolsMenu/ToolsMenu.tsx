@@ -158,6 +158,7 @@ export const ToolsMenu = (props: ToolsMenuProps) => {
         switch (tab) {
             case "quotes": view = <QuoteListView/>; break;
             case "users": view = <UserListView onInviteUser={props.onInviteUser}/>; break;
+            case "invites": view = <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>; break;
             default: view = <DefaultView {...props}/>;
         }
     }
