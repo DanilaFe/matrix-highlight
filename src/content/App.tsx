@@ -91,10 +91,10 @@ const App = () => {
         }
     };
 
-    const createRoom = async () => {
+    const createRoom = async (roomName: string) => {
         const url = window.location.href;
         setCreateRoomEnabled(false);
-        sendToBackground(port, { type: "create-room", name: `Highlight room for ${url}.`, url }); 
+        sendToBackground(port, { type: "create-room", name: roomName, url }); 
         setCreateRoomEnabled(true);
     }
 

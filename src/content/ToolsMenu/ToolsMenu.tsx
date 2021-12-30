@@ -15,7 +15,7 @@ export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" 
 export type ToolsMenuProps = {
     createRoomEnabled: boolean;
     onSelectRoom(roomId: string | null): void;
-    onCreateRoom(): void;
+    onCreateRoom(roomName: string): void;
     onJoinRoom(id: string): void;
     onIgnoreRoom(id: string): void;
     onInviteUser(roomId: string, userId: string): void;
@@ -43,7 +43,7 @@ const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick
     );
 };
 
-const RoomCreatorView = (props: { createRoomEnabled: boolean, onCreateRoom(): void,  }) => {
+const RoomCreatorView = (props: { createRoomEnabled: boolean, onCreateRoom(roomName: string): void,  }) => {
     return (
         <>
             <NavBar title="Create Room" subtitle="Create and join an empty room all to yourself."/>
