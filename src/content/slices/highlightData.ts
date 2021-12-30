@@ -4,6 +4,7 @@ import {produce} from "immer";
 
 export type HighlightDataState = {
     currentRoomId: string | null;
+    creatingRoom: boolean;
     syncComplete: boolean;
     page: Page;
 }
@@ -13,60 +14,86 @@ export type HighlightDataEvent = ToContentMessage
     | { type: "local-message", roomId: string, threadId: string | number, message: Message }
     | { type: "switch-room", newId: string | null }
     | { type: "set-active", id: string | number | null }
+    | { type: "create-room" }
 
 export const highlightReducer = (state: HighlightDataState, event: HighlightDataEvent) => {
-    const page = produce(state.page, draft => {
-        if (event.type === "highlight") {
-            draft.changeRoom(event.roomId,
-                room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId, event.placeAtTop));
-        } else if (event.type === "local-highlight") {
-            draft.changeRoom(event.roomId, room => room.addLocalHighlight(Highlight.fromOther(event.highlight)));
-        } else if (event.type === "highlight-content") {
-            draft.changeRoom(event.roomId,
-                room => room.changeHighlight(event.highlightId, hl => hl.content = event.highlight));
-        } else if (event.type === "add-room") {
-            draft.addRoom(Room.fromOther(event.room));
-        } else if (event.type === "room-membership") {
-            draft.changeRoom(event.roomId, room => room.membership = event.membership);
-        } else if (event.type === "room-name") {
-            draft.changeRoom(event.roomId, room => room.name = event.name);
-        } else if (event.type === "add-user") {
-            draft.changeRoom(event.roomId, room => room.addUser(User.fromOther(event.user)));
-        } else if (event.type === "user-membership") {
-            draft.changeRoom(event.roomId, room => room.changeUser(event.userId, u => u.membership = event.membership));
-        } else if (event.type === "local-message") {
-            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addLocalMessage(Message.fromOther(event.message))));
-        } else if (event.type === "thread-message") {
-            draft.changeRoom(event.roomId, room => room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(Message.fromOther(event.message), event.txnId, event.placeAtTop)));
-        } else if (event.type === "set-active") {
-            if (!state.currentRoomId) return;
-            draft.changeRoom(state.currentRoomId, room => {
-                room.highlights.forEach(hl => hl.active = hl.id === event.id);
-            });
+    return produce(state, draft => {
+        switch (event.type) {
+            case "highlight":
+                draft.page.changeRoom(event.roomId,
+                    room => room.addRemoteHighlight(Highlight.fromOther(event.highlight), event.txnId, event.placeAtTop));
+                return;
+            case "local-highlight":
+                draft.page.changeRoom(event.roomId, room => {
+                    room.addLocalHighlight(Highlight.fromOther(event.highlight))
+                });
+                return;
+            case "highlight-content":
+                draft.page.changeRoom(event.roomId,
+                    room => room.changeHighlight(event.highlightId, hl => hl.content = event.highlight));
+                return;
+            case "add-room":
+                draft.page.addRoom(Room.fromOther(event.room));
+                if (!state.currentRoomId && event.room.membership === "join") {
+                    draft.currentRoomId = event.room.id;
+                }
+                return;
+            case "create-room":
+                draft.creatingRoom = true;
+                return;
+            case "room-created":
+                draft.creatingRoom = false;
+                return;
+            case "room-membership":
+                draft.page.changeRoom(event.roomId, room => room.membership = event.membership);
+                if (!state.currentRoomId && event.membership === "join") {
+                    draft.currentRoomId = event.roomId;
+                } else if (event.membership === "leave" && event.roomId === state.currentRoomId) {
+                    draft.currentRoomId = null;
+                }
+                return;
+            case "room-name":
+                draft.page.changeRoom(event.roomId, room => room.name = event.name);
+                return;
+            case "add-user":
+                draft.page.changeRoom(event.roomId, room => {
+                    room.addUser(User.fromOther(event.user))
+                });
+                return;
+            case "user-membership":
+                draft.page.changeRoom(event.roomId, room => {
+                    room.changeUser(event.userId, u => u.membership = event.membership)
+                });
+                return;
+            case "local-message":
+                draft.page.changeRoom(event.roomId, room => {
+                    room.changeHighlight(event.threadId, hl => hl.addLocalMessage(Message.fromOther(event.message)))
+                });
+                return;
+            case "thread-message":
+                draft.page.changeRoom(event.roomId, room => {
+                    room.changeHighlight(event.threadId, hl => hl.addRemoteMessage(Message.fromOther(event.message), event.txnId, event.placeAtTop))
+                });
+                return;
+            case "set-active":
+                if (!state.currentRoomId) return;
+                draft.page.changeRoom(state.currentRoomId, room => {
+                    room.highlights.forEach(hl => hl.active = hl.id === event.id);
+                });
+                return;
+            case "switch-room":
+                draft.currentRoomId = event.newId;
+                return;
+            case "sync-complete":
+                draft.syncComplete = true;
+                return;
         }
     });
-    let currentRoomId = state.currentRoomId;
-    if (!currentRoomId && event.type === "add-room" && event.room.membership === "join") {
-        currentRoomId = event.room.id;
-    } else if (!currentRoomId && event.type === "room-membership" && event.membership === "join") {
-        currentRoomId = event.roomId;
-    } else if (event.type === "room-membership" && event.membership === "leave" && event.roomId === currentRoomId) {
-        currentRoomId = null;
-    } else if (event.type === "switch-room") {
-        currentRoomId = event.newId;
-    }
-
-    let syncComplete = state.syncComplete;
-    if (event.type === "sync-complete") {
-        syncComplete = true;
-    }
-
-    return { page, currentRoomId, syncComplete };
 }
 
 export const highlightInitialState = {
     page: new Page({}),
-    userId: null,
+    creatingRoom: false,
     syncComplete: false,
     currentRoomId: null
 }

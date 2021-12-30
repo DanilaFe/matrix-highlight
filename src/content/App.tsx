@@ -64,7 +64,6 @@ const App = () => {
     const [port, setPort] = useState<browser.Runtime.Port | null>(null);
 
     const [showMenu, setShowMenu] = useState(false);
-    const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
     const [toolsTab, setToolsTab] = useState<ToolsMenuTab | null>(null);
     const [authTab, setAuthTab] = useState<"login" | "signup">("login");
 
@@ -93,9 +92,8 @@ const App = () => {
 
     const createRoom = async (roomName: string) => {
         const url = window.location.href;
-        setCreateRoomEnabled(false);
+        highlightDispatch({ type: "create-room" });
         sendToBackground(port, { type: "create-room", name: roomName, url }); 
-        setCreateRoomEnabled(true);
     }
 
     const joinRoom = async (roomId: string) => {
@@ -278,7 +276,7 @@ const App = () => {
     } else {
         return wrapInProviders(
             <Window onClose={() => setShowMenu(false)}>
-                <ToolsMenu createRoomEnabled={createRoomEnabled} 
+                <ToolsMenu createRoomEnabled={!highlight.creatingRoom} 
                     onSelectRoom={switchRoom} onCreateRoom={createRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
             </Window>

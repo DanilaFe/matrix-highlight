@@ -184,11 +184,12 @@ function setupTabPort(port: browser.Runtime.Port, initial: boolean) {
             }
         }
     }
-    port.onMessage.addListener((message: FromContentMessage) => {
+    port.onMessage.addListener(async (message: FromContentMessage) => {
         if (message.type === "attempt-login") {
             passwordLogin(port, message.username, message.password, message.homeserver);
         } else if (message.type === "create-room") {
-            createRoom(client!, message.name, message.url);
+            await createRoom(client!, message.name, message.url);
+            port.postMessage({ type: "room-created" });
         } else if (message.type === "join-room") {
             joinRoom(client!, message.roomId);
         } else if (message.type === "leave-room") {

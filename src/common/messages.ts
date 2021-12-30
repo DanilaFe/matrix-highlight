@@ -10,6 +10,8 @@ export type ToContentMessage = {
     type: "add-room",
     room: Room
 } | {
+    type: "room-created"
+} | {
     type: "room-membership",
     roomId: string,
     membership: RoomMembership,
