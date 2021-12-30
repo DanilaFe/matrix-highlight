@@ -14,6 +14,10 @@ export type ToContentMessage = {
     roomId: string,
     membership: RoomMembership,
 } | {
+    type: "room-name",
+    roomId: string,
+    name: string,
+} | {
     type: "add-user",
     roomId: string,
     user: User,

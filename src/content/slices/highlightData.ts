@@ -28,6 +28,8 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
             draft.addRoom(Room.fromOther(event.room));
         } else if (event.type === "room-membership") {
             draft.changeRoom(event.roomId, room => room.membership = event.membership);
+        } else if (event.type === "room-name") {
+            draft.changeRoom(event.roomId, room => room.name = event.name);
         } else if (event.type === "add-user") {
             draft.changeRoom(event.roomId, room => room.addUser(User.fromOther(event.user)));
         } else if (event.type === "user-membership") {

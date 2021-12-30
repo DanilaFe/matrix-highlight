@@ -68,6 +68,10 @@ async function setupClient(newClient: sdk.MatrixClient) {
         newClient.on("Room", (room: sdk.Room) => {
             emitRoom(newClient, room);
         });
+        newClient.on("Room.name", (room: sdk.Room) => {
+            const roomId = room.roomId;
+            broadcastRoom(roomId, { type: "room-name", roomId, name: room.name });
+        });
         newClient.on("Room.myMembership", (room: sdk.Room, membership: string) => {
             broadcastRoom(room.roomId, {
                 type: "room-membership",
