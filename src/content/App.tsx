@@ -10,8 +10,9 @@ import {Highlight, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_HIDDEN_KEY, COLORS} f
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
-import {highlightReducer, highlightInitialState} from "./slices/highlightData";
-import {authReducer, authInitialState} from "./slices/auth";
+import {highlightReducer, highlightInitialState, HighlightDataState} from "./slices/highlightData";
+import {toolsMenuReducer, toolsMenuInitialState} from "./slices/toolsMenu";
+import {authReducer, authInitialState, AuthState} from "./slices/auth";
 import * as browser from "webextension-polyfill";
 import {AppContext} from "./AppContext";
 
@@ -33,16 +34,15 @@ async function freshTxnId(): Promise<number> {
     return txnId;
 }
 
-function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: browser.Runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void, authDispatch: (event: ToContentMessage) => void): void {
+function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: browser.Runtime.Port) => void, dispatch: (event: ToContentMessage) => void): void {
     const port = browser.runtime.connect({ name: str });
     setPort(port);
     port.onDisconnect.addListener(() => {
-        openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch) /* Do not retrieve all data on reconnect */
+        openPort(PORT_RENEW, setPort, dispatch) /* Do not retrieve all data on reconnect */
     });
     port.onMessage.addListener((message: ToContentMessage) => {
         // response(true);
-        highlightDispatch(message); 
-        authDispatch(message);
+        dispatch(message);
     });
 };
 
@@ -63,28 +63,40 @@ function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): Ind
 const App = () => {
     const [port, setPort] = useState<browser.Runtime.Port | null>(null);
 
-    const [showMenu, setShowMenu] = useState(false);
-    const [toolsTab, setToolsTab] = useState<ToolsMenuTab | null>(null);
-    const [authTab, setAuthTab] = useState<"login" | "signup">("login");
-
+    const [toolsMenu, toolsMenuDispatch] = useReducer(toolsMenuReducer, toolsMenuInitialState);
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
     const [auth, authDispatch] = useReducer(authReducer, authInitialState);
 
+    const messageDispatch = (message: ToContentMessage) => {
+        toolsMenuDispatch(message);
+        highlightDispatch(message);
+        authDispatch(message);
+    }
+
     const currentRoom = highlight.page.getRoom(highlight.currentRoomId);
     const status: IndicatorStatus = getIndicatorStatus(auth, highlight);
 
+    const closeMenu = () => {
+        toolsMenuDispatch({ type: "set-show-menu", showMenu: false });
+        toolsMenuDispatch({ type: "set-show-login", showLogin: false });
+    };
+
+    const setAuthTab = (authTab: "login" | "signup") => {
+        toolsMenuDispatch({ type: "set-auth-tab", authTab });
+    }
+
     const openTools = (tab: ToolsMenuTab | null) => {
         if (!auth.userId) {
-            authDispatch({ type: "set-show-login", showLogin: true });
+            toolsMenuDispatch({ type: "set-show-login", showLogin: true });
         }
-        setToolsTab(tab)
-        setShowMenu(true);
+        toolsMenuDispatch({ type: "set-tab", tab });
+        toolsMenuDispatch({ type: "set-show-menu", showMenu: true });
     }
 
     const handleIndicator = () => {
         switch (status) {
-            case IndicatorStatus.NoLogin: authDispatch({ type: "set-show-login", showLogin: true }); return;
+            case IndicatorStatus.NoLogin: toolsMenuDispatch({ type: "set-show-login", showLogin: true }); return;
             case IndicatorStatus.NoRoom: openTools(null); return;
             default: return;
         }
@@ -192,14 +204,14 @@ const App = () => {
 
     useEffect(() => {
         setTimeout(() => {
-            openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch);
+            openPort(PORT_RENEW, setPort, messageDispatch);
             port?.disconnect();
         }, 1000 * 60 * 4);
-    }, [port, setPort, highlightDispatch]);
+    }, [port, setPort, highlightDispatch, authDispatch, toolsMenuDispatch]);
 
     useEffect(() => {
-        openPort(PORT_TAB, setPort, highlightDispatch, authDispatch);
-    }, [setPort, highlightDispatch]);
+        openPort(PORT_TAB, setPort, messageDispatch);
+    }, [setPort, highlightDispatch, authDispatch, toolsMenuDispatch]);
 
     useEffect(() => {
         Renderer.subscribe({
@@ -207,13 +219,13 @@ const App = () => {
             click(id, top, left, bottom) { tooltipDispatch({ type: "click", id, top, left, bottom }); },
             move(id, top, left, bottom) { tooltipDispatch({ type: "resize-clicked", id, top, left, bottom }); }
         });
-    }, [tooltipDispatch]);
+    }, [highlightDispatch, tooltipDispatch]);
 
     useEffect(() => {
         document.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
-            setShowMenu(false);
-            authDispatch({ type: "set-show-login", showLogin: false });
+            toolsMenuDispatch({ type: "set-show-menu", showMenu: false });
+            toolsMenuDispatch({ type: "set-show-login", showLogin: false });
         });
         document.addEventListener("selectionchange", (e) => {
             const selection = window.getSelection();
@@ -226,7 +238,7 @@ const App = () => {
             tooltipDispatch({ type: "selection", selection: window.getSelection() });
             e.stopPropagation();
         });
-    }, [tooltipDispatch]);
+    }, [toolsMenuDispatch, tooltipDispatch]);
 
     useEffect(() => {
         const updateTooltip = () => {
@@ -245,14 +257,14 @@ const App = () => {
     const wrapInProviders = (element: ReactElement) => {
         return (
             <AppContext.Provider value={{ page: highlight.page, currentRoom, currentUserId: auth.userId }}>
-                <ToolsMenuContext.Provider value={{ tab: toolsTab, openTab: openTools, showInvites: highlight.page.invitedRooms.length !== 0 }}>
+                <ToolsMenuContext.Provider value={{ tab: toolsMenu.tab, openTab: openTools, showInvites: highlight.page.invitedRooms.length !== 0 }}>
                     {element}
                 </ToolsMenuContext.Provider>
             </AppContext.Provider>
         );
     };
 
-    if (!showMenu && !auth.showLogin) {
+    if (!toolsMenu.showMenu && !toolsMenu.showLogin) {
         const toolbarComp = 
             <Toolbar status={status} onIndicatorClick={handleIndicator}/>;
         const tooltipComp = tooltip.visible ?
@@ -265,17 +277,17 @@ const App = () => {
                 top={tooltip.top} left={tooltip.left} bottom={tooltip.bottom}/> :
             null;
         return wrapInProviders(<>{toolbarComp}{tooltipComp}</>);
-    } else if (auth.showLogin) {
+    } else if (toolsMenu.showLogin) {
         return wrapInProviders(
-            <Window onClose={() => setShowMenu(false)}>
-                 <AuthMenu authEnabled={!auth.loginInProgress} tab={authTab} onTabClick={setAuthTab}
+            <Window onClose={closeMenu}>
+                 <AuthMenu authEnabled={!auth.loginInProgress} tab={toolsMenu.authTab} onTabClick={setAuthTab}
                      attemptLogin={attemptLogin} attemptSignup={() => {}}
                      loginError={auth.loginError}/>
             </Window>
         );
     } else {
         return wrapInProviders(
-            <Window onClose={() => setShowMenu(false)}>
+            <Window onClose={closeMenu}>
                 <ToolsMenu createRoomEnabled={!highlight.creatingRoom} 
                     onSelectRoom={switchRoom} onCreateRoom={createRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
