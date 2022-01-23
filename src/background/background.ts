@@ -120,7 +120,13 @@ async function passwordLogin(port: chrome.runtime.Port, username: string, passwo
     const newClient = sdk.createClient({ baseUrl, unstableClientRelationAggregation: true });
     let result;
     try {
-        result = await newClient.loginWithPassword(username, password);
+        result = await newClient.login("m.login.password", {
+            "identifier": {
+                "type": "m.id.user",
+                "user": username
+            },
+            password,
+        });
     } catch (e: any) {
         port.postMessage({ type: "login-failed", loginError: "Invalid username or password." });
         return;
