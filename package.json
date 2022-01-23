@@ -14,7 +14,8 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-feather": "^2.0.9",
-    "sanitize-html": "^2.6.1"
+    "sanitize-html": "^2.6.1",
+    "webextension-polyfill": "^0.8.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.163",
@@ -25,6 +26,7 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/sanitize-html": "^2.6.0",
+    "@types/webextension-polyfill": "^0.8.2",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.5.1",
     "node-polyfill-webpack-plugin": "^1.1.4",

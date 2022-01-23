@@ -3,6 +3,7 @@ import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembersh
 import {createRoom, joinRoom, leaveRoom, inviteUser, sendHighlight, sendHighlightEdit, checkRoom, sendThreadMessage, loadRoom} from "./actions";
 import {fetchRequest} from "./fetch-request";
 import {processRoom, processMember, processEvent} from "./events";
+import * as browser from "webextension-polyfill";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
@@ -10,7 +11,7 @@ const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
 let client: sdk.MatrixClient | null = null;
 sdk.request(fetchRequest);
 
-const hookedTabs: Map<number, chrome.runtime.Port> = new Map();
+const hookedTabs: Map<number, browser.Runtime.Port> = new Map();
 
 let attemptedLogin: boolean = false;
 
@@ -22,7 +23,7 @@ async function broadcast(event: ToContentMessage | ToContentMessage[]): Promise<
 }
 
 async function broadcastUrl(url: string, event: ToContentMessage | ToContentMessage[]): Promise<void> {
-    const tabs = await chrome.tabs.query({ url });
+    const tabs = await browser.tabs.query({ url });
     const events = Array.isArray(event) ? event : [event];
     for (const event of events) {
         for (const tab of tabs) {
@@ -100,7 +101,7 @@ async function fetchBaseUrl(server: string) {
 async function fetchLogin() {
     if (attemptedLogin) return;
     attemptedLogin = true;
-    const credentials = await chrome.storage.local.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
+    const credentials = await browser.storage.local.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
     const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
     if (id && token) {
@@ -115,7 +116,7 @@ async function fetchLogin() {
     }
 }
 
-async function passwordLogin(port: chrome.runtime.Port, username: string, password: string, homeserver: string) {
+async function passwordLogin(port: browser.Runtime.Port, username: string, password: string, homeserver: string) {
     const baseUrl = await fetchBaseUrl(homeserver);
     const newClient = sdk.createClient({ baseUrl, unstableClientRelationAggregation: true });
     let result;
@@ -132,7 +133,7 @@ async function passwordLogin(port: chrome.runtime.Port, username: string, passwo
         return;
     }
 
-    chrome.storage.local.set({
+    browser.storage.local.set({
         [LOCALSTORAGE_ID_KEY]: result.user_id,
         [LOCALSTORAGE_TOKEN_KEY]: result.access_token
     });
@@ -141,29 +142,29 @@ async function passwordLogin(port: chrome.runtime.Port, username: string, passwo
     port.postMessage({ type: "login-successful", username, homeserver, name });
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
-    chrome.contextMenus.create({
+browser.runtime.onInstalled.addListener(async () => {
+    browser.contextMenus.create({
         title: "Highlight using Matrix",
         contexts: ["page"],
         id: "com.danilafe.highlight_context_menu",
     });
 });
 
-const activate = async (tab?: chrome.tabs.Tab) => {
+const activate = async (tab?: browser.Tabs.Tab) => {
     if (!tab?.id) return;
-    await chrome.scripting.executeScript({
+    await browser.scripting.executeScript({
         target: { tabId: tab.id },
         files: [ "content.js" ]
     });
 }
 
-chrome.contextMenus.onClicked.addListener((_, tab) => {
+browser.contextMenus.onClicked.addListener((_, tab) => {
     activate(tab);
 });
 
-chrome.action.onClicked.addListener(activate);
+browser.action.onClicked.addListener(activate);
 
-function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
+function setupTabPort(port: browser.Runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
     if (!tab?.id) return;
     hookedTabs.set(tab.id, port);
@@ -205,7 +206,7 @@ function setupTabPort(port: chrome.runtime.Port, initial: boolean) {
     });
 }
 
-chrome.runtime.onConnect.addListener(async port => {
+browser.runtime.onConnect.addListener(async port => {
     await fetchLogin();
     if (port.name === PORT_TAB || port.name === PORT_RENEW) setupTabPort(port, port.name === PORT_TAB);
 });

@@ -11,6 +11,7 @@ import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState} from "./slices/highlightData";
 import {authReducer, authInitialState} from "./slices/auth";
+import * as browser from "webextension-polyfill";
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",
@@ -20,18 +21,18 @@ export enum IndicatorStatus {
     Synced = "synced",
 }
 
-export function sendToBackground(port: chrome.runtime.Port | null, event: FromContentMessage): void {
+export function sendToBackground(port: browser.Runtime.Port | null, event: FromContentMessage): void {
     port?.postMessage(event);
 }
 
 async function freshTxnId(): Promise<number> {
-    const txnId = (await chrome.storage.local.get([ "txnId" ]))["txnId"] || 0;
-    await chrome.storage.local.set({ txnId: txnId + 1 });
+    const txnId = (await browser.storage.local.get([ "txnId" ]))["txnId"] || 0;
+    await browser.storage.local.set({ txnId: txnId + 1 });
     return txnId;
 }
 
-function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chrome.runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void, authDispatch: (event: ToContentMessage) => void): void {
-    const port = chrome.runtime.connect({ name: str });
+function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: browser.Runtime.Port) => void, highlightDispatch: (event: ToContentMessage) => void, authDispatch: (event: ToContentMessage) => void): void {
+    const port = browser.runtime.connect({ name: str });
     setPort(port);
     port.onDisconnect.addListener(() => {
         openPort(PORT_RENEW, setPort, highlightDispatch, authDispatch) /* Do not retrieve all data on reconnect */
@@ -44,7 +45,7 @@ function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: chro
 };
 
 const App = () => {
-    const [port, setPort] = useState<chrome.runtime.Port | null>(null);
+    const [port, setPort] = useState<browser.Runtime.Port | null>(null);
 
     const [showMenu, setShowMenu] = useState(false);
     const [createRoomEnabled, setCreateRoomEnabled] = useState(true);
