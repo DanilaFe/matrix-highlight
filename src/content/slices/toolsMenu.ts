@@ -26,6 +26,10 @@ export const toolsMenuReducer = (state: ToolsMenuState, event: ToolsMenuEvent) =
         newState.authTab = event.authTab;
     } else if (event.type === "logged-in") {
         newState.showLogin = false;
+    } else if (event.type === "room-created") {
+        if (state.tab === "create") {
+            newState.tab = null;
+        }
     }
     return newState;
 }
