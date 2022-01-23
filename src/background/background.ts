@@ -93,7 +93,7 @@ async function setupClient(newClient: sdk.MatrixClient) {
 async function fetchLogin() {
     if (attemptedLogin) return;
     attemptedLogin = true;
-    const credentials = await chrome.storage.sync.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
+    const credentials = await chrome.storage.local.get([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
     const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
     if (id && token) {
@@ -117,7 +117,7 @@ async function passwordLogin(port: chrome.runtime.Port, username: string, passwo
         return;
     }
 
-    chrome.storage.sync.set({
+    chrome.storage.local.set({
         [LOCALSTORAGE_ID_KEY]: result.user_id,
         [LOCALSTORAGE_TOKEN_KEY]: result.access_token
     });

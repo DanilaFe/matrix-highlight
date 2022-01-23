@@ -25,8 +25,8 @@ export function sendToBackground(port: chrome.runtime.Port | null, event: FromCo
 }
 
 async function freshTxnId(): Promise<number> {
-    const txnId = (await chrome.storage.sync.get([ "txnId" ]))["txnId"] || 0;
-    await chrome.storage.sync.set({ txnId: txnId + 1 });
+    const txnId = (await chrome.storage.local.get([ "txnId" ]))["txnId"] || 0;
+    await chrome.storage.local.set({ txnId: txnId + 1 });
     return txnId;
 }
 
