@@ -138,11 +138,15 @@ function followPath(path: Path, offset: number | undefined): NodePointer | null 
     return node && { node, offset }
 }
 
+function skipped(node: Element): boolean {
+    return node.tagName === "math" /* Skip MathML for now. */;
+}
+
 function iterateText(fromNode: Node, toNode: Node, callback: (value: Text) => any): void {
     let currentNode: Node | null = fromNode;
     while (currentNode) {
         // If we're an element, descend further down.
-        if (currentNode instanceof Element && currentNode.childNodes.length) {
+        if (currentNode instanceof Element && currentNode.childNodes.length && !skipped(currentNode)) {
             currentNode = currentNode.childNodes[0];
             continue;
         } else if (currentNode instanceof Text) {
