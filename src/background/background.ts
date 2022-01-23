@@ -90,6 +90,13 @@ async function setupClient(newClient: sdk.MatrixClient) {
     await newClient.startClient({initialSyncLimit: 100});
 };
 
+async function fetchBaseUrl(server: string) {
+    return fetch(`https://${server}/.well-known/matrix/client`)
+        .then(response => response.json())
+        .then(json => json["m.homeserver"]?.base_url || `https://${server}`)
+        .catch(() => `https://${server}`);
+}
+
 async function fetchLogin() {
     if (attemptedLogin) return;
     attemptedLogin = true;
@@ -98,9 +105,10 @@ async function fetchLogin() {
     const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
     if (id && token) {
         const server = id.substring(id.indexOf(":") + 1);
+        const baseUrl = await fetchBaseUrl(server);
         setupClient(sdk.createClient({
             unstableClientRelationAggregation: true,
-            baseUrl: `https://${server}`,
+            baseUrl: baseUrl,
             userId: id,
             accessToken: token
         }));
@@ -108,7 +116,8 @@ async function fetchLogin() {
 }
 
 async function passwordLogin(port: chrome.runtime.Port, username: string, password: string, homeserver: string) {
-    const newClient = sdk.createClient({ baseUrl: `https://${homeserver}`, unstableClientRelationAggregation: true });
+    const baseUrl = await fetchBaseUrl(homeserver);
+    const newClient = sdk.createClient({ baseUrl, unstableClientRelationAggregation: true });
     let result;
     try {
         result = await newClient.loginWithPassword(username, password);
