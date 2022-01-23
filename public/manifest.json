@@ -2,12 +2,9 @@
     "name": "Matrix Highlight",
     "description": "Matrix-based page highlighting",
     "version": "0.1.0",
-    "manifest_version": 3,
+    "manifest_version": 2,
     "background": {
-        "service_worker": "background.js"
+        "scripts": ["background.js"]
     },
-    "permissions": [ "storage", "contextMenus", "activeTab", "scripting", "tabs" ],
-    "action": {
-        "default_title": "Highlight with Matrix"
-    }
+    "permissions": [ "storage", "contextMenus", "activeTab", "tabs" ]
 }

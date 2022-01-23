@@ -152,17 +152,14 @@ browser.runtime.onInstalled.addListener(async () => {
 
 const activate = async (tab?: browser.Tabs.Tab) => {
     if (!tab?.id) return;
-    await browser.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: [ "content.js" ]
-    });
+    await browser.tabs.executeScript(tab?.id, { file: "content.js" });
 }
 
 browser.contextMenus.onClicked.addListener((_, tab) => {
     activate(tab);
 });
 
-browser.action.onClicked.addListener(activate);
+/* browser.action.onClicked.addListener(activate); */
 
 function setupTabPort(port: browser.Runtime.Port, initial: boolean) {
     const tab = port.sender?.tab;
