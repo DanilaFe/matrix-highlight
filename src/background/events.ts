@@ -62,7 +62,7 @@ function eventToMessage(event: sdk.MatrixEvent): Message {
 
 function addExistingReplies(client: sdk.MatrixClient, event: sdk.MatrixEvent, highlight: Highlight): void {
     const timelineSet = client.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
-    const threadReplies = timelineSet.getRelationsForEvent(event.getId(), sdk.RelationType.Thread, "m.room.message");
+    const threadReplies = timelineSet.getRelationsForEvent(event.getId(), "io.element.thread" as any, "m.room.message");
     if (!threadReplies) return;
     for (const threadEvent of threadReplies.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs())) {
         highlight.addRemoteMessage(eventToMessage(threadEvent), undefined);
