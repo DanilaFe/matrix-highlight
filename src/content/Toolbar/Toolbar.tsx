@@ -23,8 +23,8 @@ export const Toolbar = (props: ToolbarProps) => {
     const { openTab } = useContext(ToolsMenuContext);
     return (
         <div className="toolbar-main">
-            <button onClick={() => openTab(null) }><Folder className="feather"/></button>
             <button><Settings className="feather"/></button>
+            <button onClick={() => openTab(null) }><Folder className="feather"/></button>
             <button onClick={() => openTab("users") }><Users className="feather"/></button>
             <button onClick={() => openTab("quotes") }><AlignLeft className="feather"/></button>
             <button><MessageSquare className="feather"/></button>
