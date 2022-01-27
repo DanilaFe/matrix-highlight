@@ -123,10 +123,10 @@ const ToolView = (props: ToolsMenuProps) => {
 
     if (tab === "create") {
         return <RoomCreatorView createRoomEnabled={props.createRoomEnabled} onCreateRoom={props.onCreateRoom}/>
-    } else if (page.joinedRooms.length + page.invitedRooms.length === 0) {
-        return <NoRoomsView/>;
     } else if (tab === "invites") {
         return <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>;
+    } else if (page.joinedRooms.length === 0) {
+        return <NoRoomsView/>;
     } else if (currentRoom && tab === "quotes") {
         return <QuoteListView/>;
     } else if (currentRoom && tab === "users") {
