@@ -7,11 +7,11 @@
 .blue { --highlight-color: #{$highlight-color-blue}; }
 .orange { --highlight-color: #{$highlight-color-orange}; }
 
-.highlight {
+.matrix-highlight-highlight-region {
     background-color: rgba(var(--highlight-color), 0.7);
     transition: background-color 0.25s;
 
-    &.active {
+    &.matrix-highlight-highlight-active {
         background-color: rgba(var(--highlight-color), 1);
     }
 }

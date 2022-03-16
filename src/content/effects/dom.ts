@@ -53,7 +53,7 @@ export function highlightTextPortion(textNode: Text, from: number, to: number, i
     structural.setAttribute('data-mhl-structural', "true");
     const highlight = makeHighlightSpan(id, to-from);
     highlight.setAttribute('data-mhl-highlight', "true");
-    highlight.classList.add("highlight");
+    highlight.classList.add("matrix-highlight-highlight-region");
     highlight.classList.add(color);
     highlight.textContent = middle;
 

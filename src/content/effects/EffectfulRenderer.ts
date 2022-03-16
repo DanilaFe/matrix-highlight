@@ -26,7 +26,7 @@ class HighlightData {
         }
         this._highlight = newHighlight;
         for (const highlight of this._highlights) {
-            highlight.classList.toggle("active", this._highlight.active);
+            highlight.classList.toggle("matrix-highlight-highlight-active", this._highlight.active);
         }
     }
 
@@ -60,7 +60,7 @@ class HighlightData {
             newElements.highlight.onmouseenter = () => { this._renderer._hoverBegin(this._highlight.id); };
             newElements.highlight.onmouseleave = () => { this._renderer._hoverEnd(this._highlight.id); };
             newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id, this._top, this._left, this._bottom); };
-            newElements.highlight.classList.toggle("active", this._highlight.active);
+            newElements.highlight.classList.toggle("matrix-highlight-highlight-active", this._highlight.active);
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
         }
