@@ -8,7 +8,7 @@ import styles from "./QuoteList.scss";
 export const QuoteButtons = (props: { highlight: Highlight }) => {
     if (props.highlight.messages.length === 0) return null;
     return (
-        <div className={commonStyles.inputGroup}>
+        <div className={`${commonStyles.inputGroup} ${styles.inputGroup}`}>
             <button className={commonStyles.labeledIconButton}>
                 <MessageSquare className={commonStyles.feather}/>{props.highlight.messages.length} Comments
             </button>
