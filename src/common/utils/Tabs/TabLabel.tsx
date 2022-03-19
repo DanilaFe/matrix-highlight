@@ -1,6 +1,6 @@
 import React from "react";
 import {TabProps} from "./Tab";
-import "./TabLabel.scss";
+import styles from "./TabLabel.scss";
 
 export type TabLabelProps = TabProps & {
     onTabClick(key: string): void
@@ -9,9 +9,9 @@ export type TabLabelProps = TabProps & {
 
 export const TabLabel = (props: TabLabelProps) => {
     return (
-        <span className={`tab-button ${props.active ? 'active' : ''}`}
+        <span className={`${styles.tabButton} ${props.active ? styles.active : ''}`}
             onClick={() => props.onTabClick(props.tabId)}>
-            <span className="tab-button-name">{props.tabTitle}</span>
+            <span className={styles.tabButtonName}>{props.tabTitle}</span>
         </span>
     );
 }

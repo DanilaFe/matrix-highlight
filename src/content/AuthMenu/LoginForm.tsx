@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./LoginForm.scss";
+import styles from "./LoginForm.scss";
 
 export type LoginFormProps = {
     authEnabled: boolean;
@@ -14,17 +14,17 @@ export const LoginForm = (props: LoginFormProps) => {
     const [homeserver, setHomeserver] = useState("matrix.org");
 
     return (
-        <form id="LoginForm" onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
-            { props.loginError ? <p className="login-error">{props.loginError}</p> : <></> }
+        <form id="MatrixHighlightLoginForm" onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
+            { props.loginError ? <p className={styles.loginError}>{props.loginError}</p> : <></> }
             <fieldset disabled={!props.authEnabled}>
-                <label htmlFor="username">Matrix Username</label>
-                <input placeholder="your-matrix-username" id="username" type="text"
+                <label htmlFor="mhl-username">Matrix Username</label>
+                <input placeholder="your-matrix-username" id="mhl-username" type="text"
                     value={username} onChange={e => setUsername(e.target.value)} disabled={trying}/>
-                <label htmlFor="password">Password</label>
-                <input type="password" id="password"
+                <label htmlFor="mhl-password">Password</label>
+                <input type="password" id="mhl-password"
                     value={password} onChange={e => setPassword(e.target.value)} disabled={trying}/>
-                <label htmlFor="homeserver">Homeserver</label>
-                <input value={homeserver} onChange={e => setHomeserver(e.target.value)} disabled={trying} type="text" id="homeserver"></input>
+                <label htmlFor="mhl-homeserver">Homeserver</label>
+                <input value={homeserver} onChange={e => setHomeserver(e.target.value)} disabled={trying} type="text" id="mhl-homeserver"></input>
                 <input type="submit" value="Log In" className="primary" disabled={trying}></input>
             </fieldset>
         </form>

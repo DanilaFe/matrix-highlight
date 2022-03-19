@@ -2,14 +2,14 @@ import {useContext} from "react";
 import {ToolsMenuContext} from "./ToolsMenuContext";
 import {AppContext} from "../AppContext";
 import {ArrowLeft} from "react-feather";
-import "./Navbar.scss";
+import styles from "./Navbar.scss";
 
 export const NavBar = (props: { title: string, subtitle: string }) => {
     const { openTab } = useContext(ToolsMenuContext);
     return (
-        <nav>
-            <ArrowLeft className="feather" onClick={() => openTab(null)}/>
-            <div className="nav-text">
+        <nav className={styles.toolsNav}>
+            <ArrowLeft className={styles.feather} onClick={() => openTab(null)}/>
+            <div>
                 <h1>{props.title}</h1>
                 <span>{props.subtitle}</span>
             </div>

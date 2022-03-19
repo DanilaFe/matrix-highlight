@@ -1,6 +1,6 @@
 import {Room} from "../../common/model";
 import {Folder} from "react-feather";
-import "./InviteList.scss";
+import styles from "./InviteList.scss";
 
 export type InviteListProps = {
     invitedRooms: Room[];
@@ -10,16 +10,16 @@ export type InviteListProps = {
 
 const Invite = (props: {room: Room} & Exclude<InviteListProps, "invitedRoom">) => {
     return (
-        <div className="room">
-            <div className="room-icon"><Folder/></div>
-            <div className="room-name">
+        <div className={styles.room}>
+            <div className={styles.roomIcon}><Folder/></div>
+            <div className={styles.roomName}>
                 {props.room.name}
             </div>
-            <div className="room-info">
+            <div className={styles.roomInfo}>
                 Users: {props.room.joinedUsers.map(u => u.name).join(", ")}
                 <p>
-                    <button className="accept-button" onClick={() => props.onJoinRoom(props.room.id)}>Accept</button>
-                    <button className="reject-button" onClick={() => props.onIgnoreRoom(props.room.id)}>Reject</button>
+                    <button className={styles.acceptButton} onClick={() => props.onJoinRoom(props.room.id)}>Accept</button>
+                    <button className={styles.rejectButton} onClick={() => props.onIgnoreRoom(props.room.id)}>Reject</button>
                 </p>
             </div>
         </div>
@@ -28,7 +28,7 @@ const Invite = (props: {room: Room} & Exclude<InviteListProps, "invitedRoom">) =
 
 export const InviteList = (props: InviteListProps) => {
     return (
-        <div className="room-list">
+        <div className={styles.roomList}>
             {props.invitedRooms.map(r => <Invite room={r} {...props}/>)}
         </div>
     );

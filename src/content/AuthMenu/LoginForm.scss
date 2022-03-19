@@ -1,10 +1,10 @@
 @import "../../common/scss/helpers.scss";
 
-.matrix-highlight #LoginForm {
+#MatrixHighlightLoginForm {
     margin: 0 auto 0 auto;
     max-width: 25rem;
 
-    .login-error {
+    .loginError {
         @include bordered-block;
         color: tomato;
         border-color: tomato;

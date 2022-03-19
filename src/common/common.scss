@@ -7,23 +7,23 @@
 .blue { --highlight-color: #{$highlight-color-blue}; }
 .orange { --highlight-color: #{$highlight-color-orange}; }
 
-.matrix-highlight-highlight-region {
+.highlight {
     background-color: rgba(var(--highlight-color), 0.7);
     transition: background-color 0.25s;
 
-    &.matrix-highlight-highlight-active {
+    &.active {
         background-color: rgba(var(--highlight-color), 1);
     }
 }
     
-.matrix-highlight {
+.matrixHighlight {
     all: initial;
 
     *:not(svg,path,circle,line,.room-select,.room-select *,.DraftEditor-root *) {
         all: revert;
     }
 
-    .toolbar-main, .window {
+    .toolbarMain, .window {
         z-index: 999;
     }
 
@@ -51,7 +51,7 @@
         }
     }
     
-    .input-group {
+    .inputGroup {
         display: flex;
         margin: 0.5rem 0 0.5rem 0;
     
@@ -109,7 +109,7 @@
         border-color: rgba(0, 0, 0, 0.20);
         min-width: 5rem;
 
-        &.labeled-icon-button {
+        &.labeledIconButton {
             display: inline-flex;
             align-items: center;
 

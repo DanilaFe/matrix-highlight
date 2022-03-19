@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.matrix-highlight .window {
+.window {
     @include bordered-block;
     font-family: "Inconsolata";
     box-shadow: $default-shadow;
@@ -20,11 +20,11 @@
         padding: 0.5rem;
     }
 
-    .title-text {
+    .titleText {
         margin-left: 0.5rem;
     }
 
-    .close-button {
+    .closeButton {
         height: 1rem;
         width: 1rem;
         min-width: 0;
@@ -43,7 +43,7 @@
         }
     }
 
-    .color-dot {
+    .colorDot {
         height: 0.5rem;
         width: 0.5rem;
         border-radius: 100%;

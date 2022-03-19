@@ -1,5 +1,5 @@
 import React from "react";
-import "./Tab.scss"
+import styles from "./Tab.scss"
 
 export type TabProps = {
     tabId: string,
@@ -8,7 +8,7 @@ export type TabProps = {
 
 export const Tab = (props: React.PropsWithChildren<TabProps>) => {
     return (
-        <div className="tab">
+        <div className={styles.tab}>
             <h2>{props.tabTitle}</h2>
             { props.children }
         </div>

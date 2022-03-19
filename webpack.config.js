@@ -13,11 +13,6 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
-      },
-      {
           test: /\.css$/i,
           use: 'css-loader',
       },
@@ -26,11 +21,18 @@ module.exports = {
         use: [
           // Creates `style` nodes from JS strings
           "style-loader",
+          // Generate TS module definitions
+          "css-modules-typescript-loader",
           // Translates CSS into CommonJS
-          "css-loader",
+          { loader: "css-loader", options: { "modules": true } },
           // Compiles Sass to CSS
           "sass-loader",
         ],
+      },
+      {
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
       },
     ],
   },

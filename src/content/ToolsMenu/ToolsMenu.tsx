@@ -4,11 +4,12 @@ import {InviteList} from "./InviteList";
 import {RoomCreator} from "./RoomCreator";
 import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare} from "react-feather";
 import Select from "react-select";
-import "./ToolsMenu.scss";
 import {useContext} from "react";
 import {AppContext} from "../AppContext";
 import {ToolsMenuContext} from "./ToolsMenuContext";
 import {NavBar, RoomNavBar} from "./Navbar";
+import commonStyles from "../../common/common.scss";
+import styles from "./ToolsMenu.scss";
 
 export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
 
@@ -24,10 +25,10 @@ export type ToolsMenuProps = {
 const RoomToolbar = () => {
     const { openTab, showInvites } = useContext(ToolsMenuContext);
     return (
-        <div className="input-group">
-            <button className="labeled-icon-button" onClick={() => openTab("create")}><Plus className="feather"/>Create room</button>
-            <button className="labeled-icon-button" onClick={() => openTab("join")}><FolderPlus className="feather"/>Join room</button>
-            { showInvites ? <button className="labeled-icon-button" onClick={() => openTab("invites")}><Bell className="feather"/>View Invites</button> : null }
+        <div className={commonStyles.inputGroup}>
+            <button className={commonStyles.labeledIconButton} onClick={() => openTab("create")}><Plus className={commonStyles.feather}/>Create room</button>
+            <button className={commonStyles.labeledIconButton} onClick={() => openTab("join")}><FolderPlus className={commonStyles.feather}/>Join room</button>
+            { showInvites ? <button className={commonStyles.labeledIconButton} onClick={() => openTab("invites")}><Bell className={commonStyles.feather}/>View Invites</button> : null }
         </div>
     );
 };
@@ -35,10 +36,10 @@ const RoomToolbar = () => {
 const RoomButton = (props: {title: string, subtitle: string, icon: Icon, onClick(): void }) => {
     const MyIcon = props.icon;
     return (
-        <div className="menu-button" onClick={props.onClick}>
-            <div className="menu-button-icon"><MyIcon/></div>
-            <div className="menu-button-title">{props.title}</div>
-            <div className="menu-button-subtitle">{props.subtitle}</div>
+        <div className={styles.menuButton} onClick={props.onClick}>
+            <div className={styles.menuButtonIcon}><MyIcon/></div>
+            <div className={styles.menuButtonTitle}>{props.title}</div>
+            <div className={styles.menuButtonSubtitle}>{props.subtitle}</div>
         </div>
     );
 };
@@ -71,7 +72,7 @@ const UserListView = (props: { onInviteUser(roomId: string, userId: string): voi
 }
 const NoRoomsView = () => {
     return (
-        <div id="FirstGroupMessage">
+        <div id="MatrixHighlightFirstGroupMessage">
             Your highlights are stored in rooms. Each rooms contains its own highlights,
             and can be shared with other users (or not shared at all).
             <RoomToolbar/>
@@ -88,7 +89,7 @@ const DefaultView = (props: ToolsMenuProps) => {
         <>
             <h3>Select Room</h3>
             <RoomToolbar/>
-            <Select className="room-select" options={options} defaultValue={defaultOption}
+            <Select className={styles.roomSelect} options={options} defaultValue={defaultOption}
                 onChange={newValue => props.onSelectRoom(newValue?.value || null)}
                 styles={{
                     option: (provided, state) => ({
@@ -136,5 +137,5 @@ const ToolView = (props: ToolsMenuProps) => {
 }
 
 export const ToolsMenu = (props: ToolsMenuProps) => {
-    return <div className="tools-menu"><ToolView {...props}/></div>;
+    return <div className={styles.toolsMenu}><ToolView {...props}/></div>;
 }

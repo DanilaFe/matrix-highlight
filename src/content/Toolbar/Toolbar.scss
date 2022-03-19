@@ -1,6 +1,6 @@
 @import '../../common/utils.scss';
 
-.matrix-highlight .toolbar-main {
+.toolbarMain {
     @include bordered-block;
     position: fixed;
     left: 1rem;

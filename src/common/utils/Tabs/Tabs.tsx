@@ -1,6 +1,6 @@
 import React from "react";
 import {TabLabel} from "./TabLabel";
-import "./Tabs.scss";
+import styles from "./Tabs.scss";
 
 export type TabsProps = {
     currentTab: string;
@@ -18,7 +18,7 @@ export const Tabs = (props: TabsProps) => {
             onTabClick={props.onTabClick}
         />);
     return (
-        <div className="tabs">
+        <div className={styles.tabs}>
             <nav>{tabLabels}</nav>
             {props.children.find(child => child.props.tabId === props.currentTab)}
         </div>

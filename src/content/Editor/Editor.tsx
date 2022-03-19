@@ -6,7 +6,8 @@ import sanitizeHtml from 'sanitize-html';
 const {hasCommandModifier} = KeyBindingUtil;
 export const SEND_COMMAND = 'draft-editor-send';
 import {EDITOR_BUTTONS, EditorButton} from "./EditorButton";
-import "./Editor.scss"
+import styles from "./Editor.scss"
+import commonStyles from "../../common/common.scss";
 
 /* No idea where to get SyntheticKeyboardEvent. */
 function keyBindingFn(e: Parameters<typeof hasCommandModifier>[0]) {
@@ -38,9 +39,9 @@ export const Editor = (props: { sendReply(plain: string, formatted: string): voi
     const buttons = EDITOR_BUTTONS.map(([string, icon]) =>
         <EditorButton toggleStyle={toggleStyle} currentStyles={inlineStyles} style={string} icon={icon}/>);
     return (
-      <div className={`editor ${focused ? "focused" : ""}`}>
-          <div className="editor-buttons">{buttons}</div>
-          <div className={`editor-box`}>
+      <div className={`${styles.editor} ${focused ? commonStyles.focused : ""}`}>
+          <div className={styles.editorButtons}>{buttons}</div>
+          <div className={styles.editorBox}>
               <Draft.Editor keyBindingFn={keyBindingFn}
                   onFocus={() => setFocused(true)}
                   onBlur={() => setFocused(false)}

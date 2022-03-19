@@ -1,10 +1,11 @@
 import {PropsWithChildren} from "react";
 import {Highlight} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
-import "./Tooltip.scss";
 import {Trash} from "react-feather";
 import {Editor} from "../Editor/Editor";
 import {CommentList} from "../CommentList/CommentList";
+import styles from "./Tooltip.scss";
+import commonStyles from "../../common/common.scss"
 
 export type TooltipProps = {
     left: number;
@@ -18,26 +19,26 @@ export type TooltipProps = {
 }
 
 const SmallTooltip = (props: PropsWithChildren<TooltipProps>) => {
-    return <div className="matrix-highlight-tooltip"
+    return <div className={styles.tooltip}
         style={{ left: props.left, top: (props.top - 40) }}
         onMouseUp={e => e.stopPropagation()}>{props.children}</div>;
 }
 
 const LargeTooltip = (props: PropsWithChildren<TooltipProps>) => {
-    return <div className="matrix-highlight-tooltip tooltip-large"
+    return <div className={`${styles.tooltip} ${styles.large}`}
         style={{ left: props.left, top: props.bottom }}
         onMouseUp={e => e.stopPropagation()}>{props.children}</div>;
 }
 
 const DeleteButton = (props: { onClick(): void } ) => {
-    return <button className="round destructive" onClick={props.onClick}><Trash/></button>
+    return <button className={`${styles.round} ${commonStyles.destructive}`} onClick={props.onClick}><Trash/></button>
 }
 
 const ColorButton = (props: { color: string, onClick(): void, selectedColor?: string }) => {
-    const currentClass = props.color === props.selectedColor ? "current" : "";
+    const currentClass = props.color === props.selectedColor ? styles.current : "";
     return (
         <button onClick={props.onClick}
-            className={`color-switch round ${currentClass} ${props.color}`}/>
+            className={`${styles.colorSwitch} ${styles.round} ${currentClass} ${props.color}`}/>
     );
 }
 
@@ -53,13 +54,13 @@ export const Tooltip = (props: TooltipProps) => {
     );
     return (
         <LargeTooltip {...props}>
-            <div className="tooltip-buttons">
-                <span className="tooltip-color-buttons">{highlightButtons}</span>
+            <div>
+                <span>{highlightButtons}</span>
                 <DeleteButton onClick={() => props.hide(props.target!.id)}/>
             </div>
             <h3>Comments</h3> 
             <CommentList messages={props.target.messages}/>
-            <span className="notice">Leave a comment</span>
+            <span>Leave a comment</span>
             <Editor sendReply={(plain, formatted) => props.reply(props.target!.id, plain, formatted) }/>
         </LargeTooltip>
     );

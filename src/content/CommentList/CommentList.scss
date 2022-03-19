@@ -1,27 +1,24 @@
 @import "../../common/utils.scss";
 
-.matrix-highlight {
-    .comment-list, .no-comments {
-        margin-bottom: 0.5rem;
+.commentList, .noComments {
+    margin-bottom: 0.5rem;
+}
+.commentList {
+    @include bordered-block;
+
+    .comment {
+        p {
+            margin: 0;
+        }
+
+        padding: 0.5rem;
+        &:not(:last-child) {
+            border-bottom: $default-border;
+        }
     }
 
-    .comment-list {
-        @include bordered-block;
-
-        .comment {
-            p {
-                margin: 0;
-            }
-
-            padding: 0.5rem;
-            &:not(:last-child) {
-                border-bottom: $default-border;
-            }
-        }
-
-        .sender {
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
+    .sender {
+        font-weight: bold;
+        margin-right: 0.5rem;
     }
 }

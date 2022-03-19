@@ -1,37 +1,37 @@
 @import "../../common/utils.scss";
 
-.matrix-highlight .tools-menu {
+.toolsMenu {
     padding: 1rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
-.matrix-highlight  .room-select {
+.roomSelect {
     input:focus {
         /* Fix the fake input created by react-select */
         box-shadow: none;
     }
 }
 
-.matrix-highlight .menu-button {
+.menuButton {
     @include padded-list-item;
     @include bordered-block;
     margin-bottom: 0.5rem;
 
-    .menu-button-icon {
+    .menuButtonIcon {
         @include padded-list-icon;
     }
 
-    .menu-button-title {
+    .menuButtonTitle {
         @include padded-list-name;
     }
 
-    .menu-button-subtitle {
+    .menuButtonSubtitle {
         @include padded-list-body;
     }
 }
-.matrix-highlight #FirstGroupMessage {
+#MatrixHighlightFirstGroupMessage {
     margin: auto;
     display: flex;
     flex-direction: column;

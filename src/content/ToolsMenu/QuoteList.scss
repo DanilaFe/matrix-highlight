@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.matrix-highlight .quote-list {
+.quoteList {
     @include bordered-block;
     overflow: auto;
     padding: 0.5rem;
@@ -14,7 +14,7 @@
         display: flex;
         align-items: center;
 
-        .input-group {
+        .inputGroup {
             margin-bottom: 0;
 
             button {
@@ -22,14 +22,14 @@
             }
         }
 
-        .quote-color {
+        .quoteColor {
             background-color: rgb(var(--highlight-color));
             border-radius: 100%;
             margin-left: 0.5rem;
             padding: 0.25rem;
         }
 
-        .quote-data {
+        .quoteData {
             flex-grow: 1;
             padding: 0.5rem;
             flex-basis: 0;
