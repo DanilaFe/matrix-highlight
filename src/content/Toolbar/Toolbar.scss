@@ -1,6 +1,6 @@
 @import '../../common/utils.scss';
 
-.toolbarMain {
+.toolbarMain:not(.impossible) {
     @include bordered-block;
     position: fixed;
     left: 1rem;

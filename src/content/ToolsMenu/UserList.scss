@@ -1,12 +1,12 @@
 @import "../../common/utils.scss";
 
-.usersView {
+.usersView:not(.impossible) {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
 }
 
-.userList {
+.userList:not(.impossible) {
     @include padded-list;
     margin-bottom: 1rem;
     flex-basis: 0;

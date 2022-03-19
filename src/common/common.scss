@@ -19,7 +19,7 @@
 .matrixHighlight {
     all: initial;
 
-    *:not(svg,path,circle,line,.room-select,.room-select *,.DraftEditor-root *) {
+    *:not(svg,path,circle,line,:global(.roomSelect),:global(.roomSelect) *,:global(.DraftEditor-root) *) {
         all: revert;
     }
 

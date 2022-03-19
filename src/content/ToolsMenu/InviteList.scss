@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.roomList {
+.roomList:not(.impossible) {
     @include padded-list;
     margin-bottom: 1rem;
     flex-grow: 0;

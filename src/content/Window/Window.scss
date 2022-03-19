@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.window {
+.window:not(.impossible) {
     @include bordered-block;
     font-family: "Inconsolata";
     box-shadow: $default-shadow;

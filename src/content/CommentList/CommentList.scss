@@ -1,9 +1,11 @@
 @import "../../common/utils.scss";
 
 .commentList, .noComments {
-    margin-bottom: 0.5rem;
+    &:not(.impossible) {
+        margin-bottom: 0.5rem;
+    }
 }
-.commentList {
+.commentList:not(.impossible) {
     @include bordered-block;
 
     .comment {

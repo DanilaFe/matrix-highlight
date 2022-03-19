@@ -6,8 +6,8 @@ import sanitizeHtml from 'sanitize-html';
 const {hasCommandModifier} = KeyBindingUtil;
 export const SEND_COMMAND = 'draft-editor-send';
 import {EDITOR_BUTTONS, EditorButton} from "./EditorButton";
-import styles from "./Editor.scss"
 import commonStyles from "../../common/common.scss";
+import styles from "./Editor.scss"
 
 /* No idea where to get SyntheticKeyboardEvent. */
 function keyBindingFn(e: Parameters<typeof hasCommandModifier>[0]) {

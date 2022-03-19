@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.tooltip {
+.tooltip:not(.impossible) {
     @include bordered-block;
     font-family: 'Inconsolata';
     box-shadow: $default-shadow;

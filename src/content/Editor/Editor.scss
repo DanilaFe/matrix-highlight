@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.editor {
+.editor:not(.impossible) {
     /* Most styles are inherited from common.scss and shared with text inputs. */
     padding: 0;
 

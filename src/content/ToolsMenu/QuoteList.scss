@@ -1,6 +1,6 @@
 @import "../../common/utils.scss";
 
-.quoteList {
+.quoteList:not(.impossible) {
     @include bordered-block;
     overflow: auto;
     padding: 0.5rem;

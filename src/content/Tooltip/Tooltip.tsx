@@ -4,8 +4,8 @@ import {COLORS} from "../../common/model/matrix";
 import {Trash} from "react-feather";
 import {Editor} from "../Editor/Editor";
 import {CommentList} from "../CommentList/CommentList";
-import styles from "./Tooltip.scss";
 import commonStyles from "../../common/common.scss"
+import styles from "./Tooltip.scss";
 
 export type TooltipProps = {
     left: number;

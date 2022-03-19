@@ -1,6 +1,6 @@
 import {useState} from "react";
-import "./RoomCreator.scss";
 import commonStyles from "../../common/common.scss";
+import "./RoomCreator.scss";
 
 export type RoomCreatorProps = {
     createRoomEnabled: boolean;

@@ -2,8 +2,8 @@ import { useState } from "react";
 import {User} from "react-feather";
 import {useContext} from "react";
 import {AppContext} from "../AppContext";
-import styles from "./UserList.scss";
 import commonStyles from "../../common/common.scss";
+import styles from "./UserList.scss";
 
 export type UserListProps = {
     onInviteUser(roomId: string, userId: string): void;
