@@ -1,11 +1,11 @@
 @import "../common/utils.scss";
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
-.yellow { --highlight-color: #{$highlight-color-yellow}; }
-.pink { --highlight-color: #{$highlight-color-pink}; }
-.green { --highlight-color: #{$highlight-color-green}; }
-.blue { --highlight-color: #{$highlight-color-blue}; }
-.orange { --highlight-color: #{$highlight-color-orange}; }
+:global(.yellow) { --highlight-color: #{$highlight-color-yellow}; }
+:global(.pink) { --highlight-color: #{$highlight-color-pink}; }
+:global(.green) { --highlight-color: #{$highlight-color-green}; }
+:global(.blue) { --highlight-color: #{$highlight-color-blue}; }
+:global(.orange) { --highlight-color: #{$highlight-color-orange}; }
 
 .highlight {
     background-color: rgba(var(--highlight-color), 0.7);
@@ -21,10 +21,6 @@
 
     *:not(svg,path,circle,line,:global(.roomSelect),:global(.roomSelect) *,:global(.DraftEditor-root) *) {
         all: revert;
-    }
-
-    .toolbarMain, .window {
-        z-index: 999;
     }
 
     /* Increasing specificity to circumvent all: revert */

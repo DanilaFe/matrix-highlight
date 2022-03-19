@@ -8,6 +8,7 @@
     padding: 0.25rem;
     display: flex;
     flex-direction: column;
+    z-index: 999;
     
     & > button {
         background-color: inherit;

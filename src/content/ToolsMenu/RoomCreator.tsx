@@ -1,6 +1,6 @@
 import {useState} from "react";
 import commonStyles from "../../common/common.scss";
-import "./RoomCreator.scss";
+import styles from "./RoomCreator.scss";
 
 export type RoomCreatorProps = {
     createRoomEnabled: boolean;
@@ -10,7 +10,7 @@ export type RoomCreatorProps = {
 export const RoomCreator = (props: RoomCreatorProps) => {
     const [roomName, setRoomName] = useState(`Highlight room for: ${window.location.href}`);
     return (
-        <form onSubmit={e => { e.preventDefault(); props.onCreateRoom(roomName) }} id="MatrixHighlightCreateRoom">
+        <form onSubmit={e => { e.preventDefault(); props.onCreateRoom(roomName) }} id={styles.CreateRoom}>
             <label htmlFor="mhl-roomname">Room Name</label>
             <input id="mhl-roomname" type="text"
                 value={roomName} onChange={e => setRoomName(e.target.value)} disabled={!props.createRoomEnabled}/>

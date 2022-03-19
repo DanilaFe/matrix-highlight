@@ -39,7 +39,7 @@ export const Editor = (props: { sendReply(plain: string, formatted: string): voi
     const buttons = EDITOR_BUTTONS.map(([string, icon]) =>
         <EditorButton toggleStyle={toggleStyle} currentStyles={inlineStyles} style={string} icon={icon}/>);
     return (
-      <div className={`${styles.editor} ${focused ? commonStyles.focused : ""}`}>
+      <div className={`${styles.editor} ${commonStyles.editor} ${focused ? commonStyles.focused : ""}`}>
           <div className={styles.editorButtons}>{buttons}</div>
           <div className={styles.editorBox}>
               <Draft.Editor keyBindingFn={keyBindingFn}

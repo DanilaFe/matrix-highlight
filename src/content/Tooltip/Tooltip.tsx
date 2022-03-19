@@ -54,8 +54,8 @@ export const Tooltip = (props: TooltipProps) => {
     );
     return (
         <LargeTooltip {...props}>
-            <div>
-                <span>{highlightButtons}</span>
+            <div className={styles.buttons}>
+                <span className={styles.colorButtons}>{highlightButtons}</span>
                 <DeleteButton onClick={() => props.hide(props.target!.id)}/>
             </div>
             <h3>Comments</h3> 

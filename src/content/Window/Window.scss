@@ -11,6 +11,7 @@
     right: max(calc(50% - 25rem), 3rem);
     display: flex;
     flex-direction: column;
+    z-index: 999;
 
     & > .title {
         border-bottom: 0.08rem solid #cacaca;

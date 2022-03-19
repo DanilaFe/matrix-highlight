@@ -14,7 +14,7 @@ export const LoginForm = (props: LoginFormProps) => {
     const [homeserver, setHomeserver] = useState("matrix.org");
 
     return (
-        <form id="MatrixHighlightLoginForm" onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
+        <form id={styles.LoginForm} onSubmit={e => { e.preventDefault(); props.attemptLogin(username, password, homeserver) }}>
             { props.loginError ? <p className={styles.loginError}>{props.loginError}</p> : <></> }
             <fieldset disabled={!props.authEnabled}>
                 <label htmlFor="mhl-username">Matrix Username</label>

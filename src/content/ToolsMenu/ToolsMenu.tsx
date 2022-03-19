@@ -72,7 +72,7 @@ const UserListView = (props: { onInviteUser(roomId: string, userId: string): voi
 }
 const NoRoomsView = () => {
     return (
-        <div id="MatrixHighlightFirstGroupMessage">
+        <div id={styles.FirstGroupMessage}>
             Your highlights are stored in rooms. Each rooms contains its own highlights,
             and can be shared with other users (or not shared at all).
             <RoomToolbar/>
@@ -89,7 +89,7 @@ const DefaultView = (props: ToolsMenuProps) => {
         <>
             <h3>Select Room</h3>
             <RoomToolbar/>
-            <Select className={styles.roomSelect} options={options} defaultValue={defaultOption}
+            <Select className="roomSelect" options={options} defaultValue={defaultOption}
                 onChange={newValue => props.onSelectRoom(newValue?.value || null)}
                 styles={{
                     option: (provided, state) => ({

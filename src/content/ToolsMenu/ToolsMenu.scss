@@ -7,7 +7,7 @@
     flex-direction: column;
 }
 
-.roomSelect:not(.impossible) {
+:global(.roomSelect):not(.impossible) {
     input:focus {
         /* Fix the fake input created by react-select */
         box-shadow: none;
@@ -31,7 +31,7 @@
         @include padded-list-body;
     }
 }
-#MatrixHighlightFirstGroupMessage {
+#FirstGroupMessage {
     margin: auto;
     display: flex;
     flex-direction: column;
