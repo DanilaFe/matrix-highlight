@@ -18,13 +18,13 @@ export type TooltipProps = {
 }
 
 const SmallTooltip = (props: PropsWithChildren<TooltipProps>) => {
-    return <div className="tooltip"
+    return <div className="matrix-highlight-tooltip"
         style={{ left: props.left, top: (props.top - 40) }}
         onMouseUp={e => e.stopPropagation()}>{props.children}</div>;
 }
 
 const LargeTooltip = (props: PropsWithChildren<TooltipProps>) => {
-    return <div className="tooltip large"
+    return <div className="matrix-highlight-tooltip tooltip-large"
         style={{ left: props.left, top: props.bottom }}
         onMouseUp={e => e.stopPropagation()}>{props.children}</div>;
 }
@@ -53,8 +53,8 @@ export const Tooltip = (props: TooltipProps) => {
     );
     return (
         <LargeTooltip {...props}>
-            <div className="buttons">
-                <span className="color-buttons">{highlightButtons}</span>
+            <div className="tooltip-buttons">
+                <span className="tooltip-color-buttons">{highlightButtons}</span>
                 <DeleteButton onClick={() => props.hide(props.target!.id)}/>
             </div>
             <h3>Comments</h3> 
