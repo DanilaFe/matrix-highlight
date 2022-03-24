@@ -25,7 +25,19 @@ module.exports = {
         test: /\.s[ac]ss$/i,
         use: [
           // Creates `style` nodes from JS strings
-          "style-loader",
+          {
+            loader: "style-loader",
+            options: {
+              styleTagTransform: function (css, style) {
+                style.innerHTML = css;
+                if (!window._matrixHighlightStyleNodes) {
+                  window._matrixHighlightStyleNodes = [];
+                }
+                window._matrixHighlightStyleNodes.unshift(style);
+              }, 
+              injectType: "styleTag",
+            }
+          },
           // Translates CSS into CommonJS
           "css-loader",
           // Compiles Sass to CSS

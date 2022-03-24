@@ -19,10 +19,6 @@
 .matrix-highlight {
     all: initial;
 
-    *:not(svg,path,circle,line,.room-select,.room-select *,.DraftEditor-root *) {
-        all: revert;
-    }
-
     .toolbar-main, .window {
         z-index: 999;
     }
