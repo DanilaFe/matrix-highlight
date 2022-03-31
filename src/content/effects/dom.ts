@@ -1,3 +1,5 @@
+import global from "../global.module.scss";
+
 export function isHighlight(node: Node): boolean {
     return node instanceof Element && node.hasAttribute('data-mhl-highlight');
 }
@@ -53,8 +55,8 @@ export function highlightTextPortion(textNode: Text, from: number, to: number, i
     structural.setAttribute('data-mhl-structural', "true");
     const highlight = makeHighlightSpan(id, to-from);
     highlight.setAttribute('data-mhl-highlight', "true");
-    highlight.classList.add("highlight");
-    highlight.classList.add(color);
+    highlight.classList.add(global.highlight);
+    highlight.classList.add(global[color]);
     highlight.textContent = middle;
 
     if (before) { structural.appendChild(document.createTextNode(before)); }

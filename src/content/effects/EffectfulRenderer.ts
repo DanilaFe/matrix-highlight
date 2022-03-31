@@ -1,6 +1,7 @@
 import {Highlight} from "../../common/model/Highlight";
 import {highlightTextPortion, clearTextPortion} from "./dom";
 import {iterateTextPieces, decodeNodeData} from "./location";
+import global from "../global.module.scss";
 
 class HighlightData {
     private _structural: HTMLElement[] = [];
@@ -20,13 +21,13 @@ class HighlightData {
     replaceHighlight(newHighlight: Highlight) {
         if (this._highlight.color !== newHighlight.color) {
             for (const highlight of this._highlights) {
-                highlight.classList.toggle(this._highlight.color, false);
-                highlight.classList.toggle(newHighlight.color, true);
+                highlight.classList.toggle(global[this._highlight.color], false);
+                highlight.classList.toggle(global[newHighlight.color], true);
             }
         }
         this._highlight = newHighlight;
         for (const highlight of this._highlights) {
-            highlight.classList.toggle("active", this._highlight.active);
+            highlight.classList.toggle(global.active, this._highlight.active);
         }
     }
 
@@ -60,7 +61,7 @@ class HighlightData {
             newElements.highlight.onmouseenter = () => { this._renderer._hoverBegin(this._highlight.id); };
             newElements.highlight.onmouseleave = () => { this._renderer._hoverEnd(this._highlight.id); };
             newElements.highlight.onclick = () => { this._renderer._clicked(this._highlight.id, this._top, this._left, this._bottom); };
-            newElements.highlight.classList.toggle("active", this._highlight.active);
+            newElements.highlight.classList.toggle(global.active, this._highlight.active);
             this._highlights.push(newElements.highlight);
             if (newElements.structural) this._structural.push(newElements.structural);
         }

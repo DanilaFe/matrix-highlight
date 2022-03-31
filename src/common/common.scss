@@ -1,21 +1,7 @@
 @import "../common/utils.scss";
+@import "../content/global.module.scss";
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata&display=swap');
 
-.yellow { --highlight-color: #{$highlight-color-yellow}; }
-.pink { --highlight-color: #{$highlight-color-pink}; }
-.green { --highlight-color: #{$highlight-color-green}; }
-.blue { --highlight-color: #{$highlight-color-blue}; }
-.orange { --highlight-color: #{$highlight-color-orange}; }
-
-.highlight {
-    background-color: rgba(var(--highlight-color), 0.7);
-    transition: background-color 0.25s;
-
-    &.active {
-        background-color: rgba(var(--highlight-color), 1);
-    }
-}
-    
 .matrix-highlight {
     all: initial;
 
