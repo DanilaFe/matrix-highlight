@@ -1,7 +1,7 @@
 @import "../../common/utils.scss";
 
 .matrix-highlight .tools-menu {
-    padding: 1rem;
+    padding: 1em;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -17,7 +17,7 @@
 .matrix-highlight .menu-button {
     @include padded-list-item;
     @include bordered-block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.5em;
 
     .menu-button-icon {
         @include padded-list-icon;
@@ -39,6 +39,6 @@
     text-align: center;
 
     button {
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
     }
 }

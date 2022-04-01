@@ -6,12 +6,12 @@
 
     .editor-buttons {
         border-bottom: $default-border;
-        padding: 0.25rem;
+        padding: 0.25em;
 
         button {
             border-color: rgba(0,0,0,0);
             min-width: 0;
-            padding: 0.25rem;
+            padding: 0.25em;
 
             &.current {
                 border: $default-border;
@@ -20,6 +20,6 @@
     }
 
     .editor-box {
-        padding: 0.5rem;
+        padding: 0.5em;
     }
 }

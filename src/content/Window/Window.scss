@@ -5,33 +5,33 @@
     font-family: "Inconsolata";
     box-shadow: $default-shadow;
     position: fixed;
-    top: 2rem;
-    bottom: max(calc(100% - 50rem), 2rem);
-    left: max(calc(50% - 25rem), 3rem);
-    right: max(calc(50% - 25rem), 3rem);
+    top: 2em;
+    bottom: max(calc(100% - 50em), 2em);
+    left: max(calc(50% - 25em), 3em);
+    right: max(calc(50% - 25em), 3em);
     display: flex;
     flex-direction: column;
 
     & > .title {
-        border-bottom: 0.08rem solid #cacaca;
+        border-bottom: 0.08em solid #cacaca;
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0.5rem;
+        padding: 0.5em;
     }
 
     .title-text {
-        margin-left: 0.5rem;
+        margin-left: 0.5em;
     }
 
     .close-button {
-        height: 1rem;
-        width: 1rem;
+        height: 1em;
+        width: 1em;
         min-width: 0;
         border: none;
         padding: 0;
         position: absolute;
-        right: 1rem;
+        right: 1em;
         // ?? Cross is smaller than button
         display: flex;
         align-items: center;
@@ -44,10 +44,10 @@
     }
 
     .color-dot {
-        height: 0.5rem;
-        width: 0.5rem;
+        height: 0.5em;
+        width: 0.5em;
         border-radius: 100%;
-        margin-right: 0.25rem;
+        margin-right: 0.25em;
         background-color: rgb(var(--highlight-color));
     }
 }

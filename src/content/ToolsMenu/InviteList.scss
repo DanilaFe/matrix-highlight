@@ -2,7 +2,7 @@
 
 .matrix-highlight .room-list {
     @include padded-list;
-    margin-bottom: 1rem;
+    margin-bottom: 1em;
     flex-grow: 0;
     flex-basis: auto;
 
@@ -25,7 +25,7 @@
     }
 
     button {
-        margin-right: 0.5rem;
+        margin-right: 0.5em;
     }
 
     .accept-button {

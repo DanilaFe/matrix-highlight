@@ -2,7 +2,7 @@
 
 .matrix-highlight {
     .comment-list, .no-comments {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0.5em;
     }
 
     .comment-list {
@@ -13,7 +13,7 @@
                 margin: 0;
             }
 
-            padding: 0.5rem;
+            padding: 0.5em;
             &:not(:last-child) {
                 border-bottom: $default-border;
             }
@@ -21,7 +21,7 @@
 
         .sender {
             font-weight: bold;
-            margin-right: 0.5rem;
+            margin-right: 0.5em;
         }
     }
 }

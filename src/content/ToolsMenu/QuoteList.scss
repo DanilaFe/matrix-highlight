@@ -3,14 +3,14 @@
 .matrix-highlight .quote-list {
     @include bordered-block;
     overflow: auto;
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+    padding: 0.5em;
+    margin-bottom: 1em;
     flex-basis: 0;
     flex-grow: 1;
 
     .quote {
         @include bordered-block;
-        margin-top: 0.5rem;
+        margin-top: 0.5em;
         display: flex;
         align-items: center;
 
@@ -18,20 +18,20 @@
             margin-bottom: 0;
 
             button {
-                padding: 0.25rem;
+                padding: 0.25em;
             }
         }
 
         .quote-color {
             background-color: rgb(var(--highlight-color));
             border-radius: 100%;
-            margin-left: 0.5rem;
-            padding: 0.25rem;
+            margin-left: 0.5em;
+            padding: 0.25em;
         }
 
         .quote-data {
             flex-grow: 1;
-            padding: 0.5rem;
+            padding: 0.5em;
             flex-basis: 0;
         }
     }

@@ -3,20 +3,21 @@
 .matrix-highlight .toolbar-main {
     @include bordered-block;
     position: fixed;
-    left: 1rem;
-    top: 1rem;
-    padding: 0.25rem;
+    left: 1em;
+    top: 1em;
+    padding: 0.25em;
     display: flex;
     flex-direction: column;
     
     & > button {
+        font-size: inherit;
         background-color: inherit;
         border: none;
         padding: 0;
         min-width: 0;
         min-height: 0;
-        width: 1.5rem;
-        height: 1.5rem;
+        width: 1.5em;
+        height: 1.5em;
 
         &:nth-of-type(5n+1) { --highlight-color: #{$highlight-color-yellow}; }
         &:nth-of-type(5n+2) { --highlight-color: #{$highlight-color-pink}; }
@@ -34,6 +35,6 @@
     }
 
     .spacer {
-        padding: .5rem;
+        padding: .5em;
     }
 }

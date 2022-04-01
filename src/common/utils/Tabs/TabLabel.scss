@@ -2,17 +2,17 @@
 
 .matrix-highlight .tab-button {
     flex-grow: 1;
-    padding: 0.25rem 0.5rem 0.25rem 0.5rem;
+    padding: 0.25em 0.5em 0.25em 0.5em;
     text-align: center;
     color: lighten(black, 30%);
 
     &:not(:last-child) {
-        border-right: 0.08rem solid #cacaca;
+        border-right: 0.08em solid #cacaca;
     }
 
     &.active .tab-button-name {
         font-weight: bold;
         color: black;
-        border-bottom: 0.1rem solid $primary-color;
+        border-bottom: 0.1em solid $primary-color;
     }
 }

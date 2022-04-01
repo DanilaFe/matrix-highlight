@@ -2,12 +2,12 @@
 
 .matrix-highlight #LoginForm {
     margin: 0 auto 0 auto;
-    max-width: 25rem;
+    max-width: 25em;
 
     .login-error {
         @include bordered-block;
         color: tomato;
         border-color: tomato;
-        padding: 0.625rem;
+        padding: 0.625em;
     }
 }
