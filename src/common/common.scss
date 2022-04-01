@@ -6,7 +6,7 @@
     font-size: 15px;
 
     .toolbar-main, .window {
-        z-index: 999;
+        z-index: 999999999;
     }
 
     /* Increasing specificity to circumvent all: revert */
