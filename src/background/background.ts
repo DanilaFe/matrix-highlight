@@ -3,7 +3,7 @@ import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembersh
 import {fetchRequest} from "./fetch-request";
 import {Client} from "./client";
 import * as browser from "webextension-polyfill";
-import {Platform} from "./channel";
+import {Platform} from "./platform";
 
 class WebExtPlatform extends Platform {
     private _hookedTabs: Map<number, browser.Runtime.Port>
