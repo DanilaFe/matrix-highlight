@@ -23,6 +23,10 @@
         padding: 0.5em;
         margin: 0;
         outline: none;
+        
+        /* https://github.com/ueberdosis/tiptap/issues/873 */
+        white-space: pre-wrap;
+        word-break: break-word;
 
         p {
             margin: 0;
