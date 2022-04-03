@@ -19,7 +19,13 @@
         }
     }
 
-    .editor-box {
+    .ProseMirror {
         padding: 0.5em;
+        margin: 0;
+        outline: none;
+
+        p {
+            margin: 0;
+        }
     }
 }
