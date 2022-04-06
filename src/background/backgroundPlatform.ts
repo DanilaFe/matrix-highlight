@@ -84,9 +84,6 @@ export abstract class BackgroundPlatform {
             [LOCALSTORAGE_TOKEN_KEY]: result.access_token
         });
         return new Client(newClient, this);
-        // await setupClient(newClient);
-        // const name = newClient.getUser(newClient.getUserId()).displayName;
-        // port.postMessage({ type: "login-successful", username, homeserver, name });
     }
 
     async setupClient(newClient: Client) {
