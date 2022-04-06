@@ -7,7 +7,10 @@ module.exports = {
   entry: {
     content: './src/content/index.tsx',
     background: './src/background/background.ts',
-    standalone: './src/standalone/standalone.tsx',
+    standalone: {
+      import: './src/standalone/standalone.tsx',
+      library: { name: 'matrixHighlight', type: 'window' },
+    },
     // background: './src/background/index.tsx',
     // popup: './src/popup/index.tsx'
   },

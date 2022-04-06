@@ -45,7 +45,7 @@ class LocalStorageBackgroundPlatform extends BackgroundPlatform {
     }
 }
 
-(window as any).matrixHiglightInstall = async (htmlElement: HTMLElement)  => {
+export async function install(htmlElement: HTMLElement) {
     const combined = new CombinedPlatform();   
     ReactDOM.render(
         <App platform={combined.contentPlatform}/>,
