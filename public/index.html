@@ -8,6 +8,10 @@
       name="description"
       content="Matrix highlight prototype"
     />
+    <script src="./standalone.js"></script>
+    <style>
+        body { max-width: 800px; margin: auto; font-family: "Iosevka"; }
+    </style>
     <title>Matrix Highlight</title>
   </head>
   <body>
@@ -26,6 +30,11 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur egestas, felis vel feugiat consectetur, mi libero vulputate sapien, sit amet efficitur elit neque pharetra urna. Curabitur a bibendum justo, sit amet auctor libero. Vestibulum urna justo, gravida vel hendrerit vitae, auctor et augue. Ut suscipit pellentesque massa, at tincidunt ipsum imperdiet in. Duis et velit non lorem sagittis viverra. Nunc vehicula volutpat elit, quis porta mi auctor id. Quisque nec ipsum at mi gravida convallis. Nulla sed justo magna. Maecenas gravida posuere aliquet. Nam diam neque, bibendum ac finibus laoreet, luctus et neque. Proin tincidunt eros a ante egestas, vel ultrices purus tristique. Nam vel sem justo. Pellentesque id vehicula arcu, eu suscipit magna.</p>
     </main>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div class="matrix-highlight">
+        <div id="root"></div>
+    </div>
+    <script type="module">
+        window.matrixHiglightInstall(document.getElementById("root"));
+    </script>
   </body>
 </html>
