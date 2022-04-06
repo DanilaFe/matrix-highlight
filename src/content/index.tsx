@@ -12,7 +12,6 @@ import {ToContentMessage, FromContentMessage, PORT_TAB, PORT_RENEW} from "../com
 class WebExtPlatform extends ContentPlatform {
     private _port: browser.Runtime.Port | null = null;
     private _connectionType: typeof PORT_TAB | typeof PORT_RENEW = PORT_TAB;
-    private _callback: ((message: ToContentMessage) => void) | null = null
     
     async fetchStorage(keys: string[]): Promise<Record<string, any>> {
         return await browser.storage.local.get(keys);
@@ -20,10 +19,6 @@ class WebExtPlatform extends ContentPlatform {
 
     async setStorage(values: Record<string, any>): Promise<void> {
         await browser.storage.local.set(values);
-    }
-
-    private _runCallback(message: ToContentMessage): void {
-        if (this._callback) this._callback(message);
     }
 
     private _setupPort() {
@@ -41,7 +36,7 @@ class WebExtPlatform extends ContentPlatform {
     }
 
     setCallback(callback: (message: ToContentMessage) => void): void {
-        this._callback = callback;
+        super.setCallback(callback);
         /* Only start port after we have a callbck registered, to avoid missing events. */
         if (!this._port) this._setupPort();
     }
