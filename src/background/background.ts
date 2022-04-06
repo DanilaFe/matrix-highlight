@@ -20,19 +20,8 @@ class WebExtPlatform extends BackgroundPlatform {
             }
         }
         port.onMessage.addListener(async (message: FromContentMessage) => {
-            if (message.type === "attempt-login") {
-                const loginResult = await this.tryLogin(message.username, message.password, message.homeserver);
-                if ("loginError" in loginResult) {
-                    port.postMessage({ type: "login-failed", loginError: loginResult.loginError });
-                    return;
-                }
-                await this.setupClient(loginResult);
-            } else if (message.type === "create-room") {
-                await this._client!.createRoom(message.name, message.url);
-                port.postMessage({ type: "room-created" });
-            } else {
-                this._client?.handleMessage(message);
-            }
+            const portMessage = await this.handleMessage(message);
+            if (portMessage) port.postMessage(portMessage);
         });
     }
 

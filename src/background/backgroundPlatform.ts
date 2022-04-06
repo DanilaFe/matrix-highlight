@@ -1,4 +1,4 @@
-import { ToContentMessage } from "../common/messages";
+import { ToContentMessage, FromContentMessage } from "../common/messages";
 import { Client } from "./client";
 import * as sdk from "matrix-js-sdk";
 import { BasePlatform } from "../common/basePlatform";
@@ -75,4 +75,19 @@ export abstract class BackgroundPlatform extends BasePlatform {
         await newClient.start();
     }
 
+    async handleMessage(message: FromContentMessage): Promise<ToContentMessage | null> {
+        if (message.type === "attempt-login") {
+            const loginResult = await this.tryLogin(message.username, message.password, message.homeserver);
+            if ("loginError" in loginResult) {
+                return { type: "login-failed", loginError: loginResult.loginError };
+            }
+            await this.setupClient(loginResult);
+        } else if (message.type === "create-room") {
+            await this._client!.createRoom(message.name, message.url);
+            return { type: "room-created" };
+        } else {
+            this._client?.handleMessage(message);
+        }
+        return null;
+    }
 }
