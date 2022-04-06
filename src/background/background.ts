@@ -1,5 +1,5 @@
 import * as sdk from "matrix-js-sdk";
-import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembership} from "../common/messages";
+import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
 import {fetchRequest} from "./fetch-request";
 import {Client} from "./client";
 import * as browser from "webextension-polyfill";
