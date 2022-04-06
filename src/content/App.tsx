@@ -13,8 +13,8 @@ import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
 import {highlightReducer, highlightInitialState, HighlightDataState} from "./slices/highlightData";
 import {toolsMenuReducer, toolsMenuInitialState} from "./slices/toolsMenu";
 import {authReducer, authInitialState, AuthState} from "./slices/auth";
-import * as browser from "webextension-polyfill";
 import {AppContext} from "./AppContext";
+import {ContentPlatform} from "./contentPlatform";
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",
@@ -23,28 +23,6 @@ export enum IndicatorStatus {
     Queued = "queued",
     Synced = "synced",
 }
-
-export function sendToBackground(port: browser.Runtime.Port | null, event: FromContentMessage): void {
-    port?.postMessage(event);
-}
-
-async function freshTxnId(): Promise<number> {
-    const txnId = (await browser.storage.local.get([ "txnId" ]))["txnId"] || 0;
-    await browser.storage.local.set({ txnId: txnId + 1 });
-    return txnId;
-}
-
-function openPort(str: typeof PORT_TAB | typeof PORT_RENEW, setPort: (port: browser.Runtime.Port) => void, dispatch: (event: ToContentMessage) => void): void {
-    const port = browser.runtime.connect({ name: str });
-    setPort(port);
-    port.onDisconnect.addListener(() => {
-        openPort(PORT_RENEW, setPort, dispatch) /* Do not retrieve all data on reconnect */
-    });
-    port.onMessage.addListener((message: ToContentMessage) => {
-        // response(true);
-        dispatch(message);
-    });
-};
 
 function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): IndicatorStatus {
     if (!auth.userId) {
@@ -60,9 +38,7 @@ function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): Ind
     }
 }
 
-const App = () => {
-    const [port, setPort] = useState<browser.Runtime.Port | null>(null);
-
+const App = (props: { platform: ContentPlatform }) => {
     const [toolsMenu, toolsMenuDispatch] = useReducer(toolsMenuReducer, toolsMenuInitialState);
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
@@ -105,19 +81,19 @@ const App = () => {
     const createRoom = async (roomName: string) => {
         const url = window.location.href;
         highlightDispatch({ type: "create-room" });
-        sendToBackground(port, { type: "create-room", name: roomName, url }); 
+        props.platform.sendMessage({ type: "create-room", name: roomName, url }); 
     }
 
     const joinRoom = async (roomId: string) => {
-        sendToBackground(port, { type: "join-room", roomId });
+        props.platform.sendMessage({ type: "join-room", roomId });
     }
     
     const leaveRoom = async (roomId: string) => {
-        sendToBackground(port, { type: "leave-room", roomId });
+        props.platform.sendMessage({ type: "leave-room", roomId });
     }
 
     const inviteUser = async (roomId: string, userId: string) => {
-        sendToBackground(port, { type: "invite-user", roomId, userId });
+        props.platform.sendMessage({ type: "invite-user", roomId, userId });
     }
 
     const makeNewHighlight = async (color: string) => {
@@ -125,9 +101,9 @@ const App = () => {
         const skeletonEvent = makeEvent(tooltip.selection);
         if (skeletonEvent) {
             const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
-            const txnId = await freshTxnId();
+            const txnId = await props.platform.freshTxnId();
 
-            sendToBackground(port, { type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
+            props.platform.sendMessage({ type: "send-highlight", roomId: highlight.currentRoomId, highlight: event, txnId });
             highlightDispatch({
                 type: "local-highlight",
                 highlight: new Highlight(txnId, event),
@@ -146,7 +122,7 @@ const App = () => {
 
         const newContent = transform(existingHighlight.content);
         if (typeof id === "string") {
-            sendToBackground(port, { type: "edit-highlight", roomId: highlight.currentRoomId, highlightId: id, highlight: newContent });
+            props.platform.sendMessage({ type: "edit-highlight", roomId: highlight.currentRoomId, highlightId: id, highlight: newContent });
         }
         highlightDispatch({
             type: "highlight-content",
@@ -169,19 +145,19 @@ const App = () => {
         if (!auth.userId || !highlight.currentRoomId) return;
         if (typeof(id) !== "string") return;
         
-        const txnId = await freshTxnId();
+        const txnId = await props.platform.freshTxnId();
         const localMessage = new Message({
             id: txnId,
             userId: auth.userId,
             plainBody, formattedBody
         });
         highlightDispatch({ type: "local-message", roomId: highlight.currentRoomId, threadId: id, message: localMessage });
-        sendToBackground(port, { type: "send-thread-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
+        props.platform.sendMessage({ type: "send-thread-message", roomId: highlight.currentRoomId, threadId: id, txnId, plainBody, formattedBody });
     }
 
     const attemptLogin = async (username: string, password: string, homeserver: string) => {
         authDispatch({type: "begin-login-attempt"});
-        sendToBackground(port, { type: "attempt-login", username, password, homeserver });
+        props.platform.sendMessage({ type: "attempt-login", username, password, homeserver });
     }
 
     const switchRoom = (roomId: string) => {
@@ -190,19 +166,12 @@ const App = () => {
 
     useEffect(() => {
         if (!highlight.currentRoomId) return;
-        sendToBackground(port, { type: "load-room", roomId: highlight.currentRoomId });
+        props.platform.sendMessage({ type: "load-room", roomId: highlight.currentRoomId });
     }, [highlight.currentRoomId]);
 
     useEffect(() => {
-        setTimeout(() => {
-            openPort(PORT_RENEW, setPort, messageDispatch);
-            port?.disconnect();
-        }, 1000 * 60 * 4);
-    }, [port, setPort, highlightDispatch, authDispatch, toolsMenuDispatch]);
-
-    useEffect(() => {
-        openPort(PORT_TAB, setPort, messageDispatch);
-    }, [setPort, highlightDispatch, authDispatch, toolsMenuDispatch]);
+        props.platform.setCallback(messageDispatch);
+    }, [highlightDispatch, authDispatch, toolsMenuDispatch]);
 
     useEffect(() => {
         Renderer.subscribe({

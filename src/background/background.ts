@@ -3,9 +3,9 @@ import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembersh
 import {fetchRequest} from "./fetch-request";
 import {Client} from "./client";
 import * as browser from "webextension-polyfill";
-import {Platform} from "./platform";
+import {BackgroundPlatform} from "./platform";
 
-class WebExtPlatform extends Platform {
+class WebExtPlatform extends BackgroundPlatform {
     private _hookedTabs: Map<number, browser.Runtime.Port>
     private _triedCachedLogin: boolean = false;
 

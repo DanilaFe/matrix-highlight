@@ -5,6 +5,51 @@ import '../common/common.scss';
 import global from "!!css-loader!sass-loader!./global.module.scss";
 import createCache from '@emotion/cache';
 import {CacheProvider} from "@emotion/react";
+import {ContentPlatform} from "./contentPlatform";
+import * as browser from "webextension-polyfill";
+import {ToContentMessage, FromContentMessage, PORT_TAB, PORT_RENEW} from "../common/messages";
+
+class WebExtPlatform extends ContentPlatform {
+    private _port: browser.Runtime.Port | null = null;
+    private _connectionType: typeof PORT_TAB | typeof PORT_RENEW = PORT_TAB;
+    private _callback: ((message: ToContentMessage) => void) | null = null
+    
+    async fetchStorage(keys: string[]): Promise<Record<string, any>> {
+        return await browser.storage.local.get(keys);
+    }
+
+    async setStorage(values: Record<string, any>): Promise<void> {
+        await browser.storage.local.set(values);
+    }
+
+    private _runCallback(message: ToContentMessage): void {
+        if (this._callback) this._callback(message);
+    }
+
+    private _setupPort() {
+        this._port = browser.runtime.connect({ name: this._connectionType });
+        this._connectionType = PORT_RENEW; /* Do not retrieve all data on reconnect */
+        this._port.onMessage.addListener(this._runCallback.bind(this));
+        this._port.onDisconnect.addListener(() => {
+            this._setupPort();
+        });
+        setTimeout(() => {
+            const oldPort = this._port;
+            this._setupPort();
+            oldPort?.disconnect();
+        }, 1000 * 60 * 4)
+    }
+
+    setCallback(callback: (message: ToContentMessage) => void): void {
+        this._callback = callback;
+        /* Only start port after we have a callbck registered, to avoid missing events. */
+        if (!this._port) this._setupPort();
+    }
+
+    sendMessage(message: FromContentMessage): void {
+        this._port?.postMessage(message);
+    }
+}
 
 const newElement = document.createElement('div');
 newElement.attachShadow({ mode: "open" });
@@ -29,7 +74,7 @@ shadowRoot?.appendChild(reactRoot);
 ReactDOM.render(
   <React.StrictMode>
       <CacheProvider value={shadowCache}>
-        <App/>
+        <App platform={new WebExtPlatform()}/>
       </CacheProvider>
   </React.StrictMode>,
   reactRoot

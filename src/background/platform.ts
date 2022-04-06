@@ -1,16 +1,15 @@
 import { ToContentMessage } from "../common/messages";
 import { Client } from "./client";
 import * as sdk from "matrix-js-sdk";
+import { BasePlatform } from "../common/basePlatform";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
 
-export abstract class Platform {
+export abstract class BackgroundPlatform extends BasePlatform {
     protected _client: Client | null = null;
 
     abstract broadcast(message: ToContentMessage | ToContentMessage[], url?: string): void;
-    abstract fetchStorage(keys: string[]): Promise<Record<string, any>>;
-    abstract setStorage(keys: Record<string, any>): Promise<void>;
 
     private async _fetchBaseUrl(server: string) {
         return fetch(`https://${server}/.well-known/matrix/client`)
