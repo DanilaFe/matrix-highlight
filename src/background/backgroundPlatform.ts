@@ -44,6 +44,25 @@ export abstract class BackgroundPlatform {
         return new Client(this._createClient({ baseUrl, userId: id, accessToken: token }), this);
     }
 
+    async guestLogin(homeserver: string): Promise<Client | null> {
+        const baseUrl = await this._fetchBaseUrl(homeserver);
+        const tempClient = this._createClient({ baseUrl });
+        let result;
+        try {
+            result = await tempClient.registerGuest({});
+        } catch (e: any) {
+            return null;
+        }
+        const { access_token, user_id, device_id } = result;
+        const newClient = this._createClient({ baseUrl, accessToken: access_token, userId: user_id, deviceId: device_id });
+        newClient.setGuest(true);
+        this._storageProvider.setStorage({
+            [LOCALSTORAGE_ID_KEY]: user_id,
+            [LOCALSTORAGE_TOKEN_KEY]: access_token
+        });
+        return new Client(newClient, this);
+    }
+
     async tryLogin(username: string, password: string, homeserver: string): Promise<Client | { loginError: string }> {
         const baseUrl = await this._fetchBaseUrl(homeserver);
         const newClient = this._createClient({ baseUrl });
