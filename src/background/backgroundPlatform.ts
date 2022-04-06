@@ -1,13 +1,15 @@
 import { ToContentMessage, FromContentMessage } from "../common/messages";
 import { Client } from "./client";
 import * as sdk from "matrix-js-sdk";
-import { BasePlatform } from "../common/basePlatform";
+import { StorageProvider } from "../common/storage/provider";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
 
-export abstract class BackgroundPlatform extends BasePlatform {
+export abstract class BackgroundPlatform {
     protected _client: Client | null = null;
+
+    constructor (private _storageProvider: StorageProvider) {}
 
     abstract broadcast(message: ToContentMessage | ToContentMessage[], url?: string): void;
 
@@ -19,7 +21,7 @@ export abstract class BackgroundPlatform extends BasePlatform {
     }
 
     private async _fetchLogin(): Promise<{id: string, token: string, baseUrl: string } | null> {
-        const credentials = await this.fetchStorage([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
+        const credentials = await this._storageProvider.fetchStorage([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
         const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
         const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
         if (id && token) {
@@ -58,7 +60,7 @@ export abstract class BackgroundPlatform extends BasePlatform {
             return { loginError: "Invalid username or password." };
         }
 
-        this.setStorage({
+        this._storageProvider.setStorage({
             [LOCALSTORAGE_ID_KEY]: result.user_id,
             [LOCALSTORAGE_TOKEN_KEY]: result.access_token
         });

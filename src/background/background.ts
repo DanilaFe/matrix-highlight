@@ -3,6 +3,7 @@ import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembersh
 import {fetchRequest} from "./fetch-request";
 import {Client} from "./client";
 import * as browser from "webextension-polyfill";
+import {WebExtStorageProvider} from "../common/storage/webExt";
 import {BackgroundPlatform} from "./backgroundPlatform";
 
 class WebExtPlatform extends BackgroundPlatform {
@@ -56,7 +57,7 @@ class WebExtPlatform extends BackgroundPlatform {
     }
 
     constructor() {
-        super();
+        super(new WebExtStorageProvider());
         this._hookedTabs = new Map();
         sdk.request(fetchRequest);
         this._hookBrowser();

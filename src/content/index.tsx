@@ -8,19 +8,14 @@ import {CacheProvider} from "@emotion/react";
 import {ContentPlatform} from "./contentPlatform";
 import * as browser from "webextension-polyfill";
 import {ToContentMessage, FromContentMessage, PORT_TAB, PORT_RENEW} from "../common/messages";
+import {WebExtStorageProvider} from "../common/storage/webExt";
 
 class WebExtPlatform extends ContentPlatform {
     private _port: browser.Runtime.Port | null = null;
     private _connectionType: typeof PORT_TAB | typeof PORT_RENEW = PORT_TAB;
+
+    constructor() { super(new WebExtStorageProvider()); }
     
-    async fetchStorage(keys: string[]): Promise<Record<string, any>> {
-        return await browser.storage.local.get(keys);
-    }
-
-    async setStorage(values: Record<string, any>): Promise<void> {
-        await browser.storage.local.set(values);
-    }
-
     private _setupPort() {
         this._port = browser.runtime.connect({ name: this._connectionType });
         this._connectionType = PORT_RENEW; /* Do not retrieve all data on reconnect */
