@@ -3,7 +3,7 @@ import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage, RoomMembersh
 import {fetchRequest} from "./fetch-request";
 import {Client} from "./client";
 import * as browser from "webextension-polyfill";
-import {BackgroundPlatform} from "./platform";
+import {BackgroundPlatform} from "./backgroundPlatform";
 
 class WebExtPlatform extends BackgroundPlatform {
     private _hookedTabs: Map<number, browser.Runtime.Port>
@@ -48,7 +48,7 @@ class WebExtPlatform extends BackgroundPlatform {
             await this._cachedLogin();
             if (port.name === PORT_TAB || port.name === PORT_RENEW) this._setupTabPort(port, port.name === PORT_TAB);
         });
-        browser.runtime.onInstalled.addListener(async () => {
+        browser.runtime.onInstalled.addListener(() => {
             browser.contextMenus.create({
                 title: "Highlight using Matrix",
                 contexts: ["page"],

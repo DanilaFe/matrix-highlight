@@ -1,7 +1,7 @@
 import {Room, User, Highlight, Message, HIGHLIGHT_PAGE_KEY, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
 import {RoomMembership, ToContentMessage, FromContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
-import {BackgroundPlatform} from "./platform";
+import {BackgroundPlatform} from "./backgroundPlatform";
 
 function extractTxnId(event: sdk.MatrixEvent): number | undefined {
     let localId = undefined;
