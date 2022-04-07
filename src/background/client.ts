@@ -23,7 +23,7 @@ function eventToMessage(event: sdk.MatrixEvent): Message {
 }
 
 export class Client {
-    constructor(private _sdkClient: sdk.MatrixClient, private _channel: BackgroundPlatform){}
+    constructor(private _sdkClient: sdk.MatrixClient, private _platform: BackgroundPlatform){}
 
     async createRoom(name: string, url: string): Promise<void> {
         await this._sdkClient.createRoom({
@@ -40,7 +40,7 @@ export class Client {
         }
         const url = this._checkRoom(target);
         if (!url || !message) return;
-        return this._channel.broadcast(message, url);
+        return this._platform.broadcast(message, url);
     }
 
     private _checkRoom(room: sdk.Room): string | undefined {
@@ -158,7 +158,7 @@ export class Client {
     setup() {
         this._sdkClient.on("sync", state => {
             if (state !== "PREPARED") return;
-            this._channel.broadcast({ type: "sync-complete" });
+            this._platform.broadcast({ type: "sync-complete" });
             // During initial sync, we receive events from rooms. That's nice,
             // but if we also process the timelines of rooms we select, we end
             // up double-counting events. So instead, ignore events from initial
