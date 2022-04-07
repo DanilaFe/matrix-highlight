@@ -5,6 +5,7 @@ import { StorageProvider } from "../common/storage/provider";
 
 const LOCALSTORAGE_ID_KEY = "matrixId";
 const LOCALSTORAGE_TOKEN_KEY = "matrixToken";
+const LOCALSTORAGE_GUEST_KEY = "isGuest";
 
 export abstract class BackgroundPlatform {
     protected _client: Client | null = null;
@@ -20,14 +21,15 @@ export abstract class BackgroundPlatform {
             .catch(() => `https://${server}`);
     }
 
-    private async _fetchLogin(): Promise<{id: string, token: string, baseUrl: string } | null> {
-        const credentials = await this._storageProvider.fetchStorage([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY]);
+    private async _fetchLogin(): Promise<{id: string, token: string, isGuest: boolean, baseUrl: string } | null> {
+        const credentials = await this._storageProvider.fetchStorage([LOCALSTORAGE_ID_KEY, LOCALSTORAGE_TOKEN_KEY, LOCALSTORAGE_GUEST_KEY]);
         const id: string | undefined = credentials[LOCALSTORAGE_ID_KEY];
         const token: string | undefined = credentials[LOCALSTORAGE_TOKEN_KEY];
+        const isGuest: boolean = credentials[LOCALSTORAGE_GUEST_KEY] || false;
         if (id && token) {
             const server = id.substring(id.indexOf(":") + 1);
             const baseUrl = await this._fetchBaseUrl(server);
-            return { id, token, baseUrl };
+            return { id, token, isGuest, baseUrl };
         }
         return null;
     }
@@ -40,8 +42,10 @@ export abstract class BackgroundPlatform {
     async tryCachedLogin(): Promise<Client | null> {
         const fetchedCredentials = await this._fetchLogin();
         if (!fetchedCredentials) return null;
-        const { id, token, baseUrl } = fetchedCredentials;
-        return new Client(this._createClient({ baseUrl, userId: id, accessToken: token }), this);
+        const { id, token, isGuest, baseUrl } = fetchedCredentials;
+        const newClient = this._createClient({ baseUrl, userId: id, accessToken: token });
+        newClient.setGuest(isGuest);
+        return new Client(newClient, this);
     }
 
     async guestLogin(homeserver: string): Promise<Client | null> {
@@ -58,7 +62,8 @@ export abstract class BackgroundPlatform {
         newClient.setGuest(true);
         this._storageProvider.setStorage({
             [LOCALSTORAGE_ID_KEY]: user_id,
-            [LOCALSTORAGE_TOKEN_KEY]: access_token
+            [LOCALSTORAGE_TOKEN_KEY]: access_token,
+            [LOCALSTORAGE_GUEST_KEY]: true
         });
         return new Client(newClient, this);
     }
@@ -81,7 +86,8 @@ export abstract class BackgroundPlatform {
 
         this._storageProvider.setStorage({
             [LOCALSTORAGE_ID_KEY]: result.user_id,
-            [LOCALSTORAGE_TOKEN_KEY]: result.access_token
+            [LOCALSTORAGE_TOKEN_KEY]: result.access_token,
+            [LOCALSTORAGE_GUEST_KEY]: false,
         });
         return new Client(newClient, this);
     }
