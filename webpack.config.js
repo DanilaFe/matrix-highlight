@@ -11,8 +11,6 @@ module.exports = {
       import: './src/standalone/standalone.tsx',
       library: { name: 'matrixHighlight', type: 'window' },
     },
-    // background: './src/background/index.tsx',
-    // popup: './src/popup/index.tsx'
   },
   module: {
     rules: [
@@ -64,7 +62,5 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
-  optimization: {
-      minimize: false
-  },
+  optimization: {},
 };
