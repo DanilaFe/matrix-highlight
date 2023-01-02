@@ -97,7 +97,7 @@ export class Client {
     }
 
     private _addExistingReplies(event: sdk.MatrixEvent, highlight: Highlight): void {
-        const timelineSet = this._sdkClient.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
+        const timelineSet = this._sdkClient.getRoom(event.getRoomId()!).getUnfilteredTimelineSet();
         const threadReplies = timelineSet.getRelationsForEvent(event.getId(), "io.element.thread" as any, "m.room.message");
         if (!threadReplies) return;
         for (const threadEvent of threadReplies.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs())) {
@@ -106,7 +106,7 @@ export class Client {
     }
 
     private _useLatestContent(event: sdk.MatrixEvent, highlight: Highlight): void {
-        const timelineSet = this._sdkClient.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
+        const timelineSet = this._sdkClient.getRoom(event.getRoomId()!).getUnfilteredTimelineSet();
         const edits = timelineSet.getRelationsForEvent(event.getId(), HIGHLIGHT_EDIT_REL_TYPE as any, HIGHLIGHT_EDIT_EVENT_TYPE);
         if (!edits) return;
         const sortedEdits = edits.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs());
@@ -122,7 +122,7 @@ export class Client {
             this._useLatestContent(event, highlight);
             return {
                 type: "highlight",
-                roomId: event.getRoomId(),
+                roomId: event.getRoomId()!,
                 txnId: extractTxnId(event),
                 highlight: highlight,
                 placeAtTop,
@@ -133,7 +133,7 @@ export class Client {
             if (!highlightId) return null;
             return {
                 type: "highlight-content",
-                roomId: event.getRoomId(),
+                roomId: event.getRoomId()!,
                 highlightId,
                 highlight: newContent
             };
@@ -141,8 +141,8 @@ export class Client {
                 if (!event.isThreadRelation || event.isThreadRoot) return null;
             return {
                 type: "thread-message",
-                roomId: event.getRoomId(),
-                threadId: event.threadRootId,
+                roomId: event.getRoomId()!,
+                threadId: event.threadRootId!,
                 txnId: extractTxnId(event),
                 message: eventToMessage(event),
                 placeAtTop,
@@ -152,7 +152,7 @@ export class Client {
     }
 
     private async _emitEvent(event: sdk.MatrixEvent, placeAtTop: boolean): Promise<void> {
-        await this._broadcastRoom(this._processEvent(event, placeAtTop), event.getRoomId());
+        await this._broadcastRoom(this._processEvent(event, placeAtTop), event.getRoomId()!);
     };
 
     setup() {
@@ -184,7 +184,7 @@ export class Client {
                 if (!data.liveEvent) this._emitEvent(event, toStartOfTimeline);
             });
             this._sdkClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: RoomMembership | null) => {
-                this._emitMember(event.getRoomId(), oldMembership, member);
+                this._emitMember(event.getRoomId()!, oldMembership, member);
             });
             for (const room of this._sdkClient.getRooms()) {
                 this._emitRoom(room);
