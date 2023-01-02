@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const WebextensionPlugin = require("@webextension-toolbox/webpack-webextension-plugin").default;
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -39,7 +40,7 @@ module.exports = {
                   window._matrixHighlightStyleNodes = [];
                 }
                 window._matrixHighlightStyleNodes.unshift(style);
-              }, 
+              },
               injectType: "styleTag",
             }
           },
@@ -68,5 +69,19 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
-  optimization: {},
+  optimization: {
+    // Replacing default minification because of https://stackoverflow.com/questions/49979397/chrome-says-my-content-script-isnt-utf-8
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        parallel: true,
+        terserOptions: {
+          ecma: 6,
+          output: {
+            ascii_only: true
+          },
+        },
+      }),
+    ],
+  },
 };
