@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const WebextensionPlugin = require("@webextension-toolbox/webpack-webextension-plugin").default;
 
 module.exports = {
   entry: {
@@ -56,6 +57,9 @@ module.exports = {
     new webpack.ProvidePlugin({
       XMLHttpRequest: 'xhr-shim'
     }),
+    new WebextensionPlugin({
+      vendor: 'chrome',
+    })
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
