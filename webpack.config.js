@@ -12,6 +12,8 @@ module.exports = {
       library: { name: 'matrixHighlight', type: 'window' },
     },
   },
+  // https://stackoverflow.com/questions/54542737/webpack-4-build-bricks-csp-with-unsafe-eval
+  devtool: "source-map",
   module: {
     rules: [
       {

@@ -46,5 +46,9 @@
     "webpack": "^5.62.1",
     "webpack-cli": "^4.9.1",
     "xhr-shim": "^0.1.2"
+  },
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch"
   }
 }
