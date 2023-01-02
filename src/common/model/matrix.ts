@@ -1,6 +1,7 @@
 export const COLORS = ["yellow", "pink", "green", "blue", "orange" ] as const;
 
 export const HIGHLIGHT_EVENT_TYPE = "com.danilafe.highlight";
+export const HIGHLIGHT_STATE_EVENT_TYPE = "com.danilafe.highlight.state";
 export const HIGHLIGHT_EDIT_EVENT_TYPE = "com.danilafe.highlight_edit";
 export const HIGHLIGHT_EDIT_REL_TYPE = "com.danilafe.highlight_edit";
 export const HIGHLIGHT_PAGE_KEY = "com.danilafe.highlight_page";

@@ -1,7 +1,19 @@
-import {Room, User, Highlight, Message, HIGHLIGHT_PAGE_KEY, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
-import {RoomMembership, ToContentMessage, FromContentMessage} from "../common/messages";
-import * as sdk from "matrix-js-sdk";
-import {BackgroundPlatform} from "./backgroundPlatform";
+import {
+    Highlight,
+    HIGHLIGHT_EDIT_EVENT_TYPE,
+    HIGHLIGHT_EDIT_REL_TYPE,
+    HIGHLIGHT_EVENT_TYPE,
+    HIGHLIGHT_NEW_HIGHLIGHT_KEY,
+    HIGHLIGHT_PAGE_KEY,
+    HIGHLIGHT_STATE_EVENT_TYPE,
+    HighlightContent,
+    Message,
+    Room,
+    User,
+} from '../common/model'
+import {FromContentMessage, RoomMembership, ToContentMessage} from '../common/messages'
+import * as sdk from 'matrix-js-sdk'
+import {BackgroundPlatform} from './backgroundPlatform'
 
 function extractTxnId(event: sdk.MatrixEvent): number | undefined {
     let localId = undefined;
@@ -45,8 +57,11 @@ export class Client {
 
     private _checkRoom(room: sdk.Room): string | undefined {
         const state = room.getLiveTimeline().getState(sdk.EventTimeline.FORWARDS);
-        const event = state.getStateEvents("m.room.create", "");
-        return event.getContent()[HIGHLIGHT_PAGE_KEY];
+
+        const createEvent = state.getStateEvents("m.room.create", "");
+        const configEvent = state.getStateEvents(HIGHLIGHT_STATE_EVENT_TYPE, "")
+
+        return configEvent?.getContent()?.url || createEvent.getContent()[HIGHLIGHT_PAGE_KEY];
     }
 
     private _processRoom(room: sdk.Room): ToContentMessage[] {
@@ -181,6 +196,13 @@ export class Client {
                 this._emitEvent(event, false);
             });
             this._sdkClient.on("Room.timeline", (event: sdk.MatrixEvent, room: sdk.Room, toStartOfTimeline: boolean, removed: boolean, data: {liveEvent: boolean}) => {
+                if (event.getType() === HIGHLIGHT_STATE_EVENT_TYPE) {
+                    this._emitRoom(room);
+                    this._broadcastRoom({
+                        type: "room-configured",
+                        roomId: room.roomId,
+                    }, room.roomId)
+                }
                 if (!data.liveEvent) this._emitEvent(event, toStartOfTimeline);
             });
             this._sdkClient.on("RoomMember.membership", (event: sdk.MatrixEvent, member: sdk.RoomMember, oldMembership: RoomMembership | null) => {
@@ -251,6 +273,8 @@ export class Client {
     async handleMessage(message: FromContentMessage): Promise<void> {
         if (message.type === "join-room") {
             await this._sdkClient.joinRoom(message.roomId);
+        } else if (message.type === "join-configure-room") {
+            await this.joinAndConfigureRoom(message.roomId, message.url)
         } else if (message.type === "leave-room") {
             await this._sdkClient.leave(message.roomId);
         }  else if (message.type === "invite-user") {
@@ -264,5 +288,15 @@ export class Client {
         } else if (message.type === "load-room") {
             this._loadRoom(message.roomId);
         }
+    }
+    private async joinAndConfigureRoom(roomId: string, url: string) {
+        await this._sdkClient.joinRoom(roomId)
+        // TODO: this doesn't really work as intended rn.
+        //  The default synapse configuration is to required power level 50 (moderator) to send custom state events
+        //  So what actually needs to happen is that you join the room first, get moderator status and then
+        //  use "join" functionality in the extension to configure the room
+        //  _
+        //  It works ok, if someone else has already configured the room and you're just joining it though.
+        await this._sdkClient.sendStateEvent(roomId, HIGHLIGHT_STATE_EVENT_TYPE, {url}, "");
     }
 }

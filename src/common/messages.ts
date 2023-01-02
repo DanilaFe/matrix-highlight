@@ -16,6 +16,9 @@ export type ToContentMessage = {
     roomId: string,
     membership: RoomMembership,
 } | {
+    type: "room-configured",
+    roomId: string,
+} | {
     type: "room-name",
     roomId: string,
     name: string,
@@ -69,6 +72,10 @@ export type FromContentMessage = {
 } | {
     type: "join-room",
     roomId: string,
+} | {
+    type: "join-configure-room",
+    roomId: string,
+    url: string,
 } | {
     type: "leave-room",
     roomId: string,
