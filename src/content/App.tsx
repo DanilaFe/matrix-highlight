@@ -97,7 +97,11 @@ const App = (props: { platform: ContentPlatform }) => {
     }
 
     const makeNewHighlight = async (color: string) => {
-        if (!tooltip.selection || !highlight.currentRoomId) return;
+        if (!tooltip.selection) return;
+        if (!highlight.currentRoomId) {
+            toolsMenuDispatch({ type: "set-show-menu", showMenu: true });
+            return;
+        }
         const skeletonEvent = makeEvent(tooltip.selection);
         if (skeletonEvent) {
             const event = Object.assign(skeletonEvent, { [HIGHLIGHT_COLOR_KEY]: color });
