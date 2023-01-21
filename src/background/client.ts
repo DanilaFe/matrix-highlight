@@ -1,15 +1,8 @@
 import {
     Highlight,
-    HIGHLIGHT_EDIT_EVENT_TYPE,
-    HIGHLIGHT_EDIT_REL_TYPE,
-    HIGHLIGHT_EVENT_TYPE,
-    HIGHLIGHT_NEW_HIGHLIGHT_KEY,
-    HIGHLIGHT_PAGE_KEY,
-    HIGHLIGHT_STATE_EVENT_TYPE,
-    HighlightContent,
-    Message,
-    Room,
-    User,
+    HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_EVENT_TYPE,
+    HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_PAGE_KEY, HIGHLIGHT_STATE_EVENT_TYPE,
+    HighlightContent, Message, Room, User,
 } from '../common/model'
 import {FromContentMessage, RoomMembership, ToContentMessage} from '../common/messages'
 import * as sdk from 'matrix-js-sdk'
