@@ -1,14 +1,15 @@
-import {QuoteList} from "./QuoteList";
-import {UserList} from "./UserList";
-import {InviteList} from "./InviteList";
-import {RoomCreator} from "./RoomCreator";
-import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare} from "react-feather";
-import Select from "react-select";
-import "./ToolsMenu.scss";
-import {useContext} from "react";
-import {AppContext} from "../AppContext";
-import {ToolsMenuContext} from "./ToolsMenuContext";
-import {NavBar, RoomNavBar} from "./Navbar";
+import {QuoteList} from './QuoteList'
+import {UserList} from './UserList'
+import {InviteList} from './InviteList'
+import {RoomCreator} from './RoomCreator'
+import {AlignLeft, Bell, FolderPlus, Icon, MessageSquare, Plus, Settings, Users} from 'react-feather'
+import Select from 'react-select'
+import './ToolsMenu.scss'
+import {useContext} from 'react'
+import {AppContext} from '../AppContext'
+import {ToolsMenuContext} from './ToolsMenuContext'
+import {NavBar, RoomNavBar} from './Navbar'
+import {JoinRoomView} from './JoinRoomView'
 
 export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
 
@@ -123,6 +124,8 @@ const ToolView = (props: ToolsMenuProps) => {
 
     if (tab === "create") {
         return <RoomCreatorView createRoomEnabled={props.createRoomEnabled} onCreateRoom={props.onCreateRoom}/>
+    } else if (tab === "join") {
+       return <JoinRoomView onJoinRoom={props.onJoinRoom}/>
     } else if (tab === "invites") {
         return <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>;
     } else if (page.joinedRooms.length === 0) {
@@ -130,7 +133,7 @@ const ToolView = (props: ToolsMenuProps) => {
     } else if (currentRoom && tab === "quotes") {
         return <QuoteListView/>;
     } else if (currentRoom && tab === "users") {
-        return <UserListView onInviteUser={props.onInviteUser}/>; 
+        return <UserListView onInviteUser={props.onInviteUser}/>;
     }
     return <DefaultView {...props}/>;
 }

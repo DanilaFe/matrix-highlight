@@ -30,6 +30,11 @@ export const toolsMenuReducer = (state: ToolsMenuState, event: ToolsMenuEvent) =
         if (state.tab === "create") {
             newState.tab = null;
         }
+    } else if (
+        (event.type === 'room-configured' ||
+            (event.type === 'room-membership' && event.membership === 'join'))
+        && state.tab === 'join') {
+        newState.tab = null
     }
     return newState;
 }

@@ -81,13 +81,17 @@ const App = (props: { platform: ContentPlatform }) => {
     const createRoom = async (roomName: string) => {
         const url = window.location.href;
         highlightDispatch({ type: "create-room" });
-        props.platform.sendMessage({ type: "create-room", name: roomName, url }); 
+        props.platform.sendMessage({ type: "create-room", name: roomName, url });
     }
 
     const joinRoom = async (roomId: string) => {
-        props.platform.sendMessage({ type: "join-room", roomId });
+        // todo (PR):  this effectively replaces normal "join room" arguably it's ok to just do this every
+        //  time. Leaving as a discussion point for PR.
+        //  In case we agree - I should remove the original join-room
+        const url = window.location.href;
+        props.platform.sendMessage({ type: "join-configure-room", roomId, url });
     }
-    
+
     const leaveRoom = async (roomId: string) => {
         props.platform.sendMessage({ type: "leave-room", roomId });
     }
@@ -148,7 +152,7 @@ const App = (props: { platform: ContentPlatform }) => {
     const sendReply = async (id: string | number, plainBody: string, formattedBody: string) => {
         if (!auth.userId || !highlight.currentRoomId) return;
         if (typeof(id) !== "string") return;
-        
+
         const txnId = await props.platform.freshTxnId();
         const localMessage = new Message({
             id: txnId,
@@ -229,7 +233,7 @@ const App = (props: { platform: ContentPlatform }) => {
     };
 
     if (!toolsMenu.showMenu && !toolsMenu.showLogin) {
-        const toolbarComp = 
+        const toolbarComp =
             <Toolbar status={status} onIndicatorClick={handleIndicator}/>;
         const tooltipComp = tooltip.visible ?
             <Tooltip
@@ -252,7 +256,7 @@ const App = (props: { platform: ContentPlatform }) => {
     } else {
         return wrapInProviders(
             <Window onClose={closeMenu}>
-                <ToolsMenu createRoomEnabled={!highlight.creatingRoom} 
+                <ToolsMenu createRoomEnabled={!highlight.creatingRoom}
                     onSelectRoom={switchRoom} onCreateRoom={createRoom}
                     onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
             </Window>

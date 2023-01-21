@@ -46,8 +46,16 @@ The project is a handful of React applications written in TypeScript. It's suffi
 
 ```Bash
 yarn install
-yarn webpack
+yarn build
 ```
 
 An (unpacked) extension will be available in `dist/`. Then, you can follow the [Google guide] to
 install the unpacked extension in Chrome or Chromium.
+
+### Development mode
+
+The following command will run the Webpack in watch mode - rebuilding the extension on every change and reloading it in the browser.
+
+```bash
+yarn watch
+```
