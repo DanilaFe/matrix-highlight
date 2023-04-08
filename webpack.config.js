@@ -5,6 +5,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   entry: {
+    autorun: './src/content/autorun.tsx',
     content: './src/content/index.tsx',
     background: './src/background/background.ts',
     standalone: {

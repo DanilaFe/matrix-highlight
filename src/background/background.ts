@@ -34,6 +34,12 @@ class WebExtPlatform extends BackgroundPlatform {
     }
 
     private _hookBrowser() {
+        browser.runtime.onMessage.addListener((message: { type: "has-page-meta" }, sender: browser.Runtime.MessageSender)  => {
+            const tab = sender.tab;
+            if (tab) {
+                browser.tabs.executeScript(tab?.id, { file: "content.js" });
+            }
+        });
         browser.runtime.onConnect.addListener(async port => {
             await this._cachedLogin();
             if (port.name === PORT_TAB || port.name === PORT_RENEW) this._setupTabPort(port, port.name === PORT_TAB);
