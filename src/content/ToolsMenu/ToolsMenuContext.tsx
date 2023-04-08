@@ -1,6 +1,6 @@
 import {createContext} from "react"
 
-export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments";
+export type ToolsMenuTab = "create" | "join" | "invites" | "suggested" | "settings" | "users" | "quotes" | "comments";
 
 export type ToolsMenuState = {
     tab: ToolsMenuTab | null;

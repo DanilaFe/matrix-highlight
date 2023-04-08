@@ -1,8 +1,8 @@
 import { ReactElement, useState, useEffect, useReducer } from 'react';
 import {Toolbar} from './Toolbar/Toolbar';
 import {Window}  from "./Window/Window";
-import {ToolsMenu, ToolsMenuTab} from "./ToolsMenu/ToolsMenu";
-import {ToolsMenuContext} from "./ToolsMenu/ToolsMenuContext";
+import {ToolsMenu} from "./ToolsMenu/ToolsMenu";
+import {ToolsMenuContext, ToolsMenuTab} from "./ToolsMenu/ToolsMenuContext";
 import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";

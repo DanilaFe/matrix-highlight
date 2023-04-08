@@ -10,8 +10,6 @@ import {AppContext} from "../AppContext";
 import {ToolsMenuContext} from "./ToolsMenuContext";
 import {NavBar, RoomNavBar} from "./Navbar";
 
-export type ToolsMenuTab = "create" | "join" | "invites" | "settings" | "users" | "quotes" | "comments" ;
-
 export type ToolsMenuProps = {
     createRoomEnabled: boolean;
     onSelectRoom(roomId: string | null): void;
