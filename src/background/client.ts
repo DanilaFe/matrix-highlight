@@ -98,9 +98,13 @@ export class Client {
 
     private _addExistingReplies(event: sdk.MatrixEvent, highlight: Highlight): void {
         const timelineSet = this._sdkClient.getRoom(event.getRoomId()).getUnfilteredTimelineSet();
-        const threadReplies = timelineSet.getRelationsForEvent(event.getId(), "io.element.thread" as any, "m.room.message");
-        if (!threadReplies) return;
-        for (const threadEvent of threadReplies.getRelations().sort((e1, e2) => e1.getTs() - e2.getTs())) {
+
+        // io.element.thread is deprecated, but older clients might still use it.
+        const oldThreadReplies = timelineSet.getRelationsForEvent(event.getId(), "io.element.thread" as any, "m.room.message")?.getRelations() || [];
+        const threadReplies = timelineSet.getRelationsForEvent(event.getId(), "m.thread" as any, "m.room.message")?.getRelations() || [];
+        const allReplies = oldThreadReplies.concat(threadReplies).sort((e1, e2) => e1.getTs() - e2.getTs());
+        if (allReplies.length === 0) return;
+        for (const threadEvent of allReplies) {
             highlight.addRemoteMessage(eventToMessage(threadEvent), undefined);
         }
     }
@@ -220,7 +224,7 @@ export class Client {
             "body": plainBody,
             "formatted_body": formattedBody,
             "m.relates_to": {
-                "rel_type": "io.element.thread",
+                "rel_type": "m.thread",
                 "event_id": threadId,
             }
         }, txnId.toString());
