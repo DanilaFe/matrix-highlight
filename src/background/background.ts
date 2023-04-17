@@ -36,8 +36,11 @@ class WebExtPlatform extends BackgroundPlatform {
     private _hookBrowser() {
         browser.runtime.onMessage.addListener((message: { type: "has-page-meta" }, sender: browser.Runtime.MessageSender)  => {
             const tab = sender.tab;
-            if (tab) {
-                browser.tabs.executeScript(tab?.id, { file: "content.js" });
+            if (tab?.id) {
+                browser.scripting.executeScript({
+                    target: {tabId: tab.id, allFrames: true},
+                    files: ["content.js"]
+                });
             }
         });
         browser.runtime.onConnect.addListener(async port => {
@@ -54,12 +57,17 @@ class WebExtPlatform extends BackgroundPlatform {
 
         const activate = async (tab?: browser.Tabs.Tab) => {
             if (!tab?.id) return;
-            await browser.tabs.executeScript(tab?.id, { file: "content.js" });
+            await browser.scripting.executeScript({
+                target: {tabId: tab.id, allFrames: true},
+                files: ["content.js"]
+            });
         }
 
         browser.contextMenus.onClicked.addListener((_, tab) => {
             activate(tab);
         });
+
+        /* browser.action.onClicked.addListener(activate); */
     }
 
     constructor() {
@@ -105,5 +113,3 @@ class WebExtPlatform extends BackgroundPlatform {
 }
 
 new WebExtPlatform();
-/* browser.action.onClicked.addListener(activate); */
-

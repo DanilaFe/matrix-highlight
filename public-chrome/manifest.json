@@ -2,11 +2,15 @@
     "name": "Matrix Highlight",
     "description": "Matrix-based page highlighting",
     "version": "0.1.0",
-    "manifest_version": 2,
+    "manifest_version": 3,
     "background": {
-        "scripts": ["background.js"]
+        "service_worker": "background.js"
     },
-    "permissions": [ "storage", "contextMenus", "activeTab", "tabs", "http://*/*", "https://*/*"],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ],
+    "permissions": [ "storage", "contextMenus", "activeTab", "tabs", "scripting" ],
     "content_scripts": [
         {
             "js": ["autorun.js"],

@@ -23,7 +23,8 @@
     "react-feather": "^2.0.9",
     "react-select": "^5.2.1",
     "sanitize-html": "^2.6.1",
-    "webextension-polyfill": "^0.8.0"
+    "terser-webpack-plugin": "^5.3.7",
+    "webextension-polyfill": "^0.10.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.163",
