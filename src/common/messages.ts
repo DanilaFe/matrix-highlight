@@ -1,5 +1,5 @@
 export * from "./model";
-import {Room, User, Highlight, HighlightContent, Message} from "./model";
+import {PublicRoom, Room, User, Highlight, HighlightContent, Message} from "./model";
 
 export type RoomMembership = "invite" | "join" | "leave" | "ban"
 
@@ -55,6 +55,9 @@ export type ToContentMessage = {
     loginError: string
 } | {
     type: "sync-complete"
+} | {
+    type: "discovered-room",
+    room: PublicRoom,
 }
 
 export type FromContentMessage = {
@@ -95,5 +98,8 @@ export type FromContentMessage = {
     txnId: number
 } | {
     type: "load-room"
+    roomId: string
+} | {
+    type: "discover-room",
     roomId: string
 }

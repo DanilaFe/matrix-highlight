@@ -13,6 +13,7 @@ module.exports = {
       library: { name: 'matrixHighlight', type: 'window' },
     },
   },
+  devtool: "source-map",
   module: {
     rules: [
       {

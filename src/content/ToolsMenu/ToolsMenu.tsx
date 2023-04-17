@@ -1,8 +1,9 @@
 import {QuoteList} from "./QuoteList";
 import {UserList} from "./UserList";
 import {InviteList} from "./InviteList";
+import {SuggestedList} from "./SuggestedList";
 import {RoomCreator} from "./RoomCreator";
-import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare} from "react-feather";
+import {Plus, FolderPlus, Bell, Icon, Settings, AlignLeft, Users, MessageSquare, Star} from "react-feather";
 import Select from "react-select";
 import "./ToolsMenu.scss";
 import {useContext} from "react";
@@ -20,12 +21,13 @@ export type ToolsMenuProps = {
 }
 
 const RoomToolbar = () => {
-    const { openTab, showInvites } = useContext(ToolsMenuContext);
+    const { openTab, showInvites, showSuggested } = useContext(ToolsMenuContext);
     return (
         <div className="input-group">
             <button className="labeled-icon-button" onClick={() => openTab("create")}><Plus className="feather"/>Create room</button>
             <button className="labeled-icon-button" onClick={() => openTab("join")}><FolderPlus className="feather"/>Join room</button>
             { showInvites ? <button className="labeled-icon-button" onClick={() => openTab("invites")}><Bell className="feather"/>View Invites</button> : null }
+            { showSuggested ? <button className="labeled-icon-button" onClick={() => openTab("suggested")}><Star className="feather"/>Suggested Rooms</button> : null }
         </div>
     );
 };
@@ -56,6 +58,16 @@ const InviteView = (props: { onJoinRoom(id: string): void, onIgnoreRoom(id: stri
         <>
             <NavBar title="Invites" subtitle="Invites are shown only for the current page."/>
             <InviteList invitedRooms={page.invitedRooms} onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>
+        </>
+    );
+}
+
+const SuggestedView = (props: { onJoinRoom(id: string): void }) => {
+    const {page} = useContext(AppContext);
+    return (
+        <>
+            <NavBar title="Suggested" subtitle="Rooms recommended by this page's author."/>
+            <SuggestedList rooms={page.rooms} suggestedRooms={page.suggestedRooms} onJoinRoom={props.onJoinRoom}/>
         </>
     );
 }
@@ -123,6 +135,8 @@ const ToolView = (props: ToolsMenuProps) => {
         return <RoomCreatorView createRoomEnabled={props.createRoomEnabled} onCreateRoom={props.onCreateRoom}/>
     } else if (tab === "invites") {
         return <InviteView onJoinRoom={props.onJoinRoom} onIgnoreRoom={props.onIgnoreRoom}/>;
+    } else if (tab === "suggested") {
+        return <SuggestedView onJoinRoom={props.onJoinRoom} />;
     } else if (page.joinedRooms.length === 0) {
         return <NoRoomsView/>;
     } else if (currentRoom && tab === "quotes") {

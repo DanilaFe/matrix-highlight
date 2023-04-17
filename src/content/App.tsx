@@ -6,7 +6,7 @@ import {ToolsMenuContext, ToolsMenuTab} from "./ToolsMenu/ToolsMenuContext";
 import {AuthMenu} from "./AuthMenu/AuthMenu";
 import {Tooltip} from "./Tooltip/Tooltip";
 import {PORT_TAB, PORT_RENEW, FromContentMessage, ToContentMessage} from "../common/messages";
-import {Highlight, HighlightContent, Message, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_HIDDEN_KEY, COLORS} from "../common/model";
+import {Highlight, HighlightContent, Message, PublicRoom, HIGHLIGHT_COLOR_KEY, HIGHLIGHT_HIDDEN_KEY, COLORS} from "../common/model";
 import {Renderer} from "./effects/EffectfulRenderer";
 import {makeEvent} from "./effects/location";
 import {tooltipReducer, tooltipInitialState} from "./slices/tooltip";
@@ -178,6 +178,14 @@ const App = (props: { platform: ContentPlatform }) => {
     }, [highlightDispatch, authDispatch, toolsMenuDispatch]);
 
     useEffect(() => {
+        const commentRooms = document.querySelectorAll("meta[name=matrix-highlight-comments]");
+        commentRooms.forEach((room: Element) => {
+            const discoveredId = (room as HTMLMetaElement).content;
+            props.platform.sendMessage({ type: "discover-room", roomId: discoveredId });
+        });
+    }, [highlightDispatch]);
+
+    useEffect(() => {
         Renderer.subscribe({
             activeChange(id) { highlightDispatch({ type: "set-active", id }) },
             click(id, top, left, bottom) { tooltipDispatch({ type: "click", id, top, left, bottom }); },
@@ -202,7 +210,7 @@ const App = (props: { platform: ContentPlatform }) => {
             tooltipDispatch({ type: "selection", selection: window.getSelection() });
             e.stopPropagation();
         });
-    }, [toolsMenuDispatch, tooltipDispatch]);
+    }, [toolsMenuDispatch, tooltipDispatch, highlight.page.suggestedRooms]);
 
     useEffect(() => {
         const updateTooltip = () => {
@@ -219,9 +227,11 @@ const App = (props: { platform: ContentPlatform }) => {
     });
 
     const wrapInProviders = (element: ReactElement) => {
+        const showInvites = highlight.page.invitedRooms.length !== 0;
+        const showSuggested = highlight.page.suggestedRooms.length !== 0;
         return (
             <AppContext.Provider value={{ page: highlight.page, currentRoom, currentUserId: auth.userId }}>
-                <ToolsMenuContext.Provider value={{ tab: toolsMenu.tab, openTab: openTools, showInvites: highlight.page.invitedRooms.length !== 0 }}>
+                <ToolsMenuContext.Provider value={{ tab: toolsMenu.tab, openTab: openTools, showInvites, showSuggested }}>
                     {element}
                 </ToolsMenuContext.Provider>
             </AppContext.Provider>
