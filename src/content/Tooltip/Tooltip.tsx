@@ -2,7 +2,7 @@ import {PropsWithChildren} from "react";
 import {Highlight} from "../../common/model";
 import {COLORS} from "../../common/model/matrix";
 import "./Tooltip.scss";
-import {Trash} from "react-feather";
+import {EyeOff} from "react-feather";
 import {Editor} from "../Editor/Editor";
 import {CommentList} from "../CommentList/CommentList";
 
@@ -30,7 +30,7 @@ const LargeTooltip = (props: PropsWithChildren<TooltipProps>) => {
 }
 
 const DeleteButton = (props: { onClick(): void } ) => {
-    return <button className="round destructive" onClick={props.onClick}><Trash/></button>
+    return <button className="round destructive" onClick={props.onClick}><EyeOff/></button>
 }
 
 const ColorButton = (props: { color: string, onClick(): void, selectedColor?: string }) => {
