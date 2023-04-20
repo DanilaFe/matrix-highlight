@@ -46,7 +46,12 @@ The project is a handful of React applications written in TypeScript. It's suffi
 
 ```Bash
 yarn install
+
+# Firefox
 yarn webpack
+
+# Chrome
+yarn webpack --env browser=chrome
 ```
 
 An (unpacked) extension will be available in `dist/`. Then, you can follow the [Google guide] to
