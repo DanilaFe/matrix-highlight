@@ -1,4 +1,4 @@
-import {Room, User, Highlight, Message, HIGHLIGHT_PAGE_KEY, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
+import {PublicRoom, Room, User, Highlight, Message, HIGHLIGHT_PAGE_KEY, HighlightContent, HIGHLIGHT_EVENT_TYPE, HIGHLIGHT_EDIT_REL_TYPE, HIGHLIGHT_NEW_HIGHLIGHT_KEY, HIGHLIGHT_EDIT_EVENT_TYPE, HIGHLIGHT_HIDDEN_KEY} from "../common/model";
 import {RoomMembership, ToContentMessage, FromContentMessage} from "../common/messages";
 import * as sdk from "matrix-js-sdk";
 import {BackgroundPlatform} from "./backgroundPlatform";
@@ -51,13 +51,15 @@ export class Client {
 
     private _processRoom(room: sdk.Room): ToContentMessage[] {
         if (this._sdkClient.isRoomEncrypted(room.roomId)) return [];
+        const thisMember = room.getMember(this._sdkClient.getUserId());
+
         const events: ToContentMessage[] = [];
         events.push({
             type: "add-room",
             room: new Room({
                 id: room.roomId,
                 name: room.name,
-                membership: room.getMember(this._sdkClient.getUserId())!.membership
+                membership: thisMember?.membership || "none"
             })
         });
         for (const event of room.getLiveTimeline().getEvents()) {
@@ -252,6 +254,15 @@ export class Client {
         await continuePagination();
     }
 
+    private async _discoverRoom(roomId: string) {
+        const room = this._sdkClient.getRoom(roomId) || await this._sdkClient.peekInRoom(roomId);
+        if (!room) return;
+        const url = this._checkRoom(room);
+        if (!url) return;
+        const publicRoom = new PublicRoom({ id: roomId, name: room.name });
+        this._platform.broadcast({ type: "discovered-room", room: publicRoom });
+    }
+
     async handleMessage(message: FromContentMessage): Promise<void> {
         if (message.type === "join-room") {
             await this._sdkClient.joinRoom(message.roomId);
@@ -267,6 +278,8 @@ export class Client {
             this._sendThreadMessage(message.roomId, message.threadId, message.plainBody, message.formattedBody, message.txnId);
         } else if (message.type === "load-room") {
             this._loadRoom(message.roomId);
+        } else if (message.type === "discover-room") {
+            this._discoverRoom(message.roomId);
         }
     }
 }

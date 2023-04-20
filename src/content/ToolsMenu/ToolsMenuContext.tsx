@@ -6,6 +6,7 @@ export type ToolsMenuState = {
     tab: ToolsMenuTab | null;
     openTab(tab: ToolsMenuTab | null): void;
     showInvites: boolean;
+    showSuggested: boolean;
 };
 
-export const ToolsMenuContext = createContext<ToolsMenuState>({ tab: null, openTab: () => {}, showInvites: false });
+export const ToolsMenuContext = createContext<ToolsMenuState>({ tab: null, openTab: () => {}, showInvites: false, showSuggested: false });

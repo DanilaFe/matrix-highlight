@@ -1,4 +1,4 @@
-import {Page, Highlight, Room, User, Message} from "../../common/model";
+import {Page, Highlight, PublicRoom, Room, User, Message} from "../../common/model";
 import {ToContentMessage} from "../../common/messages";
 import {produce} from "immer";
 
@@ -40,6 +40,9 @@ export const highlightReducer = (state: HighlightDataState, event: HighlightData
                 return;
             case "create-room":
                 draft.creatingRoom = true;
+                return;
+            case "discovered-room":
+                draft.page.addSuggestedRoom(PublicRoom.fromOther(event.room));
                 return;
             case "room-created":
                 draft.creatingRoom = false;

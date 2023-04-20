@@ -15,6 +15,7 @@ module.exports = function (env, argv) {
         library: { name: 'matrixHighlight', type: 'window' },
       },
     },
+    devtool: "source-map",
     module: {
       rules: [
         {
