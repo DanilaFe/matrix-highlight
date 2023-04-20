@@ -264,7 +264,7 @@ const App = (props: { platform: ContentPlatform }) => {
             <Window onClose={closeMenu}>
                 <ToolsMenu createRoomEnabled={!highlight.creatingRoom} 
                     onSelectRoom={switchRoom} onCreateRoom={createRoom}
-                    onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/> :
+                    onJoinRoom={joinRoom} onIgnoreRoom={leaveRoom} onInviteUser={inviteUser}/>
             </Window>
         );
     }
