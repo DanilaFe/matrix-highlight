@@ -18,6 +18,12 @@ $css-vars: (
     text-color: black,
 );
 
+$css-vars-dark: (
+    background-color: #1b1d1f,
+    background-color-hover: #{lighten(#1b1d1f, 20%)},
+    text-color: white,
+);
+
 @mixin var($property, $varName) {
     #{$property}: map-get($css-vars, $varName);
     #{$property}: var(--#{$varName});
