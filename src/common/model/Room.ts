@@ -44,6 +44,7 @@ export class Room {
     }
 
     addUser(user: User) {
+        if (this.users.findIndex(it => it.id == user.id) !== -1) return;
         this.users.push(user);
     }
 

@@ -22,6 +22,7 @@ export class Page {
     }
 
     addRoom(room: Room): void {
+        if (this.rooms.findIndex(it => it.id === room.id) !== -1) return;
         this.rooms.push(room);
     }
 
@@ -36,6 +37,7 @@ export class Page {
     }
 
     addSuggestedRoom(room: PublicRoom): void {
+        if (this.suggestedRooms.findIndex(it => it.id === room.id) !== -1) return;
         this.suggestedRooms.push(room);
     }
 
