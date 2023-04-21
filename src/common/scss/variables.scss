@@ -1,5 +1,6 @@
 $default-shadow: 0 0 0.4em rgba(50, 50, 50, 0.3);
-$default-border: 0.08em solid #cacaca;
+$default-border-color: #cacaca;
+$default-border: 0.08em solid $default-border-color;
 $default-border-radius: 0.5em;
 
 $primary-color: #3072c7;
@@ -10,3 +11,14 @@ $highlight-color-pink: 255, 79, 167;
 $highlight-color-green: 52, 235, 82;
 $highlight-color-blue: 52, 156, 235;
 $highlight-color-orange: 235, 147, 52;
+
+$css-vars: (
+    background-color: white,
+    background-color-hover: #f0f0f0,
+    text-color: black,
+);
+
+@mixin var($property, $varName) {
+    #{$property}: map-get($css-vars, $varName);
+    #{$property}: var(--#{$varName});
+}

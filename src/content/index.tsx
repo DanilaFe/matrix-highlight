@@ -60,6 +60,7 @@ for (const styleTag of (window as any)._matrixHighlightStyleNodes) {
 
 const reactRoot = document.createElement('div');
 reactRoot.classList.add("matrix-highlight");
+// reactRoot.classList.add("dark");
 shadowRoot?.appendChild(reactRoot);
 ReactDOM.render(
   <React.StrictMode>

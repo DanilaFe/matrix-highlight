@@ -15,6 +15,7 @@ import {toolsMenuReducer, toolsMenuInitialState} from "./slices/toolsMenu";
 import {authReducer, authInitialState, AuthState} from "./slices/auth";
 import {AppContext} from "./AppContext";
 import {ContentPlatform} from "./contentPlatform";
+import "./App.scss"
 
 export enum IndicatorStatus {
     NoLogin = "noLogin",

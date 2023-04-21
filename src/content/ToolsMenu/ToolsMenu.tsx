@@ -103,17 +103,24 @@ const DefaultView = (props: ToolsMenuProps) => {
                 styles={{
                     option: (provided, state) => ({
                         ...provided,
-                        backgroundColor: state.isSelected ? '#3072c7' : (state.isFocused ? '#cbddf2' : 'white')
+                        backgroundColor: state.isSelected ? '#3072c7' : (state.isFocused ? 'var(--background-color-hover)' : 'var(--background-color)')
                     }),
                     control: (provided, state) => ({
                         ...provided,
                         border: state.menuIsOpen ? '0.08rem solid #3072c7' : '0.08rem solid #cacaca',
                         boxShadow: state.menuIsOpen ? '0px 0px 5px rgba(#3072c7, 0.4)' : 'none',
+                        backgroundColor: '',
                     }),
                     menu: (provided, state) => ({
                         ...provided,
-                        zIndex: 10000
-                    })
+                        zIndex: 10000,
+                        backgroundColor: 'var(--background-color)',
+                        border: '0.08rem solid #cacaca',
+                    }),
+                    singleValue: (provided, state) => ({
+                        ...provided,
+                        color: 'var(--text-color)',
+                    }),
                 }}/>
             { currentRoom ?
                 <>
