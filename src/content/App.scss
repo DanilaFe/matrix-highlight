@@ -1,0 +1,23 @@
+@import "../common/scss/variables.scss";
+
+.matrix-highlight {
+    @each $varName, $varDefault in $css-vars {
+        --#{$varName}: #{$varDefault};
+    }
+
+    @include var(color, text-color);
+
+    &.dark {
+        @each $varName, $varDefault in $css-vars-dark {
+            --#{$varName}: #{$varDefault};
+        }
+    }
+
+    &.dark-auto {
+        @media (prefers-color-scheme: dark) {
+            @each $varName, $varDefault in $css-vars-dark {
+                --#{$varName}: #{$varDefault};
+            }
+        }
+    }
+}
