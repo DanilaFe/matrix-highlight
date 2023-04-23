@@ -1,4 +1,5 @@
 import App from "../content/App";
+import global from "!!css-loader!sass-loader!../content/global.module.scss";
 import ReactDOM from 'react-dom';
 import {ContentPlatform} from "../content/contentPlatform";
 import {BackgroundPlatform} from "../background/backgroundPlatform";
@@ -45,10 +46,14 @@ class LocalStorageBackgroundPlatform extends BackgroundPlatform {
     }
 }
 
-export async function install(htmlElement: HTMLElement) {
+export async function install(htmlElement: HTMLElement, win?: Window) {
+    const globalStyle = document.createElement('style');
+    globalStyle.innerHTML = global.toString();
+    (win || window).document.head.appendChild(globalStyle);
+
     const combined = new CombinedPlatform();   
     ReactDOM.render(
-        <App platform={combined.contentPlatform}/>,
+        <App platform={combined.contentPlatform} window={win || window}/>,
         htmlElement
     );
     const client = await combined.backgroundPlatform.tryCachedLogin();

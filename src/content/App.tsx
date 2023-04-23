@@ -39,7 +39,10 @@ function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): Ind
     }
 }
 
-const App = (props: { platform: ContentPlatform }) => {
+const App = (props: { platform: ContentPlatform, window?: Window }) => {
+    const win = props.window || window;
+    const doc = win.document;
+
     const [toolsMenu, toolsMenuDispatch] = useReducer(toolsMenuReducer, toolsMenuInitialState);
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
     const [tooltip, tooltipDispatch] = useReducer(tooltipReducer, tooltipInitialState);
@@ -80,7 +83,7 @@ const App = (props: { platform: ContentPlatform }) => {
     };
 
     const createRoom = async (roomName: string) => {
-        const url = window.location.href;
+        const url = win.location.href;
         highlightDispatch({ type: "create-room" });
         props.platform.sendMessage({ type: "create-room", name: roomName, url }); 
     }
@@ -115,7 +118,7 @@ const App = (props: { platform: ContentPlatform }) => {
                 roomId: highlight.currentRoomId
             });
 
-            window.getSelection()?.removeAllRanges();
+            win.getSelection()?.removeAllRanges();
             tooltipDispatch({type: "hide"});
         }
     }
@@ -179,7 +182,7 @@ const App = (props: { platform: ContentPlatform }) => {
     }, [highlightDispatch, authDispatch, toolsMenuDispatch]);
 
     useEffect(() => {
-        const commentRooms = document.querySelectorAll("meta[name=matrix-highlight-comments]");
+        const commentRooms = doc.querySelectorAll("meta[name=matrix-highlight-comments]");
         commentRooms.forEach((room: Element) => {
             const discoveredId = (room as HTMLMetaElement).content;
             props.platform.sendMessage({ type: "discover-room", roomId: discoveredId });
@@ -195,20 +198,20 @@ const App = (props: { platform: ContentPlatform }) => {
     }, [highlightDispatch, tooltipDispatch]);
 
     useEffect(() => {
-        document.addEventListener("keydown", (e) => {
+        doc.addEventListener("keydown", (e) => {
             if (e.key !== "Escape") return;
             toolsMenuDispatch({ type: "set-show-menu", showMenu: false });
             toolsMenuDispatch({ type: "set-show-login", showLogin: false });
         });
-        document.addEventListener("selectionchange", (e) => {
-            const selection = window.getSelection();
+        doc.addEventListener("selectionchange", (e) => {
+            const selection = win.getSelection();
             if (!selection || selection.type !== "Range" || selection.toString() === "") {
                 tooltipDispatch({ type: "selection", selection: null });
             }
         });
-        document.addEventListener("mouseup", (e) => {
+        doc.addEventListener("mouseup", (e) => {
             tooltipDispatch({ type: "hide" });
-            tooltipDispatch({ type: "selection", selection: window.getSelection() });
+            tooltipDispatch({ type: "selection", selection: win.getSelection() });
             e.stopPropagation();
         });
     }, [toolsMenuDispatch, tooltipDispatch, highlight.page.suggestedRooms]);
@@ -217,9 +220,9 @@ const App = (props: { platform: ContentPlatform }) => {
         const updateTooltip = () => {
             tooltipDispatch({ type: "resize-selection" });
         };
-        window.addEventListener("resize", updateTooltip)
+        win.addEventListener("resize", updateTooltip)
         return () => {
-            window.removeEventListener("resize", updateTooltip);
+            win.removeEventListener("resize", updateTooltip);
         }
     }, [tooltipDispatch]);
 
