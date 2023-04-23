@@ -41,14 +41,14 @@ class HighlightData {
             top = Math.min(top, boundingRect.top);
             bottom = Math.max(bottom, boundingRect.bottom);
         }
-        this._left = left + window.scrollX;
-        this._top = top + window.scrollY;
-        this._bottom = bottom + window.scrollY;
+        this._left = left + this._renderer._window!.scrollX;
+        this._top = top + this._renderer._window!.scrollY;
+        this._bottom = bottom + this._renderer._window!.scrollY;
     }
 
     show() {
-        const start = decodeNodeData(this._highlight.from);
-        const end = decodeNodeData(this._highlight.to);
+        const start = decodeNodeData(this._renderer._document!, this._highlight.from);
+        const end = decodeNodeData(this._renderer._document!, this._highlight.to);
         if (!start || !end) { return; }
 
         const toHighlight: { node: Text, from: number, to: number }[] = [];
@@ -69,7 +69,7 @@ class HighlightData {
     }
 
     hide() {
-        const relevantNodes = document.querySelectorAll(`[data-mhl-id="${this._highlight.id}"]`);
+        const relevantNodes = this._renderer._document!.querySelectorAll(`[data-mhl-id="${this._highlight.id}"]`);
         for (const node of Array.from(relevantNodes)) {
             clearTextPortion(node);
         }
@@ -77,6 +77,7 @@ class HighlightData {
 }
 
 export type RendererSubscriber = {
+    window: Window;
     activeChange?(id: number | string | null): void;
     click?(id: number | string, top: number, left: number, bottom: number): void;
     move?(id: number | string, top: number, left: number, bottom: number): void;
@@ -90,12 +91,26 @@ class EffectfulRenderer {
 
     subscribe(subscriber: RendererSubscriber) {
         this._subscriber = subscriber;
-        window.addEventListener("resize", () => {
+        this._subscriber.window.addEventListener("resize", () => {
             for (const data of this._highlightData) {
                 data.recalculateOffset();
                 subscriber.move?.(data.id, data.top, data.left, data.bottom);
             }
         });
+        this._subscriber.window.addEventListener("scroll", () => {
+            for (const data of this._highlightData) {
+                data.recalculateOffset();
+                subscriber.move?.(data.id, data.top, data.left, data.bottom);
+            }
+        });
+    }
+
+    get _window() {
+        return this._subscriber?.window || null;
+    }
+
+    get _document() {
+        return this._subscriber?.window?.document || null;
     }
 
     _hoverBegin(id: number | string) {

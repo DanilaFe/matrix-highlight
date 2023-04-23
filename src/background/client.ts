@@ -37,6 +37,7 @@ export class Client {
     private async _broadcastRoom(message: ToContentMessage | ToContentMessage[] | null, target: string | sdk.Room): Promise<void> {
         if (typeof target === "string") {
             target = this._sdkClient.getRoom(target);
+            if (!target) return;
         }
         const url = this._checkRoom(target);
         if (!url || !message) return;

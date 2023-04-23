@@ -191,6 +191,7 @@ const App = (props: { platform: ContentPlatform, window?: Window }) => {
 
     useEffect(() => {
         Renderer.subscribe({
+            window: win,
             activeChange(id) { highlightDispatch({ type: "set-active", id }) },
             click(id, top, left, bottom) { tooltipDispatch({ type: "click", id, top, left, bottom }); },
             move(id, top, left, bottom) { tooltipDispatch({ type: "resize-clicked", id, top, left, bottom }); }

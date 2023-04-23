@@ -36,7 +36,7 @@ function recalculateOffset(node: Node, offset: number): NodePointer {
     if (isInserted(node)) {
         // Convert highlight nodes into offsets within text
         offset = 0;
-    } else if (!(node instanceof Text)) {
+    } else if (!(node.nodeType === Node.TEXT_NODE)) {
         // Neither a highlight nor text node; we maintain
         // the invariant that highlights only contain other
         // highlights, so this isn't a part of a highlight,
@@ -46,6 +46,7 @@ function recalculateOffset(node: Node, offset: number): NodePointer {
         }
         return { node: node.childNodes[offset], offset: undefined }
     }
+
 
     while (node.parentNode && isInserted(node.parentNode)) {
         // TypeScript knows parent is not null here.
@@ -85,6 +86,7 @@ export function makeEvent(selection: Selection): Omit<HighlightContent, typeof H
     if (selection.rangeCount !== 1 || selection.type !== "Range" || !selection.anchorNode || !selection.focusNode) {
         return null;
     }
+    const doc = selection.anchorNode.ownerDocument!;
     const anchorPath = makeNodeData(selection.anchorNode, selection.anchorOffset);
     const focusPath = makeNodeData(selection.focusNode, selection.focusOffset);
     const compare = pickSmaller(anchorPath, focusPath);
@@ -102,8 +104,8 @@ export function makeEvent(selection: Selection): Omit<HighlightContent, typeof H
         default:
             return null;
     }
-    const smallNode = followPath(smaller[HIGHLIGHT_NODE_PATH_KEY], smaller[HIGHLIGHT_NODE_OFFSET_KEY]);
-    const bigNode = followPath(bigger[HIGHLIGHT_NODE_PATH_KEY], bigger[HIGHLIGHT_NODE_OFFSET_KEY]);
+    const smallNode = followPath(doc, smaller[HIGHLIGHT_NODE_PATH_KEY], smaller[HIGHLIGHT_NODE_OFFSET_KEY]);
+    const bigNode = followPath(doc, bigger[HIGHLIGHT_NODE_PATH_KEY], bigger[HIGHLIGHT_NODE_OFFSET_KEY]);
     if (!smallNode || !bigNode) {
         return null;
     }
@@ -119,13 +121,13 @@ export function makeEvent(selection: Selection): Omit<HighlightContent, typeof H
     }
 }
 
-export function decodeNodeData(data: NodeData): NodePointer | null {
+export function decodeNodeData(doc: Document, data: NodeData): NodePointer | null {
     const offset = data[HIGHLIGHT_NODE_OFFSET_KEY]
-    return followPath(data[HIGHLIGHT_NODE_PATH_KEY], offset);
+    return followPath(doc, data[HIGHLIGHT_NODE_PATH_KEY], offset);
 }
 
-function followPath(path: Path, offset: number | undefined): NodePointer | null {
-    let node: Node | null = path.reduce((node, index) => node?.childNodes?.[index] || null, document.documentElement.parentNode as Node);
+function followPath(doc: Document, path: Path, offset: number | undefined): NodePointer | null {
+    let node: Node | null = path.reduce((node, index) => node?.childNodes?.[index] || null, doc.documentElement.parentNode as Node);
     if (!node) return null;
     if (!isInserted(node) || offset === undefined) return { node, offset };
     while (node && isInserted(node)) {
@@ -146,11 +148,11 @@ function iterateText(fromNode: Node, toNode: Node, callback: (value: Text) => an
     let currentNode: Node | null = fromNode;
     while (currentNode) {
         // If we're an element, descend further down.
-        if (currentNode instanceof Element && currentNode.childNodes.length && !skipped(currentNode)) {
+        if (currentNode.nodeType === Node.ELEMENT_NODE && currentNode.childNodes.length && !skipped(currentNode as Element)) {
             currentNode = currentNode.childNodes[0];
             continue;
-        } else if (currentNode instanceof Text) {
-            callback(currentNode);
+        } else if (currentNode.nodeType === Node.TEXT_NODE) {
+            callback(currentNode as Text);
         }
         
         // Move on to next node in the list
@@ -166,10 +168,10 @@ export function iterateTextPieces(fromNode: Node, fromOffset: number | undefined
     // Here, or elsewhere, do not assume that the assumptions regarding offset and text nodes
     // hold, just to be more robust. Elements might have an offset, text nodes might not.
     // Ensure both work.
-    if (fromNode === toNode && fromNode instanceof Text &&
-            fromOffset && fromNode instanceof Text &&
-            toOffset && toNode instanceof Text) {
-        callback(fromNode, fromOffset, toOffset);
+    if (fromNode === toNode && fromNode.nodeType === Node.TEXT_NODE &&
+            fromOffset && fromNode.nodeType === Node.TEXT_NODE &&
+            toOffset && toNode.nodeType === Node.TEXT_NODE) {
+        callback(fromNode as Text, fromOffset, toOffset);
     } else {
         iterateText(fromNode, toNode, textNode => {
             if (textNode === fromNode && fromOffset) {
