@@ -15,8 +15,8 @@ class CombinedPlatform {
     contentPlatform: LocalStorageContentPlatform;
     backgroundPlatform: LocalStorageBackgroundPlatform;
 
-    constructor() {
-        this.backgroundPlatform = new LocalStorageBackgroundPlatform(this);
+    constructor(url: string) {
+        this.backgroundPlatform = new LocalStorageBackgroundPlatform(this, url);
         this.contentPlatform = new LocalStorageContentPlatform(this);
     }
 }
@@ -35,10 +35,10 @@ class LocalStorageContentPlatform extends ContentPlatform {
 }
 
 class LocalStorageBackgroundPlatform extends BackgroundPlatform {
-    constructor(private _combined: CombinedPlatform) { super(new LocalStorageProvider()); }
+    constructor(private _combined: CombinedPlatform, private _url: string) { super(new LocalStorageProvider()); }
 
     broadcast(message: ToContentMessage | ToContentMessage[], url: string | undefined) {
-        if (url && url !== window.location.href) return;
+        if (url && url !== this._url) return;
         const messages = Array.isArray(message) ? message : [message];
         for (const message of messages) {
             this._combined.contentPlatform.handleMessage(message);
@@ -46,14 +46,16 @@ class LocalStorageBackgroundPlatform extends BackgroundPlatform {
     }
 }
 
-export async function install(htmlElement: HTMLElement, win?: Window) {
-    const globalStyle = document.createElement('style');
+export async function install(htmlElement: HTMLElement, win?: Window, url?: string) {
+    const theWindow = (win || window);
+    const theUrl = url || theWindow.location.href;
+    const globalStyle = theWindow.document.createElement('style');
     globalStyle.innerHTML = global.toString();
-    (win || window).document.head.appendChild(globalStyle);
+    theWindow.document.head.appendChild(globalStyle);
 
-    const combined = new CombinedPlatform();   
+    const combined = new CombinedPlatform(theUrl);   
     ReactDOM.render(
-        <App platform={combined.contentPlatform} window={win || window}/>,
+        <App platform={combined.contentPlatform} window={theWindow} url={theUrl}/>,
         htmlElement
     );
     const client = await combined.backgroundPlatform.tryCachedLogin();

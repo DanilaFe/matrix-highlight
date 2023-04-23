@@ -65,7 +65,7 @@ shadowRoot?.appendChild(reactRoot);
 ReactDOM.render(
   <React.StrictMode>
       <CacheProvider value={shadowCache}>
-        <App platform={new WebExtPlatform()}/>
+        <App platform={new WebExtPlatform()} url={window.location.href}/>
       </CacheProvider>
   </React.StrictMode>,
   reactRoot

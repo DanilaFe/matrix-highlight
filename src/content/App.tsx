@@ -39,9 +39,10 @@ function getIndicatorStatus(auth: AuthState, highlight: HighlightDataState): Ind
     }
 }
 
-const App = (props: { platform: ContentPlatform, window?: Window }) => {
+const App = (props: { platform: ContentPlatform, window?: Window, url: string }) => {
     const win = props.window || window;
     const doc = win.document;
+    const url = props.url;
 
     const [toolsMenu, toolsMenuDispatch] = useReducer(toolsMenuReducer, toolsMenuInitialState);
     const [highlight, highlightDispatch] = useReducer(highlightReducer, highlightInitialState);
@@ -83,7 +84,6 @@ const App = (props: { platform: ContentPlatform, window?: Window }) => {
     };
 
     const createRoom = async (roomName: string) => {
-        const url = win.location.href;
         highlightDispatch({ type: "create-room" });
         props.platform.sendMessage({ type: "create-room", name: roomName, url }); 
     }
