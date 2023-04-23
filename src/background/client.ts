@@ -124,35 +124,37 @@ export class Client {
         switch (event.getType()) {
             case HIGHLIGHT_EVENT_TYPE:
                 const highlight = new Highlight(event.getId(), event.getContent<HighlightContent>());
-            this._addExistingReplies(event, highlight);
-            this._useLatestContent(event, highlight);
-            return {
-                type: "highlight",
-                roomId: event.getRoomId(),
-                txnId: extractTxnId(event),
-                highlight: highlight,
-                placeAtTop,
-            };
+                this._addExistingReplies(event, highlight);
+                this._useLatestContent(event, highlight);
+                return {
+                    type: "highlight",
+                    roomId: event.getRoomId(),
+                    txnId: extractTxnId(event),
+                    highlight: highlight,
+                    placeAtTop,
+                };
             case HIGHLIGHT_EDIT_EVENT_TYPE:
                 const highlightId = event.getRelation()?.["event_id"];
-            const newContent = event.getContent()[HIGHLIGHT_NEW_HIGHLIGHT_KEY] as HighlightContent
-            if (!highlightId) return null;
-            return {
-                type: "highlight-content",
-                roomId: event.getRoomId(),
-                highlightId,
-                highlight: newContent
-            };
+                const newContent = event.getContent()[HIGHLIGHT_NEW_HIGHLIGHT_KEY] as HighlightContent
+                if (!highlightId) return null;
+                return {
+                    type: "highlight-content",
+                    roomId: event.getRoomId(),
+                    highlightId,
+                    highlight: newContent
+                };
             case "m.room.message":
-                if (!event.isThreadRelation || event.isThreadRoot) return null;
-            return {
-                type: "thread-message",
-                roomId: event.getRoomId(),
-                threadId: event.threadRootId,
-                txnId: extractTxnId(event),
-                message: eventToMessage(event),
-                placeAtTop,
-            };
+                const isThreadMessage = event.isRelation("io.element.thread") || event.isRelation("m.thread");
+                if (!isThreadMessage || event.isThreadRoot) return null;
+                const threadId = event.getWireContent()["m.relates_to"]!.event_id;
+                return {
+                    type: "thread-message",
+                    roomId: event.getRoomId(),
+                    threadId,
+                    txnId: extractTxnId(event),
+                    message: eventToMessage(event),
+                    placeAtTop,
+                };
             default: return null;
         }
     }
